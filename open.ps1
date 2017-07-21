@@ -52,13 +52,13 @@ function OpenTxt($file) {
   if ($EmEditor) {
     emeditor.exe $file
   } else {
-    code.cmd $file
+    code.cmd $file -r
   }
 }
 
 function OpenUnknown($file) {
   if ($Code) {
-    code.cmd $file
+    code.cmd $file -r
   } elseif ($EmEditor) {
     emEditor.exe $file
   } else {

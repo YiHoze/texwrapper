@@ -1,45 +1,49 @@
-$global:files=''
-$global:option=''
-$global:today=''
+[CmdletBinding()]
+param(
+  [string] $files,
+  [alias("d")][string] $date,
+  [alias("r")][switch] $remove = $false,  
+  [alias("h")][switch] $help = $false
+)
 
-if($args[0] -ne $null) { $files=$args[0] }
-else { write-output "today.ps1 *.foo [-r] [yyyy-mm-dd]"; break }
+function help 
+{
+write-output "
+filetoday.ps1 adds or removes a date from filenames
+Usage:
+  #>filetoday.ps1 *.foo [options]
+Options:
+    -d: today date by default (yyyy-mm-dd)
+    -r: remove
+    -h: help
+  "
+}
 
 function AppendDate () {
   get-childitem $files | 
   foreach-object { 
-    $newname = $_.basename + $today + $_.extension
+    $newname = $_.basename + $date + $_.extension
     rename-item $_.name $newname
   }
 }
 
-function RemoveDate () {
+function RemoveDate () {  
   get-childitem $files |
   foreach-object {
-    if ( $_.name.contains($today) ) {
+    if ( $_.name.contains($date) ) {
       $oldname = $_.name
-      $newname = $oldname.replace($today, "")
+      $newname = $oldname.replace($date, "")
       rename-item $_.name $newname
     }    
   }
 }
 
-function SetOption($this) {
-  if($this -eq "-r") { $global:option=$this }
-  else { $global:today=$this}
+if (!$files) { help; break }
+
+if (!$date) { 
+  $date = get-date -format "yyyy-MM-dd"   
 }
+$date = "_" + $date
 
-if($args[1] -ne $null) { SetOption($args[1]) }
-if($args[2] -ne $null) { SetOption($args[2]) }
-
-if( !($today) ) { 
-  $today = get-date -format "yyyy-MM-dd" 
-  $today = "_" + $today
-}
-
-#write-output "$files $option $today"
-
-switch ($option) {
-  "-r"  { RemoveDate }
-  default  { AppendDate }
-}
+if ($remove) { RemoveDate }
+else { AppendDate }

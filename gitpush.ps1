@@ -4,14 +4,15 @@
 # git status
 # git add foo OR git add .
 # git commit -m "comment"
-# git remote add origin https://github.com/YiHoze/latex.git
-# git remote add origin https://github.com/YiHoze/powershell_scripts.git
-# git push origin master
+# git remote add origin https://github.com/YiHoze/bin.git
+# git remote add origin https://github.com/YiHoze/HzGuide.git
+# git push -u origin master
 
 [CmdletBinding()]
 param(
 	[alias("b")][switch] $bin=$false,
-	[alias("l")][switch] $latex=$false,
+	[alias("z")][switch] $hzguide=$false,
+	[alias("k")][switch] $KTS=$false,
 	[alias("c")][string] $comment,
 	[alias("h")][switch] $help=$false
 )
@@ -20,7 +21,8 @@ function help
 {
 	write-output "
 	-b: push 'D:\home\bin' to https://github.com/YiHoze/bin.git
-	-l: push 'D:\home\texmf\tex\latex' to  https://github.com/YiHoze/latex.git
+	-k: push 'D:\home\doc\KTS\KTSmemo' to  https://github.com/KoreanTUG/KTSmemo.git
+	-z: push 'D:\home\texmf\tex\latex\hzguide' to  https://github.com/YiHoze/HzGuide.git
 	-c: comment for commit
 	-h: help
 	"
@@ -31,18 +33,25 @@ if ($help) { help; break }
 
 if( !($comment) ) { 	
 	$comment = get-date -UFormat "%Y-%m-%d_%R"
-}
+} 
 
-if ($powershell) {
+$repo = $false
+
+if ($bin) {
 	set-location "D:\home\bin"
-	git add *
-	git commit -m $comment
-	git push origin master
+	$repo = $true
+} elseif ($hzguide) {
+	set-location "D:\home\texmf\tex\latex\hzguide"
+	$repo = $true
+} elseif ($KTS) {
+	set-location "D:\home\doc\KTS\KTSmemo"
+	$repo = $true
 }
 
-if ($latex) {
-	set-location "D:\home\texmf\tex\latex"
+if ($repo) {
 	git add *
 	git commit -m $comment
 	git push origin master
+} else {
+	help
 }

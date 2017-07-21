@@ -6,7 +6,6 @@ param(
 )
 
 $Sumatra = "C:\Program Files\SumatraPDF\SumatraPDF.exe"
-#C:\Users\hugh\AppData\Local\atom\bin
 #C:\Program Files\EmEditor\emeditor.exe
 
 function help
@@ -22,8 +21,8 @@ function help
 
 function ActivateCode
 {
-  $env:TEXEDIT = "code.cmd -g %s:%d"
-  &$Sumatra -inverse-search  "code.cmd -g %f:%l"
+  $env:TEXEDIT = "code.cmd -g %s:%d -r"
+  &$Sumatra -inverse-search  "`"C:\Program Files (x86)\Microsoft VS Code\code.exe`" -g %f:%l -r"
 }
 
 function ActivateEmeditor

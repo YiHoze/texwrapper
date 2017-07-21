@@ -4,9 +4,10 @@ param(
   [alias("s")][string] $str,
   [alias("d")][string] $delimiter,
   [alias("n")][string] $new,
+  [alias("l")][switch] $removeline = $false,
   [alias("p")][string] $pattern,
-  [alias("r")][switch] $recursive=$false,
-  [alias("h")][switch] $help=$false
+  [alias("r")][switch] $recursive = $false,
+  [alias("h")][switch] $help = $false
 )
 
 function help {
@@ -20,6 +21,7 @@ function help {
     -s: string to search for
     -d: delimiter to split by
     -n: new string to replace with
+    -l: remove matched lines
     -p: pattern file (.tsv)
     -r: recursive (including subdirectories)
     -h: help
@@ -57,64 +59,65 @@ function SearchLine {
   }
 }
 
+function SingleReplaceEach ($file)
+{
+  $tmpfile = "t@mp.tmp"
+  if ($removeline) {
+    Get-Content $file -Encoding UTF8 |
+      Where-Object { $_ -notmatch $str } |
+        Set-Content $tmpfile -Encoding UTF8
+    Remove-Item $file
+    Rename-Item $tmpfile $file
+  } else {   
+    $content = get-content $file -encoding UTF8 -ReadCount 0
+    $content -replace $str, $new | set-content $file -encoding UTF8    
+  }
+}
+
 function SingleReplace {
   foreach ($file in get-childitem $files) {
-      $content = get-content $file -encoding UTF8 -ReadCount 0
-      $content -replace $str, $new | set-content $file -encoding UTF8
+    SingleReplaceEach($file)
   }
 }
 
 function SingleReplaceRecursive {
   foreach ($file in get-childitem $files -recurse) {
-      $content = get-content $file -encoding UTF8 -ReadCount 0
-      $content -replace $str, $new | set-content $file -encoding UTF8
+    SingleReplaceEach($file)
+  }
+}
+
+
+function MultiReplaceEach ($file)
+{
+  $patterns = import-csv $pattern -delimiter "`t" -encoding UTF8
+  foreach ($item in $patterns) {
+    $str = $item.old
+    $new = $item.new
+    $content = get-content $file -encoding UTF8 -ReadCount 0
+    $content -replace $str, $new | set-content $file -encoding UTF8        
   }
 }
 
 function MultipleReplace () {
   foreach ($file in get-childitem $files) {
-    $patterns = import-csv $pattern -delimiter "`t" -encoding UTF8
-    foreach ($item in $patterns) {
-      $str = $item.old
-      $new = $item.new
-      $content = get-content $file -encoding UTF8 -ReadCount 0
-      $content -replace $str, $new | set-content $file -encoding UTF8
-    }
+    MultiReplaceEach($file)
   }
 }
 
 function MultipleReplaceRecursive () {
   foreach ($file in get-childitem $files -recurse) {
-    $patterns = import-csv $pattern -delimiter "`t" -encoding UTF8
-    foreach ($item in $patterns) {
-      $str = $item.old
-      $new = $item.new
-      $content = get-content $file -encoding UTF8 -ReadCount 0
-      $content -replace $str, $new | set-content $file -encoding UTF8
-    }
+    MultiReplaceEach($file)
   }
 }
 
 checkcmd
 
-if (! $pattern) {
-  if (! $new) {
-    if (! $delimiter ) {
-      SearchLine
+if ($pattern) {
+    if ($recursive) { MultipleReplaceRecursive } else { MultipleReplace }
+} else {    
+    if ($new -or $removeline) {
+      if ($recursive) { SingleReplaceRecursive } else { SingleReplace }
     } else {
-      SearchPhrase
+      if ($delimiter) { SearchPhrase } else { SearchLine }
     }
-  } else {
-    if (! $recursive) {
-      SingleReplace
-    } else {
-      SingleReplaceRecursive
-    }
-  }
-} else {
-  if (! $recursive) {
-    MultipleReplace
-  } else {
-    MultipleReplaceRecursive
-  }
 }

@@ -56,3 +56,28 @@ Public Sub GetSheetValues()
         Cells(i, 12) = Sheets(i).Cells(30, 1)
     Next i
 End Sub
+
+Public Sub SaveColumnsAsSeparateText()
+Dim Sheet As Worksheet: Set Sheet = ThisWorkbook.Worksheets("Sheet1")
+Dim Column As Integer
+Dim Row As Integer
+Dim stream
+Set stream = CreateObject("ADODB.Stream")
+stream.Charset = "utf-8"
+Dim Path As String: Path = "c:\temp\"
+Dim Name As String
+Dim Filename As String
+For Column = 2 To 18
+    stream.Open
+    For Row = 2 To Sheet.Cells(Sheet.Rows.Count, Column).End(xlUp).Row
+        stream.WriteText Sheet.Cells(Row, Column).Value2, 1
+    Next Row
+    Name = Sheet.Cells(1, Column).Value2
+    Filename = Path & Name & ".tex"
+    stream.SaveToFile Filename, 2
+    stream.Close
+Next Column
+End Sub
+
+
+출처: http://hoze.tistory.com/1488 [Hoze]
