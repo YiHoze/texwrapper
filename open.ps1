@@ -39,12 +39,12 @@ function DetermineType($file) {
 }
 
 function OpenTexmf($file) {
-  $file = kpsewhich $file
-  if ($file -eq $null) {
-    write-output "$file does not exist."
+  $filepath = kpsewhich $file
+  if ($filepath -eq $null) {
+    write-output "$file is not found."
     break
   } else {
-    OpenTxt($file)
+    OpenTxt($filepath)
   }
 }
 

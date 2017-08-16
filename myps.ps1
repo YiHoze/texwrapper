@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-  [alias("c")][int] $columns = 2,
+  $columns = 2,
   [alias("h")][switch] $help = $false
 )
 
@@ -9,9 +9,7 @@ $psdir = "D:\home\bin\"
 function help
 {
   write-output "
-  #>myps.ps1 [option]
-  Options:
-    -c: the number of columns (up to 4)
+  #>myps.ps1 [number of columns (up to 4)]
     -h: help
   "
 }
@@ -19,6 +17,7 @@ function help
 if ($help) { help; break }
 
 if ($columns -gt 4) {$columns = 4}
+
 $table = New-Object system.Data.DataTable "My scripts"
 $col1 = New-Object system.Data.DataColumn 1,([string])
 $table.columns.add($col1)

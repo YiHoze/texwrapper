@@ -36,5 +36,6 @@ foreach ($file in get-childitem $files -file -name) {
 		$bak = $file + ".bak"
 		copy-item $file $bak -force
 	}
-	magick $file -units PixelsPerCentimeter -density $resolution -resize $scale% $file
+  magick $file -units PixelsPerCentimeter -density $resolution -resize $scale% $file
+  imginfo.ps1 $file
 }
