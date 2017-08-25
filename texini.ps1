@@ -1,6 +1,6 @@
-#$env:TEXEDIT = "code.cmd -g %s:%d -r"
+#$env:TEXEDIT = "code.cmd -g %f:%l -r"
 $Sumatra = "C:\Program Files\SumatraPDF\SumatraPDF.exe"
-&$Sumatra -inverse-search  "`"C:\Program Files (x86)\Microsoft VS Code\code.exe`" -g %f:%l -r"
+&$Sumatra -inverse-search  "`"C:\Program Files\Microsoft VS Code\code.exe`" -g %f:%l -r"
 
 $texmfcnf="C:\texlive\2017\texmf.cnf"
 $texmfhome = "TEXMFHOME = D:/home/texmf"
@@ -17,4 +17,5 @@ Run cmd as administrator
 
 #> tlmgr repository add http://ftp.ktug.org/KTUG/texlive/tlnet/ KTUG
 #> tlmgr pinning add KTUG "*"
-
+# http://ftp.neowiz.com/CTAN/systems/texlive/Images/
+# http://ftp.kaist.ac.kr/tex-archive/systems/texlive/Images/

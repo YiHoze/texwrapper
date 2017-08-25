@@ -49,8 +49,28 @@ function SearchPhrase {
   }
 }
 
+function SearchPhraseRecursive {
+  foreach ($file in get-childitem $files -recurse) {
+    (get-content $file -encoding UTF8) | foreach-object {
+        if($_ -match $str) {
+          write-output $_.split($delimiter)
+        }
+    }
+  }
+}
+
 function SearchLine {
   foreach ($file in get-childitem $files) {
+    $filename = split-path $file -leaf
+    write-output $filename
+    get-content $file -encoding UTF8 |
+      select-string -pattern $str |
+        select-object linenumber, line | format-list
+  }
+}
+
+function SearchLineRecursive {
+  foreach ($file in get-childitem $files -recurse) {
     $filename = split-path $file -leaf
     write-output $filename
     get-content $file -encoding UTF8 |
@@ -118,6 +138,10 @@ if ($pattern) {
     if ($new -or $removeline) {
       if ($recursive) { SingleReplaceRecursive } else { SingleReplace }
     } else {
-      if ($delimiter) { SearchPhrase } else { SearchLine }
+      if ($delimiter) { 
+         if ($recursive) { SearchPhraseRecursive } else { SearchPhrase }
+      } else { 
+         if ($recursive) { SearchLineRecursive } else { SearchLine }
+      }
     }
 }

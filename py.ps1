@@ -1,4 +1,4 @@
-$pydir = "D:\home\bin\"
+$pydir = "D:\home\bin\python\"
 
 $pyfile = $args[0]
 if (! $pyfile) {
