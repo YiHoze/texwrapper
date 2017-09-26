@@ -11,6 +11,7 @@ Run cmd as administrator
 #> tlmgr repository list
 #> tlmgr option repository http://ftp.kaist.ac.kr/tex-archive/systems/texlive/tlnet/
 #> tlmgr option repository http://ftp.neowiz.com/CTAN/systems/texlive/tlnet/
+#> tlmgr option repository https://mirrors.hustunique.com/ctan/systems/texlive/tlnet
 #> tlmgr option repository http://ftp.ktug.org/tex-archive/systems/texlive/tlnet 
 #> tlmgr update --self --all
 "

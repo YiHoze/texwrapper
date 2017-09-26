@@ -11,7 +11,6 @@
 [CmdletBinding()]
 param(
 	[alias("b")][switch] $bin=$false,
-	[alias("k")][switch] $KARI=$false,
 	[alias("t")][switch] $KTS=$false,
 	[alias("z")][switch] $hzguide=$false,
 	[alias("c")][string] $comment,
@@ -24,7 +23,6 @@ write-output "
 #>gitpush.ps1 repository [comment]
 #>gitpush.ps1 -z -c `"blah blah`"  
   -b: push 'D:\home\bin' to https://github.com/YiHoze/bin.git
-  -k: commit changes in 'D:\pyFlutter\docs'
   -t: push 'D:\home\doc\KTS\KTSmemo' to  https://github.com/KoreanTUG/KTSmemo.git
   -z: push 'D:\home\texmf\tex\latex\hzguide' to  https://github.com/YiHoze/HzGuide.git
   -c: comment for commit (current date and time by default)

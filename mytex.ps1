@@ -1,68 +1,75 @@
-if (!($args[0]) -or ($args[0].StartsWith('-'))) {	
-	$file=$args[1]	
-	$class = $args[0]
-} else {
-	$file = $args[0]
-	$class = $args[1]
+[CmdletBinding()]
+param(
+	[string] $file = "mytex.tex",
+	[alias("c")][string] $class = "hzguide",
+	[alias("h")][switch] $help = $false
+)
+
+
+Function Help
+{
+write-output "> mytex.ps1 [foo.tex] [-c class]
+Available classes: article, hzguide (default), memoir, oblivoir"
 }
 
-if (!($file)) {
-	$file="mytex.tex"
-} elseif ( !($file.EndsWith(".tex")) ) {
+if ($help) {
+	help
+	break
+}
+
+
+if ( !($file.EndsWith(".tex")) ) {
 	$file = $file + ".tex"
 }
 
 if (Test-Path($file)) {
 	Write-Output "$file already exsits."
 	$answer = Read-Host "Do you want to overwrite it? (Enter Y or N)"
-	if (($answer -ne 'y') -or ($answer -ne 'Y')) {
-		break
-	}
+	if ($answer -ne 'y') { break }
 }
-
-Function UseArticle () {
+Function ClassArticle
+{
 $this = "\documentclass{article}
 \usepackage{fontspec}
-\begin{document} 
-
+\begin{document}`n
 \end{document}" 
 return $this
 }
 
-Function UseHzguide () {
+Function ClassHzguide 
+{
 $this = "\documentclass{hzguide}
 \LayoutSetup{paper=A4}
-\begin{document} 
-
+\begin{document}`n
 \end{document}" 
 return $this
 }
 
-Function UseMemoir () {
+Function ClassMemoir
+{
 $this = "\documentclass[a4paper]{memoir} 
 \usepackage{fontspec} 
-\begin{document} 
-
+\begin{document}`n
 \end{document}"
 return $this
 }
 
-Function UseOblivoir () {
+Function ClassOblivoir 
+{
 $this = "\documentclass[a4paper]{oblivoir} 
 \usepackage{fapapersize}
 \usefapapersize{*,*,30mm,*,30mm,*}
-\begin{document} 
-
+\begin{document}`n
 \end{document}"
 return $this
 }
 
 Switch ($class) {
-	"-a" {$preamble = UseArticle}
-	"-h" {$preamble = UseHzguide}
-	"-o" {$preamble = UseOblivoir}
-	"-m" {$preamble = UseMemoir}
-	default {$preamble = UseHzguide}
+	"article" {$preamble = ClassArticle}
+	"hzguide" {$preamble = ClassHzguide}
+	"oblivoir" {$preamble = ClassOblivoir}
+	"memoir" {$preamble = ClassMemoir}
+	default {$preamble = ClassHzguide}
 }
 
 Set-Content $file -Encoding UTF8 $preamble

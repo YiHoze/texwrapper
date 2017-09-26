@@ -22,12 +22,12 @@ open.ps1 file [option]
 return
 }
 
-function DetermineType($file) {
-  if ( test-path($file) ) {
-    $ext = (get-item $file).extension
+function DetermineType($file) 
+{
+  if ( !(test-path($file)) ) {
+    return $false    
   } else {
-    write-output "$file does not exist."
-    return $false
+    $ext = (get-item $file).extension
   }
   if ($ext -eq "pdf") {
     return "pdf"
@@ -38,7 +38,8 @@ function DetermineType($file) {
   }
 }
 
-function OpenTexmf($file) {
+function OpenTexmf($file) 
+{
   $filepath = kpsewhich $file
   if ($filepath -eq $null) {
     write-output "$file is not found."
@@ -56,7 +57,8 @@ function OpenTxt($file) {
   }
 }
 
-function OpenUnknown($file) {
+function OpenUnknown($file) 
+{
   if ($Code) {
     code.cmd $file -r
   } elseif ($EmEditor) {
@@ -66,7 +68,8 @@ function OpenUnknown($file) {
   }
 }
 
-function OpenPdf($file) {
+function OpenPdf($file) 
+{
   if ($Acrobat) {
      &"C:\Program Files (x86)\Adobe\Acrobat 10.0\Acrobat\Acrobat.exe" $file
   } else {
@@ -74,7 +77,8 @@ function OpenPdf($file) {
   }
 }
 
-function OpenFile($file) {
+function OpenFile($file) 
+{
   $FileType = DetermineType($file)
   if ($FileType) {
     switch ($FileType) {
@@ -82,12 +86,15 @@ function OpenFile($file) {
     "txt" { OpenTxt($file) }
     "unknown" { OpenUnknown($file) }
     }
+  } else {
+    write-output "$file does not exist."
   }
 }
 
 if ( $help -or !$file ) { help; break }
 
-if ($kpsewhich) {
+if ($kpsewhich) 
+{
   OpenTexmf($file)
 } elseif ( $file.contains('*')) {
   foreach ($element in Get-ChildItem $file -name) { OpenFile($element) }
