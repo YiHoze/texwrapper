@@ -1,0 +1,24 @@
+\documentclass[10pt, language=korean]{hzguide}
+\usepackage{karijupyter}
+
+$if(title)$
+\title{$title$}
+$endif$
+$if(author)$
+\author{$author$}
+$endif$
+\date{$date$}
+
+\begin{document}
+
+\MakeTitle
+
+$for(include-before)$
+$include-before$
+$endfor$
+\tableofcontents*
+$body$
+$for(include-after)$
+$include-after$
+$endfor$
+\end{document}

@@ -1,1 +1,0 @@
-eps2pdf.ps1 $args[0]

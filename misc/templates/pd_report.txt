@@ -1,0 +1,39 @@
+\documentclass[11pt, language=korean]{hzguide}
+
+\LayoutSetup{paper=A4,column=one}
+\HeadingSetup{type=report}
+\AdmonitionSetup{indent=1.5em}
+
+\ExplSyntaxOn
+\RenewDocumentCommand\figure{}{\bigskip\group_begin:}
+\RenewDocumentCommand\endfigure{}{\group_end:\medskip}
+\cs_set_eq:NN \verbatim \boxedverbatim
+\cs_set_eq:NN \endverbatim \endboxedverbatim
+\cs_set_eq:NN \quote \reference
+\cs_set_eq:NN \endquote \endreference
+\ExplSyntaxOff
+
+\renewcommand\caption[1]{}
+\hypersetup{linkcolor=MidnightBlue, citecolor=MidnightBlue, urlcolor=MidnightBlue}
+
+$if(title)$
+\title{$title$}
+$endif$
+$if(author)$
+\author{$author$}
+$endif$
+\date{$date$}
+
+\begin{document}
+$if(title)$
+\maketitle
+$endif$
+$for(include-before)$
+$include-before$
+$endfor$
+\tableofcontents*
+$body$
+$for(include-after)$
+$include-after$
+$endfor$
+\end{document}

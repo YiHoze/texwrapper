@@ -1,0 +1,9 @@
+autojosa.py
+bmind.py
+docbuild.py
+imgsize.py
+literal.py
+nb2pdf.py
+svg2pdf.py
+texclean.py
+xlt.py

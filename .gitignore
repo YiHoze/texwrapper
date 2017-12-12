@@ -1,1 +1,7 @@
-rsync/
+*.exe
+.vscode/
+_pycache_/
+build/
+dist/
+obsolete/
+tentative/
