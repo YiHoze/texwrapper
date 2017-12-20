@@ -4,7 +4,7 @@ import os, sys, glob, argparse, configparser, subprocess
 ini = os.path.split(sys.argv[0])[0] 
 if bool(ini):
     ini += '\\docenv.ini'
-else:
+else: # in case this source code is called by Python when the terminal's current directory is that which contains this script.
     ini = 'docenv.ini'
 config = configparser.ConfigParser()
 if os.path.exists(ini):
@@ -17,13 +17,13 @@ else:
     MagickPath = r'C:\Program Files\ImageMagick-7.0.5-Q16\magick.exe'
 
 # Get arguments
-parser = argparse.ArgumentParser(description='View the metadata of image files using ImageMagick.')
+parser = argparse.ArgumentParser(description='View the basic information of image files using ImageMagick.')
 parser.add_argument(
-    'files',
+    'images',
     metavar='Image files',
     type=str,
     nargs='+',
-    help='Specify PNG or JPG files to view their metadata.')
+    help='Specify PNG or JPG files to view their basic information.')
 parser.add_argument(
     '-p',
     dest='magick',  
@@ -40,15 +40,16 @@ except OSError:
     exit(False)
 
 # Get
-def GetImageInfo(file):
-    cmd = '\"%s\" identify -verbose %s' % (args.magick, file)
+def GetImageInfo(afile):
+    cmd = '\"%s\" identify -verbose %s' % (args.magick, afile)
     result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     gist = str(result).split('\\r\\n')
     line = 4
+    print('\n %s' %(afile))
     while line < 8:
         print(gist[line])
         line += 1    
 
-for pattern in args.files:
-    for file in glob.glob(pattern):
-        GetImageInfo(file)
+for fnpattern in args.images:
+    for afile in glob.glob(fnpattern):
+        GetImageInfo(afile)

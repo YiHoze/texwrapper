@@ -4,7 +4,7 @@ import os, sys, glob, argparse, configparser, subprocess
 ini = os.path.split(sys.argv[0])[0] 
 if bool(ini):
     ini += '\\docenv.ini'
-else:
+else: # in case this source code is called by Python when the terminal's current directory is that which contains this script.
     ini = 'docenv.ini'
 config = configparser.ConfigParser()
 if os.path.exists(ini):
@@ -51,26 +51,26 @@ except OSError:
     exit(False)
 
 # Convert the specified SVG files to PDF.
-def svg2pdf(file):
-    if file.endswith('.svg'):        
-        target = os.path.splitext(file)[0] + '.pdf'
-        cmd = "\"%s\" --export-pdf %s %s" % (args.inkscape, target, file)
+def svg2pdf(afile):
+    if afile.endswith('.svg'):        
+        target = os.path.splitext(afile)[0] + '.pdf'
+        cmd = "\"%s\" --export-pdf %s %s" % (args.inkscape, target, afile)
         os.system(cmd)        
         if args.crop:
             cmd = "pdfcrop.exe %s %s" % (target, target)
             os.system(cmd)
     else:
-        print('%s is not SVG' %(file))
+        print('%s is not SVG' %(afile))
 
 cnt = 0
 if not bool(args.files):
-    for file in glob.glob('*.svg'):
-        svg2pdf(file)
+    for afile in glob.glob('*.svg'):
+        svg2pdf(afile)
         cnt += 1        
 else:
-    for pattern in args.files:
-        for file in glob.glob(pattern):
-            svg2pdf(file)
+    for fnpattern in args.files:
+        for afile in glob.glob(fnpattern):
+            svg2pdf(afile)
             cnt += 1
 msg = "%d file(s) have been converted." % (cnt)
 print(msg)

@@ -17,7 +17,7 @@ import os, sys, configparser, subprocess
 ini = os.path.split(sys.argv[0])[0]
 if bool(ini):
     ini += '\daily.ini'
-else:
+else: # in case this source code is called by Python when the terminal's current directory is that which contains this script.
     ini = 'daily.ini'
 config = configparser.ConfigParser()
 

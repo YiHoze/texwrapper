@@ -1,7 +1,8 @@
 daily.py
 imginfo.py
+imgsize.py
+mypy.py
 open.py
 pyver.py
-svg2pdf.py
 texclean.py
 xlt.py

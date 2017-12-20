@@ -4,7 +4,7 @@ import os, glob, argparse, configparser, subprocess
 ini = os.path.split(sys.argv[0])[0] 
 if bool(ini):
     ini += '\\docenv.ini'
-else:
+else: # in case this source code is called by Python when the terminal's current directory is that which contains this script.
     ini = 'docenv.ini'
 config = configparser.ConfigParser()
 if os.path.exists(ini):
@@ -19,7 +19,7 @@ else:
 # Get arguments
 parser = argparse.ArgumentParser(description='Change the resolution of image files using ImageMagick.')
 parser.add_argument(
-    'files',
+    'images',
     metavar='Image files',
     type=str,
     nargs='+',
@@ -37,7 +37,7 @@ parser.add_argument(
     type=int,
     nargs=1,
     default=1000,
-    help='Maximum width. Default: 100 (pixels)')
+    help='Maximum width. Default: 1000 (pixels)')
 parser.add_argument(
     '-s',
     dest='scale',
@@ -63,20 +63,20 @@ except OSError:
 # Resize the specified images.
 widthlimit = args.maxwidth / args.density
 
-def ResizeImage(file):
-    cmd = '\"%s\" identify -ping -format %%w %s' %(args.magick, file)
+def ResizeImage(image):
+    cmd = '\"%s\" identify -ping -format %%w %s' %(args.magick, image)
     imgwidth = int(subprocess.check_output(cmd, stderr=subprocess.STDOUT))
     if imgwidth > args.maxwidth:
         density = imgwidth / widthlimit
     else:
         density = args.density
-    cmd = '\"%s\" %s -units PixelsPerCentimeter -density %d -resize %d%% %s' % (args.magick, file, density, args.scale, file)
+    cmd = '\"%s\" %s -units PixelsPerCentimeter -density %d -resize %d%% %s' % (args.magick, image, density, args.scale, image)
     os.system(cmd)
 
 cnt = 0
-for pattern in args.files:
-    for file in glob.glob(pattern):        
-        ResizeImage(file)        
+for fnpattern in args.images:
+    for image in glob.glob(fnpattern):        
+        ResizeImage(image)        
         cnt += 1
 msg = "%d image(s) have been resized." % (cnt)
 print(msg)

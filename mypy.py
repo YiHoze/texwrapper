@@ -16,34 +16,34 @@ if bool(args.columns):
 else:
     step = 3 
 
-dir = os.path.split(sys.argv[0])[0]
-if bool(dir):
-    dir += '\\*.py'
+bindir = os.path.split(sys.argv[0])[0]
+if bool(bindir):
+    bindir += '\\*.py'
 else:
-    dir = '*.py'
+    bindir = '*.py'
 
-def enumerate_scripts(list):
+def enumerate_scripts(alist):
     i = 0
-    while i < len(list):
+    while i < len(alist):
         line = ''
         for j in range(step):
             k = i + j
-            if k < len(list):
-                line += '%-20s' %(list[k])
+            if k < len(alist):
+                line += '%-20s' %(alist[k])
             else:
                 break
         i += step
         print(line)
-    print('%s files are found.\n' %(len(list)))
+    print('%s files are found.\n' %(len(alist)))
 
 list_py = []
 list_exe = []
-for file in glob.glob(dir):        
-    filename = os.path.basename(file)
+for afile in glob.glob(bindir):
+    filename = os.path.basename(afile)
     list_py.append(filename)
-    file = os.path.splitext(file)[0] + '.exe'
-    if os.path.exists(file):
-        filename = os.path.basename(file)
+    afile = os.path.splitext(afile)[0] + '.exe'
+    if os.path.exists(afile):
+        filename = os.path.basename(afile)
         list_exe.append(filename)
         
 enumerate_scripts(list_py)

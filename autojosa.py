@@ -31,8 +31,8 @@ if os.path.exists(tmp):
     os.remove(tmp)
 
 for files in args.tex:
-    for file in glob.glob(files):
-        with open(file, mode='r', encoding='utf-8') as f:
+    for afile in glob.glob(files):
+        with open(afile, mode='r', encoding='utf-8') as f:
             content = f.read()        
         # for tag, josa in product(tags, josas):
         #     pattern = tag + josa
@@ -41,5 +41,5 @@ for files in args.tex:
             content = re.sub(pattern, subst, content)
         with open(tmp, mode='w', encoding='utf-8') as f:
             f.write(content)        
-        os.remove(file)
-        os.rename(tmp, file)      
+        os.remove(afile)
+        os.rename(tmp, afile)      

@@ -1,4 +1,4 @@
-import os, sys, glob, argparse, shutil
+import os, sys, glob, argparse
 
 # Get arguments
 parser = argparse.ArgumentParser(
@@ -8,14 +8,14 @@ parser.add_argument(
     'files',
     type=str,
     nargs='*',
-    help='If no python file is specified, every python file listed in the pylist.txt is to be build.'
+    help='If no python file is specified, every python file listed in the py.list is to be build.'
 )
 parser.add_argument(
     '-l',
-    dest='list',
+    dest='pylist',
     type=str,
-    default='pylist.txt',
-    help='Specify a list file that enumerates python files to use it instead of pylist.txt.'
+    default='py.list',
+    help='Specify a list file that enumerates python files to use it instead of py.list'
 )
 parser.add_argument(
     '-k',
@@ -29,15 +29,15 @@ args = parser.parse_args()
 # Collect python scripts to build.
 pys = []
 if not bool(args.files):
-    f = open(args.list, mode='r', encoding='utf-8')
+    f = open(args.pylist, mode='r', encoding='utf-8')
     lines = f.readlines()
     f.close()    
     for line in lines:
         pys.append(line.replace('\n', ''))
 else:
-    for pattern in args.files:
-        for file in glob.glob(pattern):
-            pys.append(file)
+    for fnpattern in args.files:
+        for afile in glob.glob(fnpattern):
+            pys.append(afile)
 
 for py in pys:
     cmd = 'pyinstaller --onefile %s' % (py)
@@ -48,10 +48,10 @@ for py in pys:
         print(msg)
 
 for py in pys:
-    filename = os.path.splitext(py)[0]
-    trg = filename + '.exe'
-    src = 'dist\\' + trg    
-    shutil.copyfile(src, trg)
+    filename = os.path.splitext(py)[0]    
+    src = 'dist\\' + filename + '.exe'
+    cmd = 'copy %s .' %(src)
+    os.system(cmd)
     if not args.keep_spec:
         src = filename + '.spec'    
         if os.path.exists(src):

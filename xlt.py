@@ -5,7 +5,7 @@ parser = argparse.ArgumentParser(
     description='Convert a TeX file to PDF using XeLaTeX.'
 )
 parser.add_argument(
-    'file',
+    'tex',
     type=str,
     nargs=1,
     help='Specify a TeX file.'
@@ -45,13 +45,6 @@ parser.add_argument(
     help='Specify a language to sort index entries. For example, \"german\" or \"ger\" for German. The default is \"korean\".'
 )
 parser.add_argument(
-    '-j',
-    dest='AutoJosa',
-    action='store_true',
-    default=False,
-    help='Replace with 자동조사'
-)
-parser.add_argument(
     '-k',
     dest='KeepAux',
     action='store_true',
@@ -68,7 +61,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 # In case of a wrong filename extension
-filename = os.path.splitext(args.file[0])[0] 
+filename = os.path.splitext(args.tex[0])[0] 
 tex = filename + '.tex'
 idx = filename + '.idx'
 ind = filename + '.ind'
