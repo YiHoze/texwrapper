@@ -34,9 +34,6 @@ for files in args.tex:
     for afile in glob.glob(files):
         with open(afile, mode='r', encoding='utf-8') as f:
             content = f.read()        
-        # for tag, josa in product(tags, josas):
-        #     pattern = tag + josa
-        #     subst = '\\1' + '\\\\' + josa
         for pattern, subst in josa_generator():
             content = re.sub(pattern, subst, content)
         with open(tmp, mode='w', encoding='utf-8') as f:

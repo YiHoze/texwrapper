@@ -56,6 +56,13 @@ parser.add_argument(
     dest='BookmarkIndex',
     action='store_true',
     default=False,
+    help='Bookmark all index entries.'
+)
+parser.add_argument(
+    '-p',
+    dest='BookmarkPython',
+    action='store_true',
+    default=False,
     help='Bookmark index entries which are Python functions extracted from docstrings.'
 )
 args = parser.parse_args()
@@ -103,6 +110,9 @@ def compile_fully():
         os.system(cmd)        
         if args.BookmarkIndex:
             cmd = 'bmind.exe ' + ind
+            os.system(cmd)
+        elif args.BookmarkPython:
+            cmd = 'bmind.exe -p ' + ind
             os.system(cmd)
         os.system(cmd_tex)
     os.system(cmd_tex)

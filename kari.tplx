@@ -1,3 +1,11 @@
+((=
+  "latex": {
+    "title": "An Example of Jupyter Notebook",
+    "author": "John Doe",
+    "language": "english"
+  },
+=))
+
 ((*- extends 'display_priority.tplx' -*))
 % Displaying simple data text
 ((* block data_text *))
@@ -57,32 +65,45 @@
 ((* block unknowncell scoped *))((* endblock unknowncell *))
 
 ((* block header *))
+
 ((* block docclass *))
-((*- if nb.metadata.latex.language -*))
-\documentclass[10pt, language=((( nb.metadata.latex.language )))]{hzguide}
+((*- if nb.metadata.latex -*))
+    ((*- if nb.metadata.latex.language -*))
+    \documentclass[10pt, language=((( nb.metadata.latex.language )))]{hzguide}
+    ((*- else -*))
+    \documentclass[10pt, language=korean]{hzguide}
+    ((*- endif -*))    
 ((*- else -*))
-\documentclass[10pt, language=korean]{hzguide}
-((*- endif -*))
-\usepackage{karijupyter}
+    \documentclass[10pt, language=korean]{hzguide}
+((*- endif -*))    
+    \usepackage{karijupyter}
 ((* endblock docclass *))
+
 ((* block title *))
-((*- if nb.metadata.latex.title -*))
-\title{((( nb.metadata.latex.title )))}
+((*- if nb.metadata.latex -*))
+    ((*- if nb.metadata.latex.title -*))
+    \title{((( nb.metadata.latex.title )))}
+    ((*- else -*))
+    \title{((( resources.metadata.name | ascii_only | escape_latex )))}
+    ((*- endif -*))
 ((*- else -*))
-\title{((( resources.metadata.name | ascii_only | escape_latex )))}
+    \title{((( resources.metadata.name | ascii_only | escape_latex )))}
 ((*- endif -*))
 ((* endblock title *))
-((* block date *))\date{}((* endblock date *))
-((=
-    ((* block date *))
-    ((*- if nb.metadata.latex.date -*))
-    \date{((( nb.metadata.latex.date )))}
+
+((* block author *))
+((*- if nb.metadata.latex -*))
+    ((*- if nb.metadata.latex.author -*))
+    \author{((( nb.metadata.latex.author )))}
     ((*- else -*))
-    \date{\today}
+    \author{}
     ((*- endif -*))
-    ((* endblock date *))
-=))
-((* block author *))\author{((( nb.metadata.latex.author )))}((* endblock author *))
+((*- else -*))
+((*- endif -*))
+((* endblock author *))
+
+((* block date *))\date{}((* endblock date *))
+
 ((( super() )))
 ((( resources.latex.pygments_definitions )))    
 \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
@@ -99,7 +120,7 @@
 ((* block abstract *))((* endblock abstract *))
 ((* endblock predoc *))
 ((( super() )))
-% Add a bibliography block to the postdoc
+
 ((* block postdoc *))
 ((* block bibliography *))((* endblock bibliography *))
 ((* endblock postdoc *))

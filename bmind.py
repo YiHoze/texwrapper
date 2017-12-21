@@ -3,13 +3,20 @@ import re
 
 # Get arguments
 parser = argparse.ArgumentParser(
-    description = 'Bookmark index entries which are Python functions extracted from docstrings.'
+    description = 'Bookmark index entries'
 )
 parser.add_argument(
     'ind',
     type = str,
     nargs = 1,
     help = 'Specify an index file.'
+)
+parser.add_argument(
+    '-p',
+    dest = 'BookmarkPython',
+    action = 'store_true',
+    default = False,
+    help = 'Bookmark index entries which are Python functions extracted from docstrings.'
 )
 args = parser.parse_args()
 indfile = args.ind[0]
@@ -22,13 +29,23 @@ tmp = 't@mp.t@mp'
 if os.path.exists(tmp):
     os.remove(tmp)
 
+def bookmark_index(line, pattern):
+    entry = re.search(pattern, line)
+    if entry: 
+        page = re.findall('\\\\hyperpage\\{(\\d+)\\}', line)
+        append = ''
+        for i in range(len(page)):
+            append += '\t\\bookmark[level=2, page=%s]{%s}\n' %(page[i], entry.group(1))                    
+        line += append
+    return(line)
+    
 with open(tmp, mode='w', encoding='utf-8') as new_file, open(indfile, mode='r', encoding='utf-8') as old_file:
-    for line in old_file.readlines():
-        func = re.search('\\\\item (.+?)\\(\\)', line)
-        if func: 
-            page = re.search('\\\\hyperpage\\{(\\d+)\\}', line)
-            #print(func.group(1), page.group(1))
-            line = '%s\\bookmark[level=2, page=%s]{%s}\n' % (line.replace('\n', ''), page.group(1), func.group(1))
-        new_file.write(line)
+    if args.BookmarkPython:
+        for line in old_file.readlines():
+            new_file.write(bookmark_index(line, '\\\\item (.+?)\\(\\)'))
+    else:
+        for line in old_file.readlines():
+            new_file.write(bookmark_index(line, '\\\\item (.+?),'))
+            
 os.remove(indfile)
 os.rename(tmp, indfile)
