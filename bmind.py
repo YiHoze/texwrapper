@@ -32,7 +32,7 @@ if os.path.exists(tmp):
 def bookmark_index(line, pattern):
     entry = re.search(pattern, line)
     if entry: 
-        page = re.findall('\\\\hyperpage\\{(\\d+)\\}', line)
+        page = re.findall(r'\\hyperpage\{(\d+)\}', line)
         append = ''
         for i in range(len(page)):
             append += '\t\\bookmark[level=2, page=%s]{%s}\n' %(page[i], entry.group(1))                    
@@ -42,10 +42,10 @@ def bookmark_index(line, pattern):
 with open(tmp, mode='w', encoding='utf-8') as new_file, open(indfile, mode='r', encoding='utf-8') as old_file:
     if args.BookmarkPython:
         for line in old_file.readlines():
-            new_file.write(bookmark_index(line, '\\\\item (.+?)\\(\\)'))
+            new_file.write(bookmark_index(line, r'\\item (.+?)\(\)'))
     else:
         for line in old_file.readlines():
-            new_file.write(bookmark_index(line, '\\\\item (.+?),'))
+            new_file.write(bookmark_index(line, r'\\item (.+?),'))
             
 os.remove(indfile)
 os.rename(tmp, indfile)

@@ -1,8 +1,8 @@
 @echo off
 del  C:\texlive\texmf-local\tex\latex\local\*.* /y
 copy C:\home\texmf\tex\latex\hzguide\hzguide.cls  C:\PROJECTS\KARI\docs\bin\ /y
-copy C:\home\texmf\tex\latex\kari\karijupyter.sty C:\PROJECTS\KARI\docs\bin\ /y
-copy C:\home\texmf\tex\latex\kari\karisphinx.sty  C:\PROJECTS\KARI\docs\bin\ /y
+copy C:\home\texmf\tex\latex\hzguide\karijupyter.sty C:\PROJECTS\KARI\docs\bin\ /y
+copy C:\home\texmf\tex\latex\hzguide\karisphinx.sty  C:\PROJECTS\KARI\docs\bin\ /y
 
 copy C:\home\bin\docenv.ini      C:\PROJECTS\KARI\docs\bin\ /y
 copy C:\home\bin\kari.tplx       C:\PROJECTS\KARI\docs\bin\ /y

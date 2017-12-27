@@ -79,7 +79,7 @@ parser.add_argument(
     dest = 'BookmarkPython',
     action = 'store_true',
     default = False,
-    help = 'Bookmark index entries which are Python functions extracted from docstrings.'
+    help = 'Bookmark index entries which are Python functions extracted from docstrings. This option is available only with full compilation (-f).'
 )
 parser.add_argument(
     '-c',

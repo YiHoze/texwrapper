@@ -1,55 +1,66 @@
 import os, glob, argparse, configparser, subprocess
 
 # Read the initiation file to get the path to ImageMagick.
-ini = os.path.split(sys.argv[0])[0] 
-if bool(ini):
-    ini += '\\docenv.ini'
-else: # in case this source code is called by Python when the terminal's current directory is that which contains this script.
-    ini = 'docenv.ini'
-config = configparser.ConfigParser()
+try:
+    inipath = os.environ['DOCENV'].split(os.pathsep)[0]
+except:
+    inipath = False
+if inipath is False:
+    inipath = os.path.dirname(sys.argv[0])
+ini = os.path.join(inipath, 'docenv.ini')
 if os.path.exists(ini):
+    config = configparser.ConfigParser()
     config.read(ini)
     try:
         MagickPath = config.get('ImageMagick', 'path')
     except:
-        MagickPath = r'C:\Program Files\ImageMagick-7.0.5-Q16\magick.exe'
+        print('Make sure to have docenv.ini set properly.')
+        sys.exit()
 else:
-    MagickPath = r'C:\Program Files\ImageMagick-7.0.5-Q16\magick.exe'
+    print('Docenv.ini is not found. Set the DOCENV environment variable to the directory containing docenv.ini.')
+    sys.exit()    
 
 # Get arguments
-parser = argparse.ArgumentParser(description='Change the resolution of image files using ImageMagick.')
+parser = argparse.ArgumentParser(
+    description='Change the resolution of image files using ImageMagick.'
+)
 parser.add_argument(
     'images',
     metavar='Image files',
     type=str,
     nargs='+',
-    help='Specify PNG or JPG files to change their resolution.')
+    help='Specify PNG or JPG files to change their resolution.'
+)
 parser.add_argument(
     '-d',
     dest='density',
     type=int,
     nargs=1,
     default=80,
-    help='Pixel density. Default: 80 (pixels per centimeter)')
+    help='Pixel density. Default: 80 (pixels per centimeter)'
+)
 parser.add_argument(
     '-m',
     dest='maxwidth',
     type=int,
     nargs=1,
     default=1000,
-    help='Maximum width. Default: 1000 (pixels)')
+    help='Maximum width. Default: 1000 (pixels)'
+)
 parser.add_argument(
     '-s',
     dest='scale',
     type=int,
     nargs=1,
     default=100,
-    help="Scale. Default: 100 (%%). If an image's width is 800 pixels and 50 is given for scale, the image is reduced to 400 pixels.")
+    help="Scale. Default: 100 (%%). If an image's width is 800 pixels and 50 is given for scale, the image is reduced to 400 pixels."
+)
 parser.add_argument(
     '-p',
     dest='magick',  
     default=MagickPath, 
-    help='Path to ImageMagick')
+    help='To use another version of ImageMagick, specify the path to it.'
+)
 args=parser.parse_args()
 
 # Check if ImageMagick is accessible.

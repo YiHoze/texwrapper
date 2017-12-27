@@ -1,22 +1,24 @@
 import os, sys, glob, argparse, configparser, csv, re
 
 # Read the initiation file to get the tab-separated file for string replacement.
-ini = os.path.split(sys.argv[0])[0] 
-if bool(ini):
-    inipath = ini
-    ini += '\\docenv.ini'    
-else: # in case this source code is called by Python when the terminal's current directory is that which contains this script.
-    inipath = '.'
-    ini = 'docenv.ini'
-config = configparser.ConfigParser()
+try:
+    inipath = os.environ['DOCENV'].split(os.pathsep)[0]
+except:
+    inipath = False
+if inipath is False:
+    inipath = os.path.dirname(sys.argv[0])
+ini = os.path.join(inipath, 'docenv.ini')
 if os.path.exists(ini):
+    config = configparser.ConfigParser()
     config.read(ini)
     try:
         pattern = config.get('String Replacement', 'file')
     except:
-        pattern = 'strpattern.tsv'
+        print('Make sure to have docenv.ini set properly.')
+        sys.exit()
 else:
-    pattern = 'strpattern.tsv'
+    print('Docenv.ini is not found. Set the DOCENV environment variable to the directory containing docenv.ini.')
+    sys.exit() 
 
 if not os.path.exists(pattern):
     pattern = os.path.join(inipath, pattern)
@@ -33,11 +35,10 @@ parser.add_argument(
     '-p',
     dest = 'pattern',
     default = pattern,
-    help = 'Specify a string pattern file.'
+    help = 'Specify another string pattern file to use it.'
 )
 args = parser.parse_args()
 
-pattern 
 if not os.path.exists(args.pattern):
     print('%s is not found.' %(args.pattern))
     sys.exit()

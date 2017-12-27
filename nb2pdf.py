@@ -1,25 +1,25 @@
 import os, sys, glob, argparse, configparser
 
 # Read the initiation file to get Jupyter templates.
-ini = os.path.split(sys.argv[0])[0]
-if bool(ini):
-    inipath = ini
-    ini += '\\docenv.ini'
-else: # in case this source code is called by Python when the terminal's current directory is that which contains this script.
-    inipath = '.'
-    ini = 'docenv.ini'
-config = configparser.ConfigParser()
+try:
+    inipath = os.environ['DOCENV'].split(os.pathsep)[0]
+except:
+    inipath = False
+if inipath is False:
+    inipath = os.path.dirname(sys.argv[0])
+ini = os.path.join(inipath, 'docenv.ini')
 if os.path.exists(ini):
+    config = configparser.ConfigParser()
     config.read(ini)
     try:
         latex_template = config.get('Jupyter Template', 'latex')
+        latex_template = os.path.join(inipath, latex_template)
     except:
-        latex_template = 'kari.tplx'
+        print('Make sure to have docenv.ini set properly.')
+        sys.exit()
 else:
-    latex_template = 'kari.tplx'
-
-if bool(inipath):    
-    latex_template = inipath + '\\' + latex_template
+    print('Docenv.ini is not found. Set the DOCENV environment variable to the directory containing docenv.ini.')
+    sys.exit()    
 
 parser = argparse.ArgumentParser(
     description = 'Convert Jupyter notebook files (.ipynb) to PDF using nbconvert and XeLaTeX.'
@@ -33,7 +33,7 @@ parser.add_argument(
     '-t',
     dest = 'latex_template',
     default = latex_template,
-    help = 'Path to your latex template (default: md2tex.tplx)'
+    help = 'To use another latex template, specify the path to it.'
 )
 parser.add_argument(
     '-e',

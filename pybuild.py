@@ -17,13 +17,6 @@ parser.add_argument(
     default='py.list',
     help='Specify a list file that enumerates python files to use it instead of py.list'
 )
-parser.add_argument(
-    '-k',
-    dest = 'keep_spec',
-    action = 'store_true',
-    default = False,
-    help = 'Keep spec files.'
-)
 args = parser.parse_args()
 
 # Collect python scripts to build.
@@ -40,7 +33,7 @@ else:
             pys.append(afile)
 
 for py in pys:
-    cmd = 'pyinstaller --onefile %s' % (py)
+    cmd = 'pyinstaller --onefile --specpath .\dist %s' % (py)
     try:
         os.system(cmd)
     except OSError:
@@ -51,9 +44,4 @@ for py in pys:
     filename = os.path.splitext(py)[0]    
     src = 'dist\\' + filename + '.exe'
     cmd = 'copy %s .' %(src)
-    os.system(cmd)
-    if not args.keep_spec:
-        src = filename + '.spec'    
-        if os.path.exists(src):
-            os.remove(src)
-    
+    os.system(cmd)    
