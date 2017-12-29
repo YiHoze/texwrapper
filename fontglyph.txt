@@ -1,0 +1,58 @@
+0 1 2 3 4 5 6 7 8 9 
+
+english: 
+Keep this manual for later use.
+
+chinese 中文: 
+请妥善保存本手册，以备将来使用。
+
+czech ČEŠTINA: 
+Uchovejte tuto příručku pro pozdější použití.
+
+danish DANSK: 
+Gem vejledningen til senere brug.
+
+dutch NEDERLANDS: 
+Bewaar deze handleiding voor later gebruik.
+
+finnish SUOMI: 
+Säilytä tämä käsikirja myöhempää käyttöä varten.
+
+french FRANÇAIS: 
+Conservez ce manuel pour un usage ultérieur.
+
+german DEUTSCH: 
+Bewahren Sie diese Anleitung für spätere Nutzung auf.
+
+italian ITALIANO: 
+Conservare questo manuale per utilizzi successivi.
+
+japanese 日本語: 
+後で使用するために、この取扱説明書を保管してください。
+
+korean 한국어: 
+추후 사용을 위해 이 매뉴얼을 보관하십시오.
+
+norwegian NORSK:
+Oppbevar denne håndboken til senere bruk.
+
+polish POLSKI: 
+Zachowaj tę instrukcję na przyszłość.
+
+portuguese PORTUGUÊS (Brazilian): 
+Guarde este manual para uso posterior.
+
+russian РУССКИЙ ЯЗЫК: 
+Сохраните это руководство на будущее.
+
+slovakian SLOVENČINA: 
+Odložte si tento návod na neskoršie použitie.
+
+spanish ESPAÑOL (Latin): 
+Conserve este manual para poder usarlo más adelante.
+
+swedish SVENSKA: 
+Behåll denna handbok för framtida användning.
+
+turkish TÜRKÇE: 
+Bu kılavuzu daha sonra kullanmak üzere saklayın.

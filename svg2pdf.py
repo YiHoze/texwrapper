@@ -52,7 +52,7 @@ try:
     subprocess.check_call('pdfcrop.exe --version')
 except OSError:
     print("Make sure TeX Live is included in PATH.")
-    exit(False)
+    sys.exit(False)
 
 # Convert the specified SVG files to PDF.
 def svg2pdf(afile):
@@ -76,5 +76,4 @@ else:
         for afile in glob.glob(fnpattern):
             svg2pdf(afile)
             cnt += 1
-msg = "%d file(s) have been converted." % (cnt)
-print(msg)
+print('"%d file(s) have been converted.' %(cnt))
