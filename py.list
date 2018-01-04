@@ -7,6 +7,7 @@ docbuild.py
 e2p.py
 fontglyph.py
 fontlist.py
+gitpush.py
 imginfo.py
 imgsize.py
 makealbum.py

@@ -1,5 +1,5 @@
 import os, sys, argparse, configparser
-
+import datetime
 
 try:
     inipath = os.environ['DOCENV'].split(os.pathsep)[0]
@@ -38,6 +38,9 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+if args.commit_message is None:
+    now = datetime.datetime.now()    
+    args.commit_message = now.strftime("%Y-%m-%d_%H:%M")
 
 def show_repository_aliases():
     print('Available repositories are:')
