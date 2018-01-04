@@ -16,6 +16,14 @@ parser.add_argument(
     help = 'output filename (default: album)'
 )
 parser.add_argument(
+    '-n',
+    dest = 'hide_filename',
+    action = 'store_true',
+    default = False,
+    help = 'leave out filenames of images'
+)
+
+parser.add_argument(
     '-k',
     dest = 'keep',
     action = 'store_true',
@@ -35,7 +43,7 @@ if os.path.exists(pdf):
 
 # Make a file of list of image files
 image_list = []
-image_type = ['pdf', 'jpg', 'png']
+image_type = ['pdf', 'jpg', 'jpeg', 'png']
 list_file = 't@mp.t@mp'
 for i in range(len(image_type)):
     fnpattern = '*.' + image_type[i]
@@ -57,6 +65,10 @@ content = """
 \\MakeAlbum[%d]{%s}
 \\end{multicols}
 \\end{document}""" %(args.scale, list_file)
+
+if args.hide_filename:
+    content = content.replace('MakeAlbum', 'MakeAlbum*')
+
 with open(tex, mode='w') as f:
     f.write(content)
 

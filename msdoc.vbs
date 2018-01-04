@@ -1,4 +1,4 @@
-'d:\home\bin\d2d.vbs . %1 %2
+'C:\home\bin\msdoc.vbs . %1 %2
 'Const wdFormatDocument = 0
 'Const wdFormatDocument97 = 0
 'Const wdFormatDocumentDefault = 16
@@ -65,7 +65,7 @@ Select Case ArgCount
 			End If  
 		End If 			
 	Case  Else 
-	 	WScript.Echo "Usage: d2d.vbs path source-extension target-extension."
+	 	WScript.Echo "Usage: msdoc.vbs path source-extension target-extension."
 End Select 
 End Sub 
 
@@ -77,16 +77,14 @@ Function GetFileType(FileType)
 	FileTypes(1,1) = 6
 	FileTypes(2,0) = "txt"
 	FileTypes(2,1) = 7
-	FileTypes(3,0) = "tex"
-	FileTypes(3,1) = 7
-	FileTypes(4,0) = "html"
-	FileTypes(4,1) = 8
-	FileTypes(5,0) = "xml"
-	FileTypes(5,1) = 11
-	FileTypes(6,0) = "docx"
-	FileTypes(6,1) = 16
-	FileTypes(7,0) = "pdf"
-	FileTypes(7,1) = 17
+	FileTypes(3,0) = "html"
+	FileTypes(3,1) = 8
+	FileTypes(4,0) = "xml"
+	FileTypes(4,1) = 11
+	FileTypes(5,0) = "docx"
+	FileTypes(5,1) = 16
+	FileTypes(6,0) = "pdf"
+	FileTypes(6,1) = 17
 	For i=0 to UBound(FileTypes)
 		If StrComp(FileType, FileTypes(i, 0), vbTextCompare) = 0 Then
 			GetFileType = FileTypes(i, 1)

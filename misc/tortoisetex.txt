@@ -48,14 +48,19 @@
 ~~~FindAsIs
 ~~~WriteAsIs
 ~~~WC-OFF
-\을 을
-\를 를
 \이 이
 \가 가
+\을 을
+\를 를
 \은 은
 \는 는
 \와 와
 \과 과
+\로 로
+\으로 으로
+\라 라
+\이라 이라
+
 %%% Literal styling with internal style
 ~~~FindAsIs
 ~~~WriteInternal

@@ -20,19 +20,22 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Collect python scripts to build.
-pys = []
+list_py = []
 if not bool(args.files):
     f = open(args.pylist, mode='r', encoding='utf-8')
     lines = f.readlines()
     f.close()    
     for line in lines:
-        pys.append(line.replace('\n', ''))
+        list_py.append(line.replace('\n', ''))
 else:
     for fnpattern in args.files:
         for afile in glob.glob(fnpattern):
-            pys.append(afile)
+            list_py.append(afile)
 
-for py in pys:
+# compile to binary executable
+for py in list_py:
+    if py == 'pybuild.py':
+        continue
     cmd = 'pyinstaller --onefile --specpath .\dist %s' % (py)
     try:
         os.system(cmd)
@@ -40,7 +43,9 @@ for py in pys:
         msg = 'Make sure %s is well coded.' % (py)
         print(msg)
 
-for py in pys:
+for py in list_py:
+    if py == 'pybuild.py':
+        continue
     filename = os.path.splitext(py)[0]    
     src = 'dist\\' + filename + '.exe'
     cmd = 'copy %s .' %(src)
