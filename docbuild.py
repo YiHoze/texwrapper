@@ -105,18 +105,18 @@ parser.add_argument(
 args = parser.parse_args()
 
 def build_html():
-    cmd = 'sphinx-build -M html %s %s' % (args.SourceDir, args.BuildDir)
+    cmd = 'sphinx-build -M html %s %s ' % (args.SourceDir, args.BuildDir)
     if args.refresh:
-        cmd +=  ' -e -E'
+        cmd +=  '-E'
     os.system(cmd)
 
 def build_latex():        
     files = LatexDir + '/blockdiag-*.pdf'
     for afile in glob.glob(files):    
         os.remove(afile)
-    cmd = 'sphinx-build -M latex %s %s' % (args.SourceDir, args.BuildDir)
+    cmd = 'sphinx-build -M latex %s %s ' % (args.SourceDir, args.BuildDir)
     if args.refresh:
-        cmd +=  ' -e -E'
+        cmd +=  '-E'
     os.system(cmd)
     os.chdir(LatexDir)    
     if not args.passover:
