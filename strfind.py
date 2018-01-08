@@ -37,7 +37,7 @@ parser.add_argument(
     help = 'specify a filename for backup.'
 )
 parser.add_argument(
-    '-u',
+    '-s',
     dest = 'recursive',
     action = 'store_true',
     default = False,
@@ -45,16 +45,19 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+def get_subdirs(fnpattern):
+    curdir = os.path.dirname(fnpattern)
+    if curdir == '':
+        curdir = '.'
+    return([x[0] for x in os.walk(curdir)])
+
 def find_to_display():
     for fnpattern in args.files:
         for afile in glob.glob(fnpattern):
             find_to_display_sub(afile)
         if args.recursive:
-            curdir = os.path.dirname(fnpattern)
             basename = os.path.basename(fnpattern)
-            if curdir == '':
-                curdir = '.'
-            subdirs = [x[0] for x in os.walk(curdir)]
+            subdirs = get_subdirs(fnpattern)
             for subdir in subdirs:   
                 subfile = os.path.join(subdir, basename)
                 for afile in glob.glob(subfile):
@@ -70,19 +73,15 @@ def find_to_display_sub(afile):
     except:
         print('is not encoded in UTF-8.')
         return
-    
 
 def replace_to_write():    
     tmp = 't@mp.t@mp'
     for fnpattern in args.files:
         for afile in glob.glob(fnpattern):
             replace_to_write_sub(afile)
-        if args.recursive:
-            curdir = os.path.dirname(fnpattern)
+        if args.recursive:            
             basename = os.path.basename(fnpattern)
-            if curdir == '':
-                curdir = '.'
-            subdirs = [x[0] for x in os.walk(curdir)]
+            subdirs = get_subdirs(fnpattern)
             for subdir in subdirs:   
                 subfile = os.path.join(subdir, basename)
                 for afile in glob.glob(subfile):
@@ -112,7 +111,6 @@ def replace_to_write_sub(afile):
     if os.path.exists(afile):
         os.remove(afile)
     os.rename(tmp, afile)
-
 
 if args.pattern is None:        
     if args.target is None:

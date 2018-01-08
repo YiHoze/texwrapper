@@ -9,7 +9,7 @@ parser.add_argument(
     help = 'specify one or more EPS or PDF files'
 )
 parser.add_argument(
-    '-r',
+    '-s',
     dest = 'recursive',
     action = 'store_true',
     default = False,
@@ -30,6 +30,18 @@ except OSError:
     print("Make sure TeX Live is included in PATH.")    
     sys.exit(False)
 
+def get_subdirs(fnpattern):
+    curdir = os.path.dirname(fnpattern)
+    if curdir == '':
+        curdir = '.'
+    return([x[0] for x in os.walk(curdir)])
+
+def eps_to_pdf(afile):
+    if args.contrary:
+        os.system('pdftops -eps %s' %(afile))
+    else:
+        os.system('epstopdf.exe %s' %(afile))
+
 cnt = 0
 for fnpattern in args.files:
     ext = os.path.splitext(fnpattern)[1]
@@ -42,17 +54,14 @@ for fnpattern in args.files:
             print('Specify EPS files.')
             continue
     for afile in glob.glob(fnpattern):
-        if args.contrary:
-            os.system('pdftops -eps %s' %(afile))
-        else:
-            os.system('epstopdf.exe %s' %(afile))
+        eps_to_pdf(afile)
         cnt += 1        
     if args.recursive:
-        fnpattern = '.\**\%s' %(fnpattern)
-        for afile in glob.glob(fnpattern):
-            if args.contrary:
-                os.system('pdftops -eps %s' %(afile))
-            else:
-                os.system('epstopdf.exe %s' %(afile))
-            cnt += 1
+        basename = os.path.basename(fnpattern)        
+        subdirs = get_subdirs(fnpattern)
+        for subdir in subdirs:
+            subfile = os.path.join(subdir, basename)
+            for afile in glob.glob(subfile):
+                eps_to_pdf(afile)
+                cnt += 1
 print('%d file(s) have been converted.' %(cnt))
