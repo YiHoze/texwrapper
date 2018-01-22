@@ -4,6 +4,7 @@ charcode.py
 daily.py
 docbuild.py
 e2p.py
+factorial.py
 fontglyph.py
 fontlist.py
 gitpush.py

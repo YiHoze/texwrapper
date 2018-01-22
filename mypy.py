@@ -7,6 +7,7 @@ except:
 if dir_called is False:
     dir_called = os.path.dirname(sys.argv[0])
 
+pylist = os.path.join(dir_called, 'py.list')
 dir_called = os.path.join(dir_called, '*.py')
 
 parser = argparse.ArgumentParser(
@@ -21,7 +22,7 @@ parser.add_argument(
 parser.add_argument(
     '-o',
     dest = 'output',
-    default = 'py.list',
+    default = pylist,
     help = 'specify a filename for output (default: py.list)'
 )
 args = parser.parse_args()

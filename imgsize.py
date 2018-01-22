@@ -35,7 +35,6 @@ parser.add_argument(
     '-d',
     dest='density',
     type=int,
-    nargs=1,
     default=80,
     help='Pixel density. Default: 80 (pixels per centimeter)'
 )
@@ -43,7 +42,6 @@ parser.add_argument(
     '-m',
     dest='maxwidth',
     type=int,
-    nargs=1,
     default=1000,
     help='Maximum width. Default: 1000 (pixels)'
 )
@@ -51,7 +49,6 @@ parser.add_argument(
     '-s',
     dest='scale',
     type=int,
-    nargs=1,
     default=100,
     help="Scale. Default: 100 (%%). If an image's width is 800 pixels and 50 is given for scale, the image is reduced to 400 pixels."
 )
