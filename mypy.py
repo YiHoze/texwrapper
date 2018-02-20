@@ -19,11 +19,19 @@ parser.add_argument(
     nargs = '*',
     help = 'specify the number of columns (default: 3)'
 )
+
 parser.add_argument(
     '-o',
     dest = 'output',
     default = pylist,
-    help = 'specify a filename for output (default: py.list)'
+    help = 'specify a filename to make a list of python scripts (default: py.list)'
+)
+parser.add_argument(
+    '-u',
+    dest = 'update',
+    action = 'store_true',
+    default = False,
+    help = 'update the list of python scripts'
 )
 args = parser.parse_args()
 
@@ -48,15 +56,20 @@ def enumerate_scripts(alist):
 
 list_py = []
 list_exe = []
-with open(args.output, mode='w') as f:
-    for afile in glob.glob(dir_called):
-        filename = os.path.basename(afile)
-        list_py.append(filename)
+
+if args.update:
+    f = open(args.output, mode='w')
+for afile in glob.glob(dir_called):
+    filename = os.path.basename(afile)
+    list_py.append(filename)
+    if args.update:
         f.write('%s\n' %(filename))
-        afile = os.path.splitext(afile)[0] + '.exe'        
-        if os.path.exists(afile):
-            filename = os.path.basename(afile)
-            list_exe.append(filename)
+    afile = os.path.splitext(afile)[0] + '.exe'        
+    if os.path.exists(afile):
+        filename = os.path.basename(afile)
+        list_exe.append(filename)
+if args.update:
+    f.close()
         
 enumerate_scripts(list_py)
 enumerate_scripts(list_exe)

@@ -78,7 +78,7 @@ def ResizeImage(image):
         density = imgwidth / widthlimit
     else:
         density = args.density
-    cmd = '\"%s\" %s -units PixelsPerCentimeter -density %d -resize %d%% %s' % (args.magick, image, density, args.scale, image)
+    cmd = '\"%s\" %s -auto-orient -units PixelsPerCentimeter -density %d -resize %d%% %s' % (args.magick, image, density, args.scale, image)
     os.system(cmd)
 
 cnt = 0

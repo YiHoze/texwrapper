@@ -112,7 +112,7 @@ def build_html():
 
 def build_latex():        
     files = LatexDir + '/blockdiag-*.pdf'
-    for afile in glob.glob(files):    
+    for afile in glob.glob(files):
         os.remove(afile)
     cmd = 'sphinx-build -M latex %s %s ' % (args.SourceDir, args.BuildDir)
     if args.refresh:
@@ -158,9 +158,10 @@ def compile_fully():
     os.system(cmd_tex)
     if not args.KeepAux:
         os.system('texclean.exe')
-        files = ['sphinxhowto.cls', 'sphinxmanual.cls', 'sphinx.sty', 'python.ist', 'Makefile', 'latexmkrc', 'latexmkjarc']
+        files = ['sphinxhowto.cls', 'sphinxmanual.cls', 'sphinx.sty', 'python.ist', 'Makefile', 'latexmkrc', 'latexmkjarc']        
         for afile in files:
-            os.remove(afile)
+            if os.path.exists(afile):
+                os.remove(afile)
 
 # In case of a wrong filename extension
 LatexDir = args.BuildDir + '/latex'
