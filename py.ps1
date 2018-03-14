@@ -1,5 +1,5 @@
 # If the specified python script is not found in the current directory, this directory will be searched for it.
-$pydir = "C:\home\bin\"
+$pydir = "D:\home\bin\"
 
 $pyfile = $args[0]
 if (! $pyfile) {

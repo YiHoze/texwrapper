@@ -99,9 +99,9 @@ def set_docenv():
         return
     if not (answer.lower() == 'y' or answer == ''):
         docenv = answer
-    cmd = "powershell \"set-itemproperty -path HKCU:\Environment -name DOCENV -value '%s'\"" % (docenv)
+    cmd = r"powershell \"set-itemproperty -path HKCU:\Environment -name DOCENV -value '%s'\"" % (docenv)
     os.system(cmd)
-    cmd = "powershell \"(get-itemproperty -path HKCU:\Environment).'DOCENV'\""
+    cmd = r"powershell \"(get-itemproperty -path HKCU:\Environment).'DOCENV'\""
     os.system(cmd)
 
 def set_texedit():
@@ -115,9 +115,9 @@ def set_texedit():
         return
     if not (answer.lower() == 'y' or answer == ''):
         texedit = answer
-    cmd = "powershell \"set-itemproperty -path HKCU:\Environment -name TEXEDIT -value '%s'\"" % (texedit)
+    cmd = r"powershell \"set-itemproperty -path HKCU:\Environment -name TEXEDIT -value '%s'\"" % (texedit)
     os.system(cmd)
-    cmd = "powershell \"(get-itemproperty -path HKCU:\Environment).'TEXEDIT'\""
+    cmd = r"powershell \"(get-itemproperty -path HKCU:\Environment).'TEXEDIT'\""
     os.system(cmd)
 
 def update_texlive():
@@ -158,9 +158,9 @@ def set_sumatrapdf():
 def cache_font():
     print('\n[Caching fonts]')
     answer = input('Are you sure to cache fonts?\nEnter [Y] to proceed or [n] to abandon: ')
-    if answer.lower() == 'y' or answer == '':
+    if (answer.lower() == 'y' or answer == ''):
         cmd = 'fc-cache -v -r'
-        os.popen(cmd)        
+        os.system(cmd)        
 
 if args.copy_to_local:
     copy_to_local()

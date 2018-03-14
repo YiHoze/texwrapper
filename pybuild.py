@@ -36,7 +36,7 @@ else:
 for py in list_py:
     if py == 'pybuild.py':
         continue
-    cmd = 'pyinstaller --onefile --specpath .\dist %s' % (py)
+    cmd = 'pyinstaller --onefile --specpath .\\dist %s' % (py)
     try:
         os.system(cmd)
     except OSError:
