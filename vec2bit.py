@@ -38,6 +38,7 @@ cmd = '-dBATCH -dNOPAUSE -sDEVICE=%s -r%s -dEPSCrop ' %(device, args.resolution)
 
 for fnpattern in args.image:
     for afile in glob.glob(fnpattern):
-        output = os.path.basename(afile) + '.' + args.target_format
+        #output = os.path.basename(afile) + '.' + args.target_format
+        output = os.path.splitext(afile)[0] + '.' + args.target_format
         cmd = 'gswin64c -dBATCH -dNOPAUSE -sDEVICE=%s -r%s -dEPSCrop -sOutputFile=%s %s' %(device, args.resolution, output, afile)        
         os.system(cmd)

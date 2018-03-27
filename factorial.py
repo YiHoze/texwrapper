@@ -49,8 +49,7 @@ class factorial_GUI(QWidget):
         qr.moveCenter(cp)
         self.move(qr.topLeft())       
 
-if __name__ == '__main__':
-    
+if __name__ == '__main__':    
     app = QApplication([])
     fac = factorial_GUI()
     app.exec_()

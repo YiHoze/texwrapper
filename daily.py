@@ -32,8 +32,8 @@ if os.path.exists(ini):
             target = config.get(section, 'target')
         except:
             target = ''
-        cmd = '\"%s\" %s' % (app, target.replace('\n', ' '))
-        subprocess.Popen(cmd)        
+        cmd = '\"%s\" %s' % (app, target.replace('\n', ' '))        
+        subprocess.Popen(cmd)
 else:
     input('Daily.ini is not found. Set the DOCENV environment variable to the directory containing daily.ini. Press any key to exit.')
     

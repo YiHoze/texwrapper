@@ -8,7 +8,7 @@ parser.add_argument(
     'files',
     type=str,
     nargs='*',
-    help='If no python file is specified, every python file listed in the py.list is to be build.'
+    help='If no python file is specified, every python file listed in py.list is to be build.'
 )
 parser.add_argument(
     '-l',
