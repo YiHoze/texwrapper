@@ -1,4 +1,4 @@
-import os, glob, argparse, subprocess
+import os, glob, argparse
 # import configparser
 
 parser = argparse.ArgumentParser(
@@ -65,6 +65,13 @@ parser.add_argument(
     default=False,
     help='Bookmark index entries which are Python functions extracted from docstrings. This option is available only with full compilation (-f).'
 )
+parser.add_argument(
+    '-c',
+    dest='CleanAux',
+    action='store_true',
+    default=False,
+    help='Remove auxiliary files after compilation.'
+)
 args = parser.parse_args()
 
 # In case of a wrong filename extension
@@ -124,6 +131,10 @@ if args.FullCompile:
 elif args.TwiceCompile:
     os.system(cmd_tex)
     os.system(cmd_tex)
+    if args.CleanAux:
+        os.system('texclean.exe')
 else:
     os.system(cmd_tex)
+    if args.CleanAux:
+        os.system('texclean.exe')
     
