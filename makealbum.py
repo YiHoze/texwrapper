@@ -72,9 +72,9 @@ if args.hide_filename:
 with open(tex, mode='w') as f:
     f.write(content)
 
-os.system('xelatex %s' %(tex))
-os.system('texclean.exe')
-os.system('open.exe %s' %(pdf))
+os.system('powershell -command xelatex %s' %(tex))
+os.system('texclean.py')
+os.system('powershell -command open.py %s' %(pdf))
 if not args.keep:
     os.remove(list_file)
     os.remove(tex)

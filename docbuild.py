@@ -121,16 +121,16 @@ def build_latex():
     os.chdir(LatexDir)    
     if not args.passover:
         if os.path.exists('images'):
-            cmd = 'svg2pdf.exe images/*.svg'
+            cmd = 'powershell -command svg2pdf.py images/*.svg'
             os.system(cmd)
         for afile in glob.glob('blockdiag-*.pdf'):
-            cmd = 'pdfcrop.exe %s %s' %(afile, afile)
+            cmd = 'powershell -command pdfcrop.py %s %s' %(afile, afile)
             os.system(cmd)
     if args.str_replacement:
-        cmd = 'strrep.exe ' + tex 
+        cmd = 'powershell -command strrep.py ' + tex 
         os.system(cmd)
     if args.AutoJosa:
-        cmd = 'autojosa.exe ' + tex
+        cmd = 'powershell -command autojosa.py ' + tex
         os.system(cmd)
     if args.FullCompile:
         compile_fully()
@@ -152,12 +152,12 @@ def compile_fully():
         cmd = 'texindy -M ' + ind_mod + idx
         os.system(cmd)        
         if args.BookmarkPython:
-            cmd = 'bmind.exe -p ' + ind
+            cmd = 'powershell -command bmind.py -p ' + ind
             os.system(cmd)
         os.system(cmd_tex)
     os.system(cmd_tex)
     if not args.KeepAux:
-        os.system('texclean.exe')
+        os.system('texclean.py')
         files = ['sphinxhowto.cls', 'sphinxmanual.cls', 'sphinx.sty', 'python.ist', 'Makefile', 'latexmkrc', 'latexmkjarc']        
         for afile in files:
             if os.path.exists(afile):

@@ -99,9 +99,9 @@ def set_docenv():
         return
     if not (answer.lower() == 'y' or answer == ''):
         docenv = answer
-    cmd = r"powershell \"set-itemproperty -path HKCU:\Environment -name DOCENV -value '%s'\"" % (docenv)
+    cmd = "powershell \"set-itemproperty -path HKCU:\Environment -name DOCENV -value '%s'\"" % (docenv)
     os.system(cmd)
-    cmd = r"powershell \"(get-itemproperty -path HKCU:\Environment).'DOCENV'\""
+    cmd = "powershell \"(get-itemproperty -path HKCU:\Environment).'DOCENV'\""
     os.system(cmd)
 
 def set_texedit():
@@ -115,9 +115,9 @@ def set_texedit():
         return
     if not (answer.lower() == 'y' or answer == ''):
         texedit = answer
-    cmd = r"powershell \"set-itemproperty -path HKCU:\Environment -name TEXEDIT -value '%s'\"" % (texedit)
+    cmd = "powershell \"set-itemproperty -path HKCU:\Environment -name TEXEDIT -value '%s'\"" % (texedit)
     os.system(cmd)
-    cmd = r"powershell \"(get-itemproperty -path HKCU:\Environment).'TEXEDIT'\""
+    cmd = "powershell \"(get-itemproperty -path HKCU:\Environment).'TEXEDIT'\""
     os.system(cmd)
 
 def update_texlive():

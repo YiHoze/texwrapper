@@ -65,14 +65,14 @@ def notebook_convert(afile):
         os.system(cmd)
         # Replace strings
         if args.str_replacement:            
-            cmd = 'strrep.exe ' + tex 
+            cmd = 'strrep.py ' + tex 
             os.system(cmd)
         # Compile latex
         if not args.passover:
             cmd = 'xelatex -interaction=batchmode %s' %(tex)
             os.system(cmd)
             os.system(cmd)
-            os.system('texclean.exe')
+            os.system('texclean.py')
     else:
         print('%s is not a Jupyter notebook.' %(afile))
 

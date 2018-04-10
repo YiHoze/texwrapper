@@ -59,6 +59,6 @@ if os.path.exists(tex):
 
 with open(tex, mode='w', encoding='utf-8') as f:
     f.write(content)
-os.system('xelatex %s' %(tex))
-os.system('open.exe %s' %(pdf))
-os.system('texclean.exe')
+os.system('powershell -command xelatex %s' %(tex))
+os.system('powershell -command open.py %s' %(pdf))
+os.system('texclean.py')

@@ -1,5 +1,4 @@
-import os, sys, argparse
-import unicodedata
+import os, sys, argparse, unicodedata
 
 parser = argparse.ArgumentParser(
     description = 'View codes of characters in a text file encoded in UTF-8.'
@@ -40,5 +39,8 @@ for line in infile.readlines():
         print(codes)
 infile.close()
 if args.output:
-    outfile.close()
-    os.system('open.exe %s' %(filename))
+    outfile.close()    
+    os.system('powershell -command open.py %s' %(filename))
+    
+    
+    

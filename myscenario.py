@@ -85,8 +85,8 @@ content = r"""\documentclass[10pt, openany]{hzguide}
 with open(tex, mode='w') as f:
     f.write(content)
 
-os.system('open.exe %s' %(tex))
+os.system('powershell -command open.py %s' %(tex))
 
 if not args.NoCompile:
-    os.system('xlt.exe -b -w %s' %(tex))    
-    os.system('open.exe %s' %(pdf))
+    os.system('powershell -command xlt.py -b -w %s' %(tex))    
+    os.system('powershell -command open.py %s' %(pdf))

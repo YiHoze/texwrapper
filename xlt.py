@@ -107,7 +107,7 @@ except:
     ind_mod = index_modules['eng']
 
 # Compile
-cmd_tex = 'xelatex' + CompileMode + tex
+cmd_tex = 'powershell -command xelatex' + CompileMode + tex
 
 def compile_fully():
     os.system(cmd_tex)
@@ -116,15 +116,15 @@ def compile_fully():
         cmd = 'texindy -M ' + ind_mod + idx
         os.system(cmd)        
         if args.BookmarkIndex:
-            cmd = 'bmind.exe ' + ind
+            cmd = 'powershell -command bmind.py ' + ind
             os.system(cmd)
         elif args.BookmarkPython:
-            cmd = 'bmind.exe -p ' + ind
+            cmd = 'powershell -command bmind.py -p ' + ind
             os.system(cmd)
         os.system(cmd_tex)
     os.system(cmd_tex)
     if not args.KeepAux:
-        os.system('texclean.exe')
+        os.system('texclean.py')
             
 if args.FullCompile:
     compile_fully()
@@ -132,9 +132,9 @@ elif args.TwiceCompile:
     os.system(cmd_tex)
     os.system(cmd_tex)
     if args.CleanAux:
-        os.system('texclean.exe')
+        os.system('texclean.py')
 else:
     os.system(cmd_tex)
     if args.CleanAux:
-        os.system('texclean.exe')
+        os.system('texclean.py')
     

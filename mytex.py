@@ -84,4 +84,4 @@ else:
 
 with open(tex, mode='w') as f:
     f.write(content)
-os.system('open.exe %s' %(tex))
+os.system('powershell -command open.py %s' %(tex))

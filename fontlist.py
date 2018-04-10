@@ -22,4 +22,4 @@ content.sort()
 with open(args.output, mode='w', encoding='utf-8') as f:
     for line in content:
         f.write(os.path.basename(line))
-os.system("open.exe %s" %(args.output))
+os.system("powershell -command open.py %s" %(args.output))

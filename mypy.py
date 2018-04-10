@@ -55,7 +55,7 @@ def enumerate_scripts(alist):
     print('%s files are found.\n' %(len(alist)))
 
 list_py = []
-list_exe = []
+#list_exe = []
 
 if args.update:
     f = open(args.output, mode='w')
@@ -64,12 +64,12 @@ for afile in glob.glob(dir_called):
     list_py.append(filename)
     if args.update:
         f.write('%s\n' %(filename))
-    afile = os.path.splitext(afile)[0] + '.exe'        
-    if os.path.exists(afile):
-        filename = os.path.basename(afile)
-        list_exe.append(filename)
+    # afile = os.path.splitext(afile)[0] + '.exe'        
+    # if os.path.exists(afile):
+    #     filename = os.path.basename(afile)
+    #     list_exe.append(filename)
 if args.update:
     f.close()
         
 enumerate_scripts(list_py)
-enumerate_scripts(list_exe)
+#enumerate_scripts(list_exe)

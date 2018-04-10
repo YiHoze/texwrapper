@@ -90,4 +90,4 @@ if args.tortoise:
 with open(args.output, mode='w', encoding='euc-kr') as f:
     f.write(output)
 
-os.system('open.exe %s' %(args.output))
+os.system('powershell -command open.py %s' %(args.output))
