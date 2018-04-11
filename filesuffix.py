@@ -45,14 +45,14 @@ def RenameUppercase():
     for fnpattern in args.files:
         for afile in glob.glob(fnpattern):
             filename = os.path.splitext(afile)
-            newname = filename[0].upper() +  filename[1]            
+            newname = filename[0].upper() +  filename[1].upper()            
             os.rename(afile, newname)
 
 def RenameLowercase():
     for fnpattern in args.files:
         for afile in glob.glob(fnpattern):
             filename = os.path.splitext(afile)
-            newname = filename[0].lower() +  filename[1]
+            newname = filename[0].lower() +  filename[1].lower()            
             os.rename(afile, newname)
 
 def AppendSuffix():

@@ -35,15 +35,15 @@ parser.add_argument(
     '-d',
     dest='density',
     type=int,
-    default=80,
-    help='Pixel density. Default: 80 (pixels per centimeter)'
+    default=160,
+    help='Pixel density. Default: 160 (pixels per centimeter)'
 )
 parser.add_argument(
     '-m',
     dest='maxwidth',
     type=int,
-    default=1000,
-    help='Maximum width. Default: 1000 (pixels)'
+    default=1920,
+    help='Maximum width. Default: 1920 (pixels)'
 )
 parser.add_argument(
     '-s',
@@ -79,7 +79,9 @@ def ResizeImage(image):
     else:
         density = args.density
     cmd = '\"%s\" %s -auto-orient -units PixelsPerCentimeter -density %d -resize %d%% %s' % (args.magick, image, density, args.scale, image)
+    #cmd = '\"%s\" %s -units PixelsPerCentimeter -density %d -resize %d%% %s' % (args.magick, image, density, args.scale, image)
     os.system(cmd)
+    #print(cmd)
 
 cnt = 0
 for fnpattern in args.images:
