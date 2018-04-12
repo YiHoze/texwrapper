@@ -1,0 +1,379 @@
+{
+	"class": {
+		"prefix": "cls",
+		"body": "\\documentclass{hzguide}",
+		"scope": "text.tex.latex"
+	},
+
+  	"usepackage": {
+    	"prefix": "use",
+		"body": "\\usepackage{$0}",
+		"scope": "text.tex.latex"
+  	},
+
+	"ExplSyntax": {
+		"prefix": "expl",
+		"body": [
+			"\\ExplSyntaxOn",
+			"$0",
+			"\\ExplSyntaxOff"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"makeatletter": {
+    	"prefix": "makeat",
+    	"body": [
+			"\\makeatoletter", 
+			"$0", 
+			"\\makeatother"
+		],
+		"scope": "text.tex.latex"
+	  },
+
+	"NewDocumentCommand": {
+    	"prefix": "newcom",
+    	"body": [
+			"\\NewDocumentCommand $0 { }",
+			"{" ,
+			"\t",
+			"}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"RenewDocumentCommand": {
+    	"prefix": "renewcom",
+    	"body": [
+			"\\RenewDocumentCommand $0 { }",
+			"{" ,
+			"\t",
+			"}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"DeclareDocumentCommand": {
+    	"prefix": "decom",
+    	"body": [
+			"\\DeclareDocumentCommand $0 { }",
+			"{" ,
+			"\t",
+			"}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"NewDocumentEnvironment": {
+    	"prefix": "newenv",
+    	"body": [
+			"\\NewDocumentEnvironment { $0 } { }",
+			"{",
+			"\t",
+			"}{",
+			"\t",
+			"}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"RenewDocumentEnvironment": {
+    	"prefix": "renewenv",
+    	"body": [
+			"\\RenewDocumentEnvironment { $0 } { }",
+			"{",
+			"\t",
+			"}{",
+			"\t",
+			"}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"document": {
+    	"prefix": "doc",
+    	"body": [
+			"\\begin{document}",
+			"$0",
+			"\\end{document}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"chapter": { 
+		"prefix": "cha",
+		"body": "\\chapter{$0}",
+		"scope": "text.tex.latex"
+	},
+
+	"section": { 
+		"prefix": "sec",
+		"body": "\\section{$0}",
+		"scope": "text.tex.latex"
+	},
+
+	"subsection": { 
+		"prefix": "subsec",
+		"body": "\\subsection{$0}",
+		"scope": "text.tex.latex"
+	},
+
+	"topic": { 
+		"prefix": "top",
+		"body": "\\topic{$0}",
+		"scope": "text.tex.latex"
+	},
+
+  	"itemize": {
+    	"prefix": "itemi",
+    	"body": [
+			"\\begin{itemize}", 
+			"\\item $0", 
+			"\\end{itemize}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"enumerate": {
+    	"prefix": "enum",
+    	"body": [
+			"\\begin{enumerate}", 
+			"\\item $0", 
+			"\\end{enumerate}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"description": {
+    	"prefix": "desc",
+    	"body": [
+			"\\begin{description}",
+			"\\item[$0]",
+			"\\end{description}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"terms": {
+    	"prefix": "terms",
+    	"body": [
+			"\\begin{terms}",
+			"\\item[$0]",
+			"\\end{terms}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"callout": {
+    	"prefix": "callout",
+    	"body": [
+			"\\begin{callout}", 
+			"\\item $0", 
+			"\\end{callout}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"minipage": {
+		"prefix": "mp",
+		"body": [
+			"\\begin{minipage}{\\linewidth}",
+			"$0",
+			"\\end{minipage}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"flushleft": {
+		"prefix": "fleft",
+		"body": [
+			"\\begin{flushleft}",
+			"$0",
+			"\\end{flushleft}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"center": {
+		"prefix": "cnt",
+		"body": [
+			"\\begin{center}",
+			"$0",
+			"\\end{center}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"flushright": {
+		"prefix": "fright",
+		"body": [
+			"\\begin{flushright}",
+			"$0",
+			"\\end{flushright}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"verbatim": {
+		"prefix": "verb",
+		"body": [
+			"\\begin{verbatim}",
+			"$0",
+			"\\end{verbatim}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"Table": {
+    	"prefix": "table",
+    	"body": [
+			"\\begin{Table}",
+			"\\begin{tabu}{$0}",
+			"\\end{tabu}",
+			"\\end{Table}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+	"SpecTable": {
+		"prefix": "spect",
+		"body": [
+			"\\begin{SpecTable}",
+			"$0",
+			"\\end{SpecTable}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"reference": {
+    	"prefix": "ref",
+    	"body": [
+			"\\begin{reference}",
+			"$0",
+			"\\end{reference}"
+		],
+		"scope": "text.tex.latex"
+	  },
+
+  	"instance": {
+	    "prefix": "ins",
+    	"body": [
+			"\\begin{instance}",
+			"$0",
+			"\\end{instance}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"warning": {
+	    "prefix": "warning",
+    	"body": [ 
+			"\\begin{Warning}",
+			"$0",
+			"\\end{Warning}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"caution": {
+    	"prefix": "caution",
+    	"body": [
+			"\\begin{Caution}",
+			"$0",
+			"\\end{Caution}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"note": {
+    	"prefix": "nt",
+    	"body": [
+			"\\begin{Note}",
+			"$0",
+			"\\end{Note}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"image": {
+    	"prefix": "img",
+    	"body": "\\image{$0}",
+		"scope": "text.tex.latex"
+	},
+
+  	"lineimg": {
+    	"prefix": "lmg",
+    	"body": "\\lineimg{$0}",
+		"scope": "text.tex.latex"
+	},
+
+	"IllustImage": {
+		"prefix": "illu",
+		"body": [
+			"\\begin{IllustImage}{$0}",
+			"",
+			"\\end{IllustImage}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"IlluEnum": {
+    	"prefix": "illue",
+    	"body": [
+			"\\begin{IllustEnum}{$0}",
+			"\\item ",
+			"\\end{IllustEnum}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"titleref": {
+    	"prefix": "tref",
+    	"body": "\\titleref{${1:label}} on page \\pageref{${2:label}}",
+		"scope": "text.tex.latex"
+	},
+
+  	"item": {
+    	"prefix": "i",
+    	"body": "\\item ",
+		"scope": "text.tex.latex"
+	},
+
+	"item": {
+    	"prefix": "ㅑ",
+    	"body": "\\item ",
+		"scope": "text.tex.latex"
+	},
+
+	"item_term": {
+    	"prefix": "it",
+    	"body": "\\item[$0]",
+		"scope": "text.tex.latex"
+	},
+
+	"item_term": {
+    	"prefix": "ㅑㅅ",
+    	"body": "\\item[$0]",
+		"scope": "text.tex.latex"
+	},
+
+	"frame": {
+    	"prefix": "frame",
+    	"body": [
+			"\\begin{frame}{${1:frame title}}",
+			"$0",
+			"\\end{frame}"
+		],
+		"scope": "text.tex.latex"
+	},
+
+  	"exampleblock": {
+    	"prefix": "exam",
+    	"body": [
+			"\\begin{exampleblock}{${1:block title}",
+			"$0",
+			"\\end{exampleblock}"
+		],
+		"scope": "text.tex.latex"
+	}
+}

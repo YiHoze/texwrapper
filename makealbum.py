@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '-s',
     dest = 'scale',
-    default = 1,
+    default = '1',
     help = 'image scale (default: 1)'
 )
 parser.add_argument(
@@ -22,13 +22,19 @@ parser.add_argument(
     default = False,
     help = 'leave out filenames of images'
 )
-
 parser.add_argument(
     '-k',
     dest = 'keep',
     action = 'store_true',
     default = False,
     help = 'keep collateral files'
+)
+parser.add_argument(
+    '-1',
+    dest = 'one_column',
+    action = 'store_true',
+    default = False,
+    help = 'make the layout to be one column (default: two columns)'
 )
 args = parser.parse_args()
 
@@ -55,16 +61,25 @@ with open(list_file, mode='w') as f:
     f.write(image_list)
 
 # Make a tex file with this content
-content = """
-\\documentclass{hzguide}
-\\usepackage{multicol}
-\\LayoutSetup{paper=A4}
-\\HeadingSetup{type=report}
-\\begin{document}
-\\begin{multicols}{2}
-\\MakeAlbum[%d]{%s}
-\\end{multicols}
-\\end{document}""" %(args.scale, list_file)
+if args.one_column:
+    content = """
+    \\documentclass{hzguide}
+    \\LayoutSetup{paper=A4}
+    \\HeadingSetup{type=report}
+    \\begin{document}
+    \\MakeAlbum[%s]{%s}
+    \\end{document}""" %(args.scale, list_file)
+else:
+    content = """
+    \\documentclass{hzguide}
+    \\usepackage{multicol}
+    \\LayoutSetup{paper=A4}
+    \\HeadingSetup{type=report}
+    \\begin{document}
+    \\begin{multicols}{2}
+    \\MakeAlbum[%s]{%s}
+    \\end{multicols}
+    \\end{document}""" %(args.scale, list_file)
 
 if args.hide_filename:
     content = content.replace('MakeAlbum', 'MakeAlbum*')
