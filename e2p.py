@@ -1,12 +1,12 @@
 import os, sys, glob, argparse, subprocess
 
 parser = argparse.ArgumentParser(
-    description = 'Convert EPS files to PDF or the other way using epstopdf and pdftops of TeX Live.'
+    description = 'Convert EPS images to PDF or the other way using epstopdf and pdftops of TeX Live.'
 )
 parser.add_argument(
-    'files',
+    'image',
     nargs = '+',
-    help = 'specify one or more EPS or PDF files'
+    help = 'specify one or more EPS or PDF image files'
 )
 parser.add_argument(
     '-s',
@@ -20,7 +20,7 @@ parser.add_argument(
     dest = 'contrary',
     action = 'store_true',
     default = False,
-    help = 'covert PDF files to EPS'
+    help = 'covert PDF images to EPS'
 )
 args = parser.parse_args()
 
@@ -43,7 +43,7 @@ def eps_to_pdf(afile):
         os.system('epstopdf.exe %s' %(afile))
 
 cnt = 0
-for fnpattern in args.files:
+for fnpattern in args.image:
     ext = os.path.splitext(fnpattern)[1]
     if args.contrary:
         if ext.lower() != '.pdf':

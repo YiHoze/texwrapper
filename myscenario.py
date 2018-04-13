@@ -66,7 +66,7 @@ content = r"""\documentclass[10pt, openany]{hzguide}
 \section{Installing X}\sceneprocedure[5]
 \section{Checking X}\sceneprocedure
 \section{Starting X}\scenelist*
-\chapter{Operation}\scenetasks
+\chapter{Operation}\sceneactions
 \chapter{Troubleshooting}\listofproblems*\sceneproblems
 \chapter{Maintenance}
 \section{Precautions for Maintenance}\scenelist

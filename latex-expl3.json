@@ -2,13 +2,11 @@
 	"class": {
 		"prefix": "cls",
 		"body": "\\documentclass{hzguide}",
-		"scope": "text.tex.latex"
 	},
 
   	"usepackage": {
-    	"prefix": "use",
+    	"prefix": "up",
 		"body": "\\usepackage{$0}",
-		"scope": "text.tex.latex"
   	},
 
 	"ExplSyntax": {
@@ -18,7 +16,6 @@
 			"$0",
 			"\\ExplSyntaxOff"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"makeatletter": {
@@ -28,7 +25,6 @@
 			"$0", 
 			"\\makeatother"
 		],
-		"scope": "text.tex.latex"
 	  },
 
 	"NewDocumentCommand": {
@@ -39,7 +35,6 @@
 			"\t",
 			"}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"RenewDocumentCommand": {
@@ -50,7 +45,6 @@
 			"\t",
 			"}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"DeclareDocumentCommand": {
@@ -61,7 +55,6 @@
 			"\t",
 			"}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"NewDocumentEnvironment": {
@@ -74,7 +67,6 @@
 			"\t",
 			"}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"RenewDocumentEnvironment": {
@@ -87,7 +79,6 @@
 			"\t",
 			"}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"document": {
@@ -97,81 +88,80 @@
 			"$0",
 			"\\end{document}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"chapter": { 
-		"prefix": "cha",
+		"prefix": "chp",
 		"body": "\\chapter{$0}",
-		"scope": "text.tex.latex"
 	},
 
 	"section": { 
-		"prefix": "sec",
+		"prefix": "s",
 		"body": "\\section{$0}",
-		"scope": "text.tex.latex"
 	},
 
 	"subsection": { 
-		"prefix": "subsec",
+		"prefix": "ss",
 		"body": "\\subsection{$0}",
-		"scope": "text.tex.latex"
 	},
 
 	"topic": { 
-		"prefix": "top",
+		"prefix": "tp",
 		"body": "\\topic{$0}",
-		"scope": "text.tex.latex"
 	},
 
   	"itemize": {
-    	"prefix": "itemi",
+    	"prefix": "itm",
     	"body": [
 			"\\begin{itemize}", 
 			"\\item $0", 
 			"\\end{itemize}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"enumerate": {
-    	"prefix": "enum",
+    	"prefix": "enm",
     	"body": [
 			"\\begin{enumerate}", 
 			"\\item $0", 
 			"\\end{enumerate}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"description": {
-    	"prefix": "desc",
+    	"prefix": "dsc",
     	"body": [
 			"\\begin{description}",
 			"\\item[$0]",
 			"\\end{description}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"terms": {
-    	"prefix": "terms",
+    	"prefix": "te",
     	"body": [
 			"\\begin{terms}",
 			"\\item[$0]",
 			"\\end{terms}"
 		],
-		"scope": "text.tex.latex"
+	},
+
+	"UserInterface": {
+    	"prefix": "usr",
+    	"body": [
+			"\\begin{UI}",
+			"\\item[$0]",
+			"\\end{UI}"
+		],
 	},
 
 	"callout": {
-    	"prefix": "callout",
+    	"prefix": "call",
     	"body": [
 			"\\begin{callout}", 
 			"\\item $0", 
 			"\\end{callout}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"minipage": {
@@ -181,37 +171,33 @@
 			"$0",
 			"\\end{minipage}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"flushleft": {
-		"prefix": "fleft",
+		"prefix": "fl",
 		"body": [
 			"\\begin{flushleft}",
 			"$0",
 			"\\end{flushleft}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"center": {
-		"prefix": "cnt",
+		"prefix": "c",
 		"body": [
 			"\\begin{center}",
 			"$0",
 			"\\end{center}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"flushright": {
-		"prefix": "fright",
+		"prefix": "fr",
 		"body": [
 			"\\begin{flushright}",
 			"$0",
 			"\\end{flushright}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"verbatim": {
@@ -221,7 +207,6 @@
 			"$0",
 			"\\end{verbatim}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"Table": {
@@ -232,7 +217,6 @@
 			"\\end{tabu}",
 			"\\end{Table}"
 		],
-		"scope": "text.tex.latex"
 	},
 
 	"SpecTable": {
@@ -242,7 +226,6 @@
 			"$0",
 			"\\end{SpecTable}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"reference": {
@@ -252,7 +235,6 @@
 			"$0",
 			"\\end{reference}"
 		],
-		"scope": "text.tex.latex"
 	  },
 
   	"instance": {
@@ -262,7 +244,6 @@
 			"$0",
 			"\\end{instance}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"warning": {
@@ -272,7 +253,6 @@
 			"$0",
 			"\\end{Warning}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"caution": {
@@ -282,7 +262,6 @@
 			"$0",
 			"\\end{Caution}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"note": {
@@ -292,19 +271,16 @@
 			"$0",
 			"\\end{Note}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"image": {
-    	"prefix": "img",
+    	"prefix": "im",
     	"body": "\\image{$0}",
-		"scope": "text.tex.latex"
 	},
 
   	"lineimg": {
-    	"prefix": "lmg",
+    	"prefix": "lm",
     	"body": "\\lineimg{$0}",
-		"scope": "text.tex.latex"
 	},
 
 	"IllustImage": {
@@ -314,7 +290,6 @@
 			"",
 			"\\end{IllustImage}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"IlluEnum": {
@@ -324,37 +299,41 @@
 			"\\item ",
 			"\\end{IllustEnum}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"titleref": {
-    	"prefix": "tref",
-    	"body": "\\titleref{${1:label}} on page \\pageref{${2:label}}",
-		"scope": "text.tex.latex"
+    	"prefix": "tr",
+    	"body": "\\titleref{${1:label}}",
+	},
+
+	"pageref": {
+    	"prefix": "pr",
+    	"body": "\\pageref{${2:label}}",
 	},
 
   	"item": {
     	"prefix": "i",
     	"body": "\\item ",
-		"scope": "text.tex.latex"
 	},
 
-	"item": {
+	"item_ko": {
     	"prefix": "ㅑ",
     	"body": "\\item ",
-		"scope": "text.tex.latex"
 	},
 
 	"item_term": {
     	"prefix": "it",
     	"body": "\\item[$0]",
-		"scope": "text.tex.latex"
 	},
 
-	"item_term": {
+	"item_term_ko": {
     	"prefix": "ㅑㅅ",
     	"body": "\\item[$0]",
-		"scope": "text.tex.latex"
+	},
+
+	"ui": {
+    	"prefix": "u",
+    	"body": "\\ui{$0}",
 	},
 
 	"frame": {
@@ -364,7 +343,6 @@
 			"$0",
 			"\\end{frame}"
 		],
-		"scope": "text.tex.latex"
 	},
 
   	"exampleblock": {
@@ -374,6 +352,5 @@
 			"$0",
 			"\\end{exampleblock}"
 		],
-		"scope": "text.tex.latex"
 	}
 }
