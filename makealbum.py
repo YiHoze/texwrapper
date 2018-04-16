@@ -87,7 +87,7 @@ if args.hide_filename:
 with open(tex, mode='w') as f:
     f.write(content)
 
-os.system('powershell -command xelatex %s' %(tex))
+os.system('powershell -command lualatex %s' %(tex))
 os.system('texclean.py')
 os.system('powershell -command open.py %s' %(pdf))
 if not args.keep:
