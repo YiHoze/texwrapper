@@ -1,4 +1,6 @@
-'C:\home\bin\msdoc.vbs . %1 %2
+'#>msdoc.vbs directory source_format target_format
+'#>msdoc . docx pdf
+
 'Const wdFormatDocument = 0
 'Const wdFormatDocument97 = 0
 'Const wdFormatDocumentDefault = 16

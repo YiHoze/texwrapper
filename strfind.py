@@ -1,5 +1,4 @@
-import os, sys, glob, argparse, csv, re
-import codecs
+import os, sys, glob, argparse, csv, re, codecs
 
 parser = argparse.ArgumentParser(
     description = 'Search a text file to find or replace some strings with others.'
@@ -17,7 +16,7 @@ parser.add_argument(
 
 )
 parser.add_argument(
-    '-r',
+    '-s',
     dest = 'substitute',
     default = None,
     help = 'specify a string with which to replace found strings'
@@ -34,10 +33,10 @@ parser.add_argument(
     '-p',
     dest = 'pattern',
     default = None,
-    help = 'specify a filename for backup.'
+    help = 'specify a file that includes substitution patterns. (foo.tsv)'
 )
 parser.add_argument(
-    '-s',
+    '-r',
     dest = 'recursive',
     action = 'store_true',
     default = False,
@@ -75,7 +74,6 @@ def find_to_display_sub(afile):
         return
 
 def replace_to_write():    
-    tmp = 't@mp.t@mp'
     for fnpattern in args.files:
         for afile in glob.glob(fnpattern):
             replace_to_write_sub(afile)
@@ -88,6 +86,7 @@ def replace_to_write():
                     replace_to_write_sub(afile)  
 
 def replace_to_write_sub(afile):
+    tmp = 't@mp.t@mp'
     try:
         with open(afile, mode='r', encoding='utf-8') as f:
             content = f.read() 
@@ -104,7 +103,7 @@ def replace_to_write_sub(afile):
     with open(tmp, mode='w', encoding='utf-8') as f:
         f.write(content)
     if args.backup:
-        backup = os.path.splitext(afile)[0] + '_backup' + os.path.splitext(afile)[1]
+        backup = os.path.splitext(afile)[0] + '_bak' + os.path.splitext(afile)[1]
         if os.path.exists(backup):
             os.remove(backup)
         os.rename(afile, backup)

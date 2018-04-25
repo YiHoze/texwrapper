@@ -7,7 +7,7 @@ except:
 if dir_called is False:
     dir_called = os.path.dirname(sys.argv[0])
 
-pylist = os.path.join(dir_called, 'py.list')
+# pylist = os.path.join(dir_called, 'py.list')
 dir_called = os.path.join(dir_called, '*.py')
 
 parser = argparse.ArgumentParser(
@@ -16,23 +16,22 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     'columns',
     type = int,
-    nargs = '*',
+    nargs = '?',
     help = 'specify the number of columns (default: 3)'
 )
-
-parser.add_argument(
-    '-o',
-    dest = 'output',
-    default = pylist,
-    help = 'specify a filename to make a list of python scripts (default: py.list)'
-)
-parser.add_argument(
-    '-u',
-    dest = 'update',
-    action = 'store_true',
-    default = False,
-    help = 'update the list of python scripts'
-)
+# parser.add_argument(
+#     '-o',
+#     dest = 'output',
+#     default = pylist,
+#     help = 'specify a filename to make a list of python scripts (default: py.list)'
+# )
+# parser.add_argument(
+#     '-u',
+#     dest = 'update',
+#     action = 'store_true',
+#     default = False,
+#     help = 'update the list of python scripts'
+# )
 args = parser.parse_args()
 
 if bool(args.columns):
@@ -55,21 +54,14 @@ def enumerate_scripts(alist):
     print('%s files are found.\n' %(len(alist)))
 
 list_py = []
-#list_exe = []
 
-if args.update:
-    f = open(args.output, mode='w')
+# if args.update:
+#     f = open(args.output, mode='w')
 for afile in glob.glob(dir_called):
     filename = os.path.basename(afile)
     list_py.append(filename)
-    if args.update:
-        f.write('%s\n' %(filename))
-    # afile = os.path.splitext(afile)[0] + '.exe'        
-    # if os.path.exists(afile):
-    #     filename = os.path.basename(afile)
-    #     list_exe.append(filename)
-if args.update:
-    f.close()
-        
+    # if args.update:
+    #     f.write('%s\n' %(filename))
+# if args.update:
+#     f.close()
 enumerate_scripts(list_py)
-#enumerate_scripts(list_exe)

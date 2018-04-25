@@ -12,7 +12,7 @@ parser.add_argument(
 )
 parser.add_argument(
     '-n',
-    dest = 'NoCompile',
+    dest = 'no_compile',
     action = 'store_true',
     default = False,
     help = 'pass over latex compilation'
@@ -87,6 +87,6 @@ with open(tex, mode='w') as f:
 
 os.system('powershell -command open.py %s' %(tex))
 
-if not args.NoCompile:
-    os.system('powershell -command xlt.py -b -w %s' %(tex))    
+if not args.no_compile:
+    os.system('powershell -command ltx.py -b -w %s' %(tex))    
     os.system('powershell -command open.py %s' %(pdf))

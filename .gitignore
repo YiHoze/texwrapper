@@ -1,6 +1,4 @@
 *.exe
 .vscode/
-__pycache__/
-build/
-dist/
+obsolete/
 pdf2htmlEX/

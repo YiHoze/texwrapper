@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     'font',
     nargs = 1,
-    help = "specify a font's filename"
+    help = "specify a font's filename. (foo.ttf)"
 )
 parser.add_argument(
     '-e',
@@ -38,8 +38,18 @@ else:
         text = f.readlines()
         text = ''.join(map(str, text))
 
-if not bool(args.output):
-    args.output = args.font
+if args.output is None:
+    args.output = args.font[0]
+
+filename = os.path.splitext(args.output)[0] 
+tex = filename + '.tex'
+pdf = filename + '.pdf'
+if os.path.exists(tex):
+    answer = input('%s already exists. Are you sure to remake it? [y/N] ' %(tex))
+    if answer.lower() == 'y':
+        os.remove(tex)
+    else:
+        sys.exit()
 
 content = """
 \\documentclass{minimal} 
@@ -51,14 +61,7 @@ content = """
 %s
 \\end{document}""" %(args.font[0], text)
 
-filename = os.path.splitext(args.output)[0] 
-tex = filename + '.tex'
-pdf = filename + '.pdf'
-if os.path.exists(tex):
-    os.remove(tex)
-
 with open(tex, mode='w', encoding='utf-8') as f:
     f.write(content)
-os.system('powershell -command xelatex %s' %(tex))
+os.system('powershell -command ltx.py -c %s' %(tex))
 os.system('powershell -command open.py %s' %(pdf))
-os.system('texclean.py')
