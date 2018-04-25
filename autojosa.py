@@ -26,7 +26,7 @@ def josa_generator():
     for tag, josa in product(tags, josas):
         yield tag + josa, '\\1' + '\\\\' + josa
 
-tmp = 't@mp.t@mp'
+tmp = 't@mp.tex'
 if os.path.exists(tmp):
     os.remove(tmp)
 

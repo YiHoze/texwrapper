@@ -21,7 +21,7 @@
 	"makeatletter": {
     	"prefix": "makeat",
     	"body": [
-			"\\makeatoletter", 
+			"\\makeatletter", 
 			"$0", 
 			"\\makeatother"
 		],
@@ -103,6 +103,11 @@
 	"subsection": { 
 		"prefix": "ss",
 		"body": "\\subsection{$0}",
+	},
+
+	"subsubsection": { 
+		"prefix": "sss",
+		"body": "\\subsubsection{$0}",
 	},
 
 	"topic": { 
@@ -228,6 +233,15 @@
 		],
 	},
 
+	"ImageTable": {
+		"prefix": "imgt",
+		"body": [
+			"\\begin{ImageTable}",
+			"$0",
+			"\\end{ImageTable}"
+		],
+	},
+
   	"reference": {
     	"prefix": "ref",
     	"body": [
@@ -299,17 +313,7 @@
 			"\\item ",
 			"\\end{IllustEnum}"
 		],
-	},
-
-  	"titleref": {
-    	"prefix": "tr",
-    	"body": "\\titleref{${1:label}}",
-	},
-
-	"pageref": {
-    	"prefix": "pr",
-    	"body": "\\pageref{${2:label}}",
-	},
+	},  	
 
   	"item": {
     	"prefix": "i",
@@ -334,6 +338,26 @@
 	"ui": {
     	"prefix": "u",
     	"body": "\\ui{$0}",
+	},
+
+	"action": {
+    	"prefix": "a",
+    	"body": "\\action{$0}",
+	},
+
+	"action_ko": {
+    	"prefix": "ㅁ",
+    	"body": "\\action{$0}",
+	},
+
+	"titleref": {
+    	"prefix": "tr",
+    	"body": "\\titleref{${1:label}}",
+	},
+
+	"pageref": {
+    	"prefix": "pr",
+    	"body": "\\pageref{${2:label}}",
 	},
 
 	"frame": {
