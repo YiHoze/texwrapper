@@ -89,7 +89,7 @@ parser.add_argument(
     dest='bookmark_index',
     action='store_true',
     default=False,
-    help='Bookmark all index entries. This option is available only with full compilation (-f).'
+    help='Bookmark all index entries. This option is available only with full compilation (-f). This feature does not support komkindex.'
 )
 parser.add_argument(
     '-p',
@@ -181,6 +181,7 @@ def sort_index():
         os.system(cmd_tex)
 
 def bookmark_index():
+
     if not os.path.exists(ind):
         print('%s is not found' % (ind))
         return
@@ -193,10 +194,7 @@ def bookmark_index():
                 new_file.write(bookmark_index_item(line, r'\\item (.+?)\(\)'))
         else:
             for line in old_file.readlines():
-                if args.komkindex:
-                    new_file.write(bookmark_index_item(line, r'\\item (.+?)\\dotfill'))
-                else:
-                    new_file.write(bookmark_index_item(line, r'\\item (.+?),'))         
+                new_file.write(bookmark_index_item(line, r'\\item (.+?),'))         
     os.remove(ind)
     os.rename(tmp, ind)
 
