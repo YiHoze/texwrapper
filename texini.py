@@ -21,11 +21,11 @@ parser = argparse.ArgumentParser(
     description ='Configure your environment for LaTeX.'
 )
 parser.add_argument(
-    '-n',
+    '-c',
     dest = 'copy_to_local',
-    action = 'store_false',
-    default = True,
-    help = 'Do not copy the provided latex style files into the local TeXMF directory.'
+    action = 'store_true',
+    default = False,
+    help = 'Copy the provided latex style files into the local TeXMF directory.'
 )
 parser.add_argument(
     '-d',
@@ -47,6 +47,13 @@ parser.add_argument(
     action = 'store_true',
     default = False,
     help = 'Set TEXEDIT as an environment variable.'
+)
+parser.add_argument(
+    '-t',
+    dest = 'texmfhome',
+    action = 'store_true',
+    default = False,
+    help = 'Set TEXMFHOME as an environment variable.'
 )
 parser.add_argument(
     '-f',
@@ -120,6 +127,22 @@ def set_texedit():
     cmd = "powershell \"(get-itemproperty -path HKCU:\Environment).'TEXEDIT'\""
     os.system(cmd)
 
+def set_texmfhome():
+    print('\n[Setting TEXMFHOME]')
+    if not config.has_option('TeX Live', 'TEXMFHOME'):
+        print('Make sure to have docenv.ini set properly.')
+        return
+    texedit = config.get('TeX Live', 'TEXMFHOME')
+    answer = input('Are you sure to set the TEXMFHOME environment variable to  <%s>?\nEnter [Y] to proceed, [n] to abandon, or another text editor with its option: ' %(texedit))
+    if answer.lower() == 'n':
+        return
+    if not (answer.lower() == 'y' or answer == ''):
+        texedit = answer
+    cmd = "powershell \"set-itemproperty -path HKCU:\Environment -name TEXMFHOME -value '%s'\"" % (texedit)
+    os.system(cmd)
+    cmd = "powershell \"(get-itemproperty -path HKCU:\Environment).'TEXMFHOME'\""
+    os.system(cmd)
+
 def update_texlive():
     print('\n[Updating TeX Live]')
     if not config.has_option('TeX Live', 'repository'):
@@ -153,7 +176,6 @@ def set_sumatrapdf():
     cmd.append('-inverse-search')
     cmd.append(editor)    
     subprocess.Popen(cmd)
-    
 
 def cache_font():
     print('\n[Caching fonts]')
@@ -170,6 +192,8 @@ if args.update_texlive:
     update_texlive()
 if args.texedit:
     set_texedit()
+if args.texmfhome:
+    set_texmfhome()
 if args.sumatrapdf:
     set_sumatrapdf()
 if args.cache_font:
