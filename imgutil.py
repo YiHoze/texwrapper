@@ -22,43 +22,50 @@ else:
 
 # Get arguments
 parser = argparse.ArgumentParser(
-    description='Change the resolution of image files using ImageMagick.'
+    description = 'Change the resolution of image files using ImageMagick.'
 )
 parser.add_argument(
     'images',
-    metavar='Image files',
-    type=str,
-    nargs='+',
-    help='Specify PNG or JPG files to change their resolution.'
+    metavar = 'Image files',
+    type = str,
+    nargs = '+',
+    help = 'Specify PNG or JPG files to change their resolution, or to view their image information.'
+)
+parser.add_argument(
+    '-i',
+    dest = 'image_info',
+    action = 'store_true',
+    default = False,
+    help = 'Display image information.'
 )
 parser.add_argument(
     '-d',
-    dest='density',
-    type=int,
-    default=160,
-    help='Pixel density. Default: 160 (pixels per centimeter)'
+    dest = 'density',
+    type = int,
+    default = 160,
+    help = 'pixel density (default: 160 pixels per centimeter)'
 )
 parser.add_argument(
     '-m',
-    dest='maxwidth',
-    type=int,
-    default=1920,
-    help='Maximum width. Default: 1920 (pixels)'
+    dest = 'maxwidth',
+    type = int,
+    default = 1920,
+    help = 'maximum width (default: 1920 pixels)'
 )
 parser.add_argument(
     '-s',
-    dest='scale',
-    type=int,
-    default=100,
-    help="Scale. Default: 100 (%%). If an image's width is 800 pixels and 50 is given for scale, the image is reduced to 400 pixels."
+    dest = 'scale',
+    type = int,
+    default = 100,
+    help = "scale (default: 100 %%) If an image's width is 800 pixels and 50 is given for scale, the image is reduced to 400 pixels."
 )
 parser.add_argument(
     '-p',
-    dest='magick',  
-    default=MagickPath, 
-    help='To use another version of ImageMagick, specify the path to it.'
+    dest = 'magick',  
+    default = MagickPath, 
+    help = 'Specify the path to another version of ImageMagick to use it.'
 )
-args=parser.parse_args()
+args = parser.parse_args()
 
 # Check if ImageMagick is accessible.
 try:
@@ -71,9 +78,19 @@ except OSError:
 # Resize the specified images.
 widthlimit = args.maxwidth / args.density
 
-def ResizeImage(image):
+def get_image_info(image):
+    cmd = '\"%s\" identify -verbose %s' % (args.magick, image)
+    result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    gist = str(result).split('\\r\\n')
+    line = 4
+    print('\n %s' %(image))
+    while line < 8:
+        print(gist[line])
+        line += 1   
+
+def resize_image(image):
     cmd = '\"%s\" identify -ping -format %%w %s' %(args.magick, image)
-    imgwidth = int(subprocess.check_output(cmd, stderr=subprocess.STDOUT))
+    imgwidth = int(subprocess.check_output(cmd, stderr = subprocess.STDOUT))
     if imgwidth > args.maxwidth:
         density = imgwidth / widthlimit
     else:
@@ -85,8 +102,12 @@ def ResizeImage(image):
 
 cnt = 0
 for fnpattern in args.images:
-    for image in glob.glob(fnpattern):        
-        ResizeImage(image)        
-        cnt += 1
-msg = "%d image(s) have been resized." % (cnt)
-print(msg)
+    for image in glob.glob(fnpattern):
+        if args.image_info:
+            get_image_info(image)
+        else:
+            resize_image(image)        
+            cnt += 1
+if not args.image_info:
+    msg = "%d image(s) have been resized." % (cnt)
+    print(msg)
