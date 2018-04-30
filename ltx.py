@@ -1,5 +1,8 @@
 import os, sys, glob, argparse, re
 
+# sys.path.append(...)
+# from foo import *
+
 parser = argparse.ArgumentParser(
     description='Convert a TeX file to PDF using XeLaTeX or LuaLaTeX.'
 )

@@ -79,7 +79,7 @@ except OSError:
 widthlimit = args.maxwidth / args.density
 
 def get_image_info(image):
-    cmd = '\"%s\" identify -verbose %s' % (args.magick, image)
+    cmd = '\"%s\" identify -verbose %s' %(args.magick, image)
     result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     gist = str(result).split('\\r\\n')
     line = 4
@@ -95,8 +95,7 @@ def resize_image(image):
         density = imgwidth / widthlimit
     else:
         density = args.density
-    cmd = '\"%s\" %s -auto-orient -units PixelsPerCentimeter -density %d -resize %d%% %s' % (args.magick, image, density, args.scale, image)
-    #cmd = '\"%s\" %s -units PixelsPerCentimeter -density %d -resize %d%% %s' % (args.magick, image, density, args.scale, image)
+    cmd = '\"%s\" -auto-orient -units PixelsPerCentimeter -density %d -resize %d%% %s %s' % (args.magick, density, args.scale, image, image)
     os.system(cmd)
     #print(cmd)
 
