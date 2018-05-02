@@ -36,7 +36,7 @@ parser.add_argument(
     dest = 'tex',
     action = 'store_true',
     default = False,
-    help = 'Extract TeX macros'
+    help = 'Extract TeX macros.'
 )
 parser.add_argument(
     '-tor',
