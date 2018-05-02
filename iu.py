@@ -26,12 +26,19 @@ else:
 
 # Get arguments
 parser = argparse.ArgumentParser(
-    description = 'Convert EPS, PDF, SVG images to other vector or bitmat formats. This script requires TeX Live, Inkscape, and ImageMagick. Be aware that SVG cannot be the target format. (eps/pdf/svg to pdf/eps/jpg/png)'  
+    description = 'This script requires TeX Live, Inkscape, and ImageMagick.     With this script you can: 1) view a bitmap image\'s information; 2) resize a bitmap image by changing its resolution or scale; 3) convert a bitmap image to another format [jpg/png]; 4) convert a vector image to another vector or bitmap format [eps/pdf/svg to pdf/eps/jpg/png]. Be aware that SVG cannot be the target format.'
 )
 parser.add_argument(
     'image',
     nargs = '+',
-    help = 'Specify one or more vector images.'
+    help = 'Specify one or more images.'
+)
+parser.add_argument(
+    '-i',
+    dest = 'view_info',
+    action = 'store_true',
+    default = False,
+    help = 'Display image information.'
 )
 parser.add_argument(
     '-t',
@@ -40,29 +47,52 @@ parser.add_argument(
     help = 'Specify the target format. (default: pdf)'
 )
 parser.add_argument(
+    '-r',
+    dest = 'resize',
+    action = 'store_true',
+    default = False,
+    help = 'Change resolution or scale.'
+)
+parser.add_argument(
     '-d',
     dest = 'density',
     type = int,
     default = 200,
-    help = 'pixel density (default: 200 pixels per centimeter)'
+    help = 'Pixel density (default: 200 pixels per centimeter)'
 )
 parser.add_argument(
-    '-r',
+    '-m',
+    dest = 'maxwidth',
+    type = int,
+    default = 1920,
+    help = 'Maximum width (default: 1920 pixels)'
+)
+parser.add_argument(
+    '-s',
+    dest = 'scale',
+    type = int,
+    default = 100,
+    help = "Scale (default: 100 %%). If an image's width is 800 pixels and 50 is given for scale, the image is reduced to 400 pixels."
+)
+parser.add_argument(
+    '-rec',
     dest = 'recursive',
     action = 'store_true',
     default = False,
     help = 'process ones in all subdirectories'
 )
-args = parser.parse_args()
 
-def if_TeXLive_exists():
+args = parser.parse_args()
+widthlimit = args.maxwidth / args.density
+
+def check_TeXLive_exists():
     try:
         subprocess.check_call('epstopdf.exe --version')
     except OSError:
         print("Make sure TeX Live is included in PATH.")
         sys.exit()
 
-def if_Inkscape_exists():
+def check_Inkscape_exists():
     try:
         cmd = InkscapePath + ' --version'
         subprocess.check_call(cmd)
@@ -70,7 +100,7 @@ def if_Inkscape_exists():
         print("Check the path to Inkscape.")
         sys.exit()
 
-def if_Imagemagick_exists():
+def check_ImageMagick_exists():
     try:
         cmd = MagickPath + ' --version'
         subprocess.check_call(cmd)
@@ -81,12 +111,16 @@ def if_Imagemagick_exists():
 def check_converter(fnpattern):
     srcfmt = os.path.splitext(fnpattern)[1]
     srcfmt = srcfmt.lower()
-    if trgfmt == '.png' or trgfmt == '.jpg':
-        if_Imagemagick_exists()
+    if args.view_info:
+        check_ImageMagick_exists()
+    if args.resize:
+        check_ImageMagick_exists()
+    elif trgfmt == '.png' or trgfmt == '.jpg':
+        check_ImageMagick_exists()
     elif srcfmt == '.svg':
-        if_Inkscape_exists()
+        check_Inkscape_exists()
     else:
-        if_TeXLive_exists()
+        check_TeXLive_exists()
 
 def eps_to_pdf(src):
     global cnt
@@ -111,13 +145,39 @@ def svg_to_eps(src, trg):
     global cnt
     cmd = "\"%s\" --export-eps %s %s" % (InkscapePath, trg, src)
     cnt += 1
-    os.system(cmd)    
+    os.system(cmd)
+
+def bitmap_to_bitmap(src, trg):
+    global cnt
+    cmd = '\"%s\" %s %s' %(MagickPath, src, trg)
+    os.system(cmd)
+    cnt += 1
 
 def vector_to_bitmap(src, trg):
     global cnt
     cmd = '\"%s\" -units PixelsPerCentimeter -density %d %s %s' %(MagickPath, args.density, src, trg)
     os.system(cmd)
     cnt += 1
+
+def get_bitmap_info(img):
+    cmd = '\"%s\" identify -verbose %s' %(MagickPath, img)
+    result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    gist = str(result).split('\\r\\n')
+    line = 4
+    print('\n %s' %(img))
+    while line < 8:
+        print(gist[line])
+        line += 1   
+
+def resize_bitmap(img):
+    cmd = '\"%s\" identify -ping -format %%w %s' %(MagickPath, img)
+    imgwidth = int(subprocess.check_output(cmd, stderr = subprocess.STDOUT))
+    if imgwidth > args.maxwidth:
+        density = imgwidth / widthlimit
+    else:
+        density = args.density
+    cmd = '\"%s\" %s -auto-orient -units PixelsPerCentimeter -density %d -resize %d%%  %s' % (MagickPath, img, density, args.scale, img)
+    os.system(cmd)    
 
 def get_subdirs(fnpattern):
     curdir = os.path.dirname(fnpattern)
@@ -152,6 +212,12 @@ def converter(afile):
             vector_to_bitmap(afile, target)
         elif trgfmt == '.png':
             vector_to_bitmap(afile, target)
+    elif srcfmt == '.png':
+        if trgfmt == '.jpg':
+            bitmap_to_bitmap(afile, target)
+    elif srcfmt == '.jpg':
+        if trgfmt == '.png':
+            bitmap_to_bitmap(afile, target)
 
 trgfmt = args.target_format
 trgfmt = trgfmt.lower()
@@ -167,8 +233,22 @@ for fnpattern in args.image:
         for subdir in subdirs:
             subfile = os.path.join(subdir, filename)
             for afile in glob.glob(subfile):
-                converter(afile)
+                if args.view_info:
+                    get_bitmap_info(afile)
+                elif args.resize:
+                    resize_bitmap(afile)
+                else:
+                    converter(afile)
     else:
         for afile in glob.glob(fnpattern):
-            converter(afile)
-print('%d file(s) have been converted.' %(cnt))
+            if args.view_info:
+                get_bitmap_info(afile)
+            elif args.resize:
+                resize_bitmap(afile)
+            else:
+                converter(afile)
+
+if args.resize:
+    print('%d file(s) have been resized.' %(cnt))
+elif not args.view_info:
+    print('%d file(s) have been converted.' %(cnt))
