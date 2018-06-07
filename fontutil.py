@@ -72,6 +72,7 @@ def show_glyphs():
 def enumerate_fonts():
     if os.path.exists(args.font_list):
         os.remove(args.font_list)
+    # fc-list :outline -f "%{family}\n"
     cmd = "fc-list : file >> %s" %(args.font_list)
     os.system(cmd)
     with open(args.font_list, mode='r', encoding='utf-8') as f:

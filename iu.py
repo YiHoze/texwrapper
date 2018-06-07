@@ -170,6 +170,7 @@ def get_bitmap_info(img):
         line += 1   
 
 def resize_bitmap(img):
+    global cnt
     cmd = '\"%s\" identify -ping -format %%w %s' %(MagickPath, img)
     imgwidth = int(subprocess.check_output(cmd, stderr = subprocess.STDOUT))
     if imgwidth > args.maxwidth:
@@ -178,6 +179,7 @@ def resize_bitmap(img):
         density = args.density
     cmd = '\"%s\" %s -auto-orient -units PixelsPerCentimeter -density %d -resize %d%%  %s' % (MagickPath, img, density, args.scale, img)
     os.system(cmd)    
+    cnt += 1
 
 def get_subdirs(fnpattern):
     curdir = os.path.dirname(fnpattern)
@@ -215,8 +217,12 @@ def converter(afile):
     elif srcfmt == '.png':
         if trgfmt == '.jpg':
             bitmap_to_bitmap(afile, target)
+        elif trgfmt == '.pdf':
+            bitmap_to_bitmap(afile, target)
     elif srcfmt == '.jpg':
         if trgfmt == '.png':
+            bitmap_to_bitmap(afile, target)
+        elif trgfmt == '.pdf':
             bitmap_to_bitmap(afile, target)
 
 trgfmt = args.target_format

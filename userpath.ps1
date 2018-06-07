@@ -61,8 +61,7 @@ function AppendLocalPath()
 
 function RemoveLocalPath()
 {
-  $Verify = $env:path.split(';') -contains $directory
-  If ($Verify) {
+  If ( $env:path.split(';') -contains $directory ) {
     $env:path = $env:path.replace($directory,$NULL)
     $env:path = $env:path.replace(';;',';')
   }

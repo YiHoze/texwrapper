@@ -219,7 +219,7 @@ def clean_aux():
             os.remove(afile)
 
 if not args.no_compile:
-    if args.tex is not None:         
+    if args.tex is not None:
         cmd_tex = '%s %s %s' %(compiler, compile_mode, tex)
         if args.full_compile:
             compile_fully()
@@ -228,7 +228,8 @@ if not args.no_compile:
         else:
             compile_once()
 
-if args.no_compile:
+#if args.no_compile:
+if args.tex is not None:
     if args.index_sort or args.komkindex:
         sort_index()
     elif args.bookmark_index or args.bookmark_python:

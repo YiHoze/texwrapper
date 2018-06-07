@@ -90,6 +90,13 @@ def check_to_remove(afile):
     else:
         return True
 
+def tex_article():
+    content = """\\documentclass[a4paper]{article}
+\\usepackage{fontspec}\n
+\\begin{document}\n
+\\end{document}"""
+    return(content)
+
 def tex_hzbeamer():
     content = """\\documentclass[10pt,flier=false,hangul=true]{hzbeamer}
 \\usepackage{csquotes}
