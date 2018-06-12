@@ -69,14 +69,14 @@ if args.suffix is None:
         args.suffix = 'extracted'
 
 if args.tex:
-    reserved_patterns = [
+    tex_patterns = [
         r'\\[^a-zA-Z]', 
         r'\\[a-zA-Z*^|+]+',
         r'\\begin(\{.+?\}[*^|+]*)', 
         r'(\w+=)'
     ]
 else:
-    reserved_patterns = [
+    tex_patterns = [
         r'\\[^a-zA-Z]', 
         r'\\[a-zA-Z*^|+]+',
         r'\\begin\{.+?\}[*^|+]*', 
@@ -113,7 +113,7 @@ tortoise = """
 ]
 &
 """
-# Spaces are not counted as a character.
+
 def check_to_remove(afile):
     if os.path.exists(afile):
         answer = input('%s alread exists. Are you sure to overwrite it? [y/N] ' %(afile))
@@ -125,6 +125,7 @@ def check_to_remove(afile):
     else:
         return True
 
+# Spaces are not counted as a character.
 def count_words(afile):
     lines, chars, words = 0, 0, 0
     f = open(afile, mode='r', encoding='utf-8')
@@ -146,8 +147,8 @@ def extract_words(afile):
         content = f.read()
     # remove numbers and tex macros
     if not args.keep: 
-        for i in range(len(reserved_patterns)):
-            content = re.sub(reserved_patterns[i], '', content) 
+        for i in range(len(tex_patterns)):
+            content = re.sub(tex_patterns[i], '', content) 
     p = re.compile('\w+')
     extracted = p.findall(content)
     extracted = set(extracted)
@@ -202,8 +203,8 @@ def pick_tex_macro(afile):
     with open(afile, mode='r', encoding='utf-8') as f:
         content = f.read()
     # pick tex macros and keys
-    for i in range(len(reserved_patterns)):
-        p = re.compile(reserved_patterns[i])
+    for i in range(len(tex_patterns)):
+        p = re.compile(tex_patterns[i])
         found += p.findall(content)
     # remove duplicates and sort
     found = set(found)

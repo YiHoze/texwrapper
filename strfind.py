@@ -6,20 +6,20 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     'files',
     nargs = '+',
-    help = 'specify one or more text files'
+    help = 'Specify one or more text files.'
 )
 parser.add_argument(
     '-t',
     dest = 'target',
     default = None,
-    help = 'specify a string to find'
+    help = 'Specify a string to find.'
 
 )
 parser.add_argument(
     '-s',
     dest = 'substitute',
     default = None,
-    help = 'specify a string with which to replace found strings'
+    help = 'Specify a string with which to replace found strings.'
 
 )
 parser.add_argument(
@@ -27,22 +27,40 @@ parser.add_argument(
     dest = 'backup',
     action = 'store_true',
     default = False,
-    help = 'Make a backup copy'
+    help = 'Make a backup copy.'
 )
 parser.add_argument(
     '-p',
     dest = 'pattern',
     default = None,
-    help = 'specify a file that includes substitution patterns. (foo.tsv)'
+    help = 'Specify a file that includes substitution patterns. (foo.tsv)'
 )
 parser.add_argument(
     '-r',
     dest = 'recursive',
     action = 'store_true',
     default = False,
-    help = 'process ones in all subdirectories'
+    help = 'Process ones in all subdirectories.'
+)
+parser.add_argument(
+    '-d',
+    dest = 'detex',
+    action = 'store_true',
+    default = False,
+    help = 'Remove macros from a TeX file.'
 )
 args = parser.parse_args()
+
+def check_to_remove(afile):
+    if os.path.exists(afile):
+        answer = input('%s alread exists. Are you sure to overwrite it? [y/N] ' %(afile))
+        if answer.lower() == 'y':
+            os.remove(afile)
+            return True
+        else:
+            return False
+    else:
+        return True
 
 def get_subdirs(fnpattern):
     curdir = os.path.dirname(fnpattern)
@@ -102,14 +120,26 @@ def replace_to_write_sub(afile):
                 content = re.sub(row[0], row[1], content) 
     with open(tmp, mode='w', encoding='utf-8') as f:
         f.write(content)
-    if args.backup:
-        backup = os.path.splitext(afile)[0] + '_bak' + os.path.splitext(afile)[1]
-        if os.path.exists(backup):
-            os.remove(backup)
-        os.rename(afile, backup)
-    if os.path.exists(afile):
-        os.remove(afile)
-    os.rename(tmp, afile)
+    if args.detex:
+        basename = os.path.splitext(afile)[0]
+        output = basename + '_clean.txt'
+        if check_to_remove(output) is False:
+            return
+        else:
+            os.rename(tmp, output)
+    else:
+        if args.backup:
+            backup = os.path.splitext(afile)[0] + '_bak' + os.path.splitext(afile)[1]
+            if os.path.exists(backup):
+                os.remove(backup)
+            os.rename(afile, backup)
+        if os.path.exists(afile):
+            os.remove(afile)
+        os.rename(tmp, afile)
+
+if args.detex:
+    if args.pattern is None:
+        args.pattern = "tex.tsv"
 
 if args.pattern is None:        
     if args.target is None:

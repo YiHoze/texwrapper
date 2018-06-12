@@ -1,0 +1,86 @@
+%.+?\n	
+\\documentclass.+?\n	
+\\LayoutSetup(.|\n)+?\}\n	
+\\HeadingSetup(.|\n)+?\}\n	
+\\CalloutSetup(.|\n)+?\}\n	
+\\ActionSetup(.|\n)+?\}\n	
+\\IllustImageSetup(.|\n)+?\}\n	
+\\hyphenation(.|\n)+?\}\n	
+\\RenewTerm\{.+?\}(.|\n)+?\}\n	
+\\RenewTerms\{.+?\}(.|\n)+?\}\n	
+\\renewcommand(.|\n)+?\}\n	
+\\setsecnumdepth\{.+?\}	
+\\settocepth\{.+?\}	
+\\definecolor.+?\n	
+\\DecolorHyperlinks\[.+?\]	
+\\setmainfont.+?\n	
+\\setsansfont.+?\n	
+\\setmonofont.+?\n	
+\\setmainhangulfont.+?\n	
+\\setsanshangulfont.+?\n	
+\\setmonohangulfont.+?\n	
+\\CoverSetup(.|\n)+?\}\n	
+\\begin\{document\}	
+\\end\{document\}	
+\\begin\{warning\}	
+\\end\{warning\}	
+\\begin\{caution\}	
+\\end\{caution\}	
+\\begin\{note\}	
+\\end\{note\}	
+\\begin\{itemize\}.?	
+\\end\{itemize\}	
+\\begin\{enumerate\}	
+\\end\{enumerate\}	
+\\begin\{UI\}.?	
+\\end\{UI\}	
+\\begin\{terms\}.?	
+\\end\{terms\}	
+\\begin\{callout\}.?	
+\\end\{callout\}	
+\\begin\{IllustImage\}\{.+?\}	
+\\end\{IllustImage\}	
+\\begin\{ImageTable\}.?	
+\\end\{ImageTable\}	
+\\begin\{SpecTable\}	
+\\end\{SpecTable\}	
+\s&	
+\\\\	
+\\FrontCover.?	
+\\BackCover	
+\\frontmatter.?	
+\\mainmatter.?	
+\\backmatter	
+\\appendix	
+\\printindex	
+\\tableofcontents.?	
+\\TableOfContents.?	
+\\newpage	
+\\footnotemark	
+\\image.+?\n	
+\\lineimg\{.+?\}	
+\\listimg\{.+?\}	
+\\URL.?\{.+?\}	
+\\url.?\{.+?\}	
+\\email\{.+?\}	
+\\label\{.+?\}		
+\\pageref\{.+?\}	
+\\titleref\{.+?\}	
+\\footnotetext\[.+?\]	
+\\chapter\{(.+?)\}	\1
+\\section\{(.+?)\}	\1
+\\subsection\{(.+?)\}	\1
+\\topic.?\{(.+?)\}	\1
+\\problem\{(.+?)\}	\1
+\\action\{(.+?)\}	\1
+\\ui\{(.+?)\}	\1
+\\menu\{(.+?)\}\{(.+?)\}	\1 \2
+\\item\[(.+?)\]	\1
+\\item	
+<	
+>	
+{	
+}	
+\\%	%
+\\&	&
+(\n\s*\n){2,}	\n
