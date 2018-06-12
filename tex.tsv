@@ -63,7 +63,7 @@
 \\URL.?\{.+?\}	
 \\url.?\{.+?\}	
 \\email\{.+?\}	
-\\label\{.+?\}		
+\\label\{.+?\}	
 \\pageref\{.+?\}	
 \\titleref\{.+?\}	
 \\footnotetext\[.+?\]	

@@ -114,10 +114,14 @@ def replace_to_write_sub(afile):
     if args.pattern is None:
         content = re.sub(args.target, args.substitute, content)
     else:
-        with open(args.pattern, mode='r', encoding='utf-8') as tsv:
-            reader = csv.reader(tsv, delimiter='\t')
+        ptrn_ext = os.path.splitext(args.pattern)[1].lower()
+        with open(args.pattern, mode='r', encoding='utf-8') as ptrn:
+            if ptrn_ext == '.tsv':
+                reader = csv.reader(ptrn, delimiter='\t')
+            else:
+                reader = csv.reader(ptrn)
             for row in reader:            
-                content = re.sub(row[0], row[1], content) 
+                content = re.sub(row[0], row[1], content)                 
     with open(tmp, mode='w', encoding='utf-8') as f:
         f.write(content)
     if args.detex:
@@ -139,7 +143,7 @@ def replace_to_write_sub(afile):
 
 if args.detex:
     if args.pattern is None:
-        args.pattern = "tex.tsv"
+        args.pattern = "tex.csv"
 
 if args.pattern is None:        
     if args.target is None:
