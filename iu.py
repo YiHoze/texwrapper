@@ -84,6 +84,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 widthlimit = args.maxwidth / args.density
+cnt = 0
 
 def check_TeXLive_exists():
     try:
@@ -126,7 +127,6 @@ def eps_to_pdf(src):
     global cnt
     os.system('epstopdf.exe %s' %(src))
     cnt += 1
-    #print('%s: %d' %(src,cnt))
 
 def pdf_to_eps(src):
     global cnt 
@@ -224,13 +224,22 @@ def converter(afile):
             bitmap_to_bitmap(afile, target)
         elif trgfmt == '.pdf':
             bitmap_to_bitmap(afile, target)
+    elif srcfmt == '.ppm':
+        if trgfmt == '.jpg':
+            bitmap_to_bitmap(afile, target)
+        elif trgfmt == '.png':
+            bitmap_to_bitmap(afile, target)
+    elif srcfmt == '.pbm':
+        if trgfmt == '.jpg':
+            bitmap_to_bitmap(afile, target)
+        elif trgfmt == '.png':
+            bitmap_to_bitmap(afile, target)
 
 trgfmt = args.target_format
 trgfmt = trgfmt.lower()
 if not trgfmt.startswith('.'):
     trgfmt = '.' + trgfmt
 
-cnt = 0
 for fnpattern in args.image: 
     check_converter(fnpattern)   
     if args.recursive:

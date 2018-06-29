@@ -131,6 +131,7 @@ def replace_to_write_sub(afile):
             return
         else:
             os.rename(tmp, output)
+            os.system('powershell -command open.py %s' %(output))
     else:
         if args.backup:
             backup = os.path.splitext(afile)[0] + '_bak' + os.path.splitext(afile)[1]
@@ -143,7 +144,9 @@ def replace_to_write_sub(afile):
 
 if args.detex:
     if args.pattern is None:
-        args.pattern = "tex.csv"
+        args.pattern = "tex.csv"        
+        if not os.path.exists(args.pattern):
+            args.pattern =  os.path.join(os.path.dirname(sys.argv[0]), args.pattern)            
 
 if args.pattern is None:        
     if args.target is None:

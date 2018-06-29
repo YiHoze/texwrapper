@@ -108,6 +108,20 @@ parser.add_argument(
     default=False,
     help='Remove auxiliary files after compilation.'
 )
+parser.add_argument(
+    '-fin',
+    dest='finalizer',
+    action='store_true',
+    default=False,
+    help='Find \\FinalizerOff to replace it with \\FinalizerOn in the tex file.'    
+)
+parser.add_argument(
+    '-d',
+    dest='draft',
+    action='store_true',
+    default=False,
+    help='Find \\FinalizerON to replace it with \\FinalizerOff in the tex file.'    
+)
 args = parser.parse_args()
 
 # In case of a wrong filename extension
@@ -217,6 +231,26 @@ def clean_aux():
         fnpattern = '*.' + ext
         for afile in glob.glob(fnpattern):
             os.remove(afile)
+
+def finalizer():
+    with open(tex, mode='r', encoding='utf-8') as f:
+        content = f.read()
+    content = re.sub("\\\\FinalizerOff", "\\\\FinalizerOn", content)
+    with open(tex, mode='w', encoding='utf-8') as f:
+        f.write(content)
+
+def draft():
+    with open(tex, mode='r', encoding='utf-8') as f:
+        content = f.read()
+    content = re.sub("\\\\FinalizerOn", "\\\\FinalizerOff", content)
+    with open(tex, mode='w', encoding='utf-8') as f:
+        f.write(content)
+
+
+if args.finalizer:
+    finalizer()
+if args.draft:
+    draft()
 
 if not args.no_compile:
     if args.tex is not None:
