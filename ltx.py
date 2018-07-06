@@ -226,7 +226,7 @@ def bookmark_index_item(line, pattern):
     return(line)  
 
 def clean_aux():
-    extensions = {"aux", "bbl", "blg", "idx", "ilg", "ind", "lof", "log", "lop", "loq", "lot", "minted*", "mw", "nav", "out", "synctex*", "snm", "toc*", "upa", "upb", "vrb"}
+    extensions = {"aux", "bbl", "blg", "idx", "ilg", "ind", "loe", "lof", "log", "lop", "loq", "lot", "minted*", "mw", "nav", "out", "synctex*", "snm", "toc*", "upa", "upb", "vrb"}
     for ext in extensions:
         fnpattern = '*.' + ext
         for afile in glob.glob(fnpattern):
