@@ -39,6 +39,13 @@ parser.add_argument(
     help = 'Extract TeX macros.'
 )
 parser.add_argument(
+    '-g',
+    dest = 'tex_gather',
+    action ='store_true',
+    default = False,
+    help = 'Gather TeX macors into one file.'
+)
+parser.add_argument(
     '-tor',
     dest = 'tortoise',
     action = 'store_true',
@@ -68,13 +75,15 @@ if args.suffix is None:
     else:
         args.suffix = 'extracted'
 
+# Extract TeX macros
 if args.tex:
     tex_patterns = [
         r'\\[^a-zA-Z]', 
         r'\\[a-zA-Z*^|+]+',
         r'\\begin(\{.+?\}[*^|+]*)', 
-        r'(\w+=)'
+        r'\s(\w+=)'
     ]
+# Extract words with TeX macros
 else:
     tex_patterns = [
         r'\\[^a-zA-Z]', 
@@ -160,7 +169,7 @@ def extract_words(afile):
 
 def display_unicode(string):
     codes = ''
-    for i, c in enumerate(string):                        
+    for c in enumerate(string):                        
         if (c != '\n') and (c != ' '):
             codes += '%s\tU+%04X\t%s\n' %(c, ord(c), unicodedata.name(c).lower())
     return codes
@@ -195,11 +204,18 @@ def check_to_convert(afile):
         return filename
 
 def pick_tex_macro(afile):
-    basename = os.path.splitext(afile)[0]
-    output = '%s_%s.txt' %(basename, args.suffix)
-    if check_to_remove(output) is False:
-        return
     found = []
+    # read previously found macros
+    if args.tex_gather:
+        output = tex_picked
+        if os.path.exists(output):
+            with open(output, mode='r', encoding='euc-kr') as f:
+                found = f.read().split('\n')
+    else:
+        basename = os.path.splitext(afile)[0]
+        output = '%s_%s.txt' %(basename, args.suffix)
+        if check_to_remove(output) is False:
+            return        
     with open(afile, mode='r', encoding='utf-8') as f:
         content = f.read()
     # pick tex macros and keys
@@ -216,6 +232,11 @@ def pick_tex_macro(afile):
     cmd = 'powershell -command open.py %s' %(output)
     os.system(cmd)
 
+if args.tex and args.tex_gather:
+    tex_picked = 'tex_picked.txt'
+    if check_to_remove(tex_picked) is False:
+        os.exit()                        
+
 for fnpattern in args.files:
     for afile in glob.glob(fnpattern):
         afile = check_to_convert(afile)
@@ -224,7 +245,7 @@ for fnpattern in args.files:
                 extract_words(afile)
             elif args.unicode:
                 get_unicode(afile)
-            elif args.tex:
+            elif args.tex:                
                 pick_tex_macro(afile)
             else:
                 count_words(afile)
