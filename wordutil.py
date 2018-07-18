@@ -169,9 +169,10 @@ def extract_words(afile):
 
 def display_unicode(string):
     codes = ''
-    for c in enumerate(string):                        
-        if (c != '\n') and (c != ' '):
-            codes += '%s\tU+%04X\t%s\n' %(c, ord(c), unicodedata.name(c).lower())
+    for s in enumerate(string):
+        c = s[1]
+        if (c != '\n') and (c != ' ') and ( c != '\t'):
+            codes += '%s\tU+%04X\t%s\n' %(c, ord(c), unicodedata.name(c).lower())            
     return codes
 
 def get_unicode(afile):
