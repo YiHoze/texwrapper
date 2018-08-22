@@ -1,4 +1,5 @@
 *.exe
 .vscode/
 obsolete/
+pandoc-2.2.2/
 pdf2htmlEX/
