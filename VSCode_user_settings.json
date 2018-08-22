@@ -1,0 +1,40 @@
+{ 
+    "editor.detectIndentation": false,
+    "files.associations": {
+        "*.sty": "latex-expl3",
+        "*.cls": "latex-expl3",
+        "*.tplx": "latex-expl3",
+        "*.ltx": "latex-expl3"
+    },   
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "window.zoomLevel": 0,
+    "[TSV]": {
+        "editor.insertSpaces": false,
+        "editor.autoIndent": false,
+        "editor.renderWhitespace": "boundary"
+    },
+    "[latex]": {
+        "editor.insertSpaces": false,
+        "editor.autoIndent": false
+    },
+    "[latex-expl3]": {
+        "editor.insertSpaces": false,
+        "editor.autoIndent": false
+    },
+    "latex-workshop.view.pdf.viewer": "external",
+    "latex-workshop.view.pdf.external.command": {
+        "command": "C:\\Program Files\\SumatraPDF\\SumatraPDF.exe",
+        "args": [
+            "%PDF%"
+        ]
+    },
+    "explorer.confirmDelete": false,
+    "latex-workshop.latex.autoBuild.cleanAndRetry.enabled": false,
+    "latex-workshop.latex.autoBuild.onSave.enabled": false,
+    "spellright.language": "en",
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ],    
+}

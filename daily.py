@@ -1,16 +1,12 @@
-# daily.ini:
-# [App 1]
+# [Chrome]
 # app = C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
-# target = 
-#     https://login.microsoftonline.com 
+# target =     
 #     http://dic.daum.net/index.do?dic=eng 
-#     https://mail.google.com 
-#     http://hoze.tistory.com 
 #     http://www.ktug.org
-# [App 2]
-# app = C:\Program Files (x86)\FreeCommander XE\FreeCommander.exe
-# [App 3]
-# app = C:\Program Files\Microsoft VS Code\bin\code.cmd
+# [FreeCommander]
+# app = C:\Program Files\FreeCommander XE\FreeCommander.exe
+# [VS Code]
+# app = C:\Users\Hoze\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd
 
 import os, sys, configparser, subprocess
 try:
