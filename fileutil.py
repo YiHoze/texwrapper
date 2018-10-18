@@ -1,10 +1,10 @@
-import os, glob, argparse, datetime, re
+import os, sys, shutil, glob, argparse, datetime, re
 
 now = datetime.datetime.now()
 today = now.strftime('_%Y-%m-%d')
 
 parser = argparse.ArgumentParser(
-    description = 'Append a date or suffix to filenames.'
+    description = 'Append a date or suffix to filenames'
 )
 
 parser.add_argument(
@@ -39,6 +39,18 @@ parser.add_argument(
     default = False,
     help = 'Rename files to lowercase.'
 )
+parser.add_argument(
+    '-c',
+    dest = 'copy',
+    action = 'store_true',
+    default = False,
+    help = 'Copy fiels from multiple folders to one folder.'
+)
+parser.add_argument(
+    '-t',
+    dest = 'target_folder',
+    help = 'Specify your target folder.'
+)
 args = parser.parse_args()
 
 def RenameUppercase():
@@ -68,11 +80,34 @@ def RemoveSuffix():
             newname = re.sub(args.suffix, '', afile)
             os.rename(afile, newname)
 
+def get_subdirs(fnpattern):
+    curdir = os.path.dirname(fnpattern)
+    if curdir == '':
+        curdir = '.'
+    return([x[0] for x in os.walk(curdir)])
+
+def CopyIntoOne():
+    if not os.path.exists(args.target_folder):
+        answer = input('The %s folder is not found. If you want to create it, Enter Y. ' % (args.target_folder))
+        if (answer.lower() == 'y'):
+            os.mkdir(args.target_folder)
+        else:
+            sys.exit(False)
+    for fnpattern in args.files:
+        basename = os.path.basename(fnpattern)
+        subdirs = get_subdirs(fnpattern)
+        for subdir in subdirs:   
+            subfile = os.path.join(subdir, basename)
+            for afile in glob.glob(subfile):
+                shutil.copy(afile, args.target_folder)
+
 if args.uppercase:
     RenameUppercase()
 elif args.lowercase:
     RenameLowercase()
-elif not args.remove:
-    AppendSuffix()
-else:
+elif args.remove:
     RemoveSuffix()
+elif args.copy:
+    CopyIntoOne()
+else:
+    AppendSuffix()    

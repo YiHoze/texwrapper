@@ -72,7 +72,7 @@ def notebook_convert(afile):
             cmd = 'xelatex -interaction=batchmode %s' %(tex)
             os.system(cmd)
             os.system(cmd)
-            os.system('texclean.py')
+            os.system('ltx.py -c')
     else:
         print('%s is not a Jupyter notebook.' %(afile))
 
