@@ -19,7 +19,7 @@ parser.add_argument(
 )
 parser.add_argument(
     '-l',
-    dest = 'font_list',
+    dest = 'font_list',    
     default = 'font_list.txt',
     help = 'a filename for list of fonts (default: font_list.txt)'
 )
@@ -75,7 +75,7 @@ def enumerate_fonts():
     # fc-list :outline -f "%{family}\n"
     cmd = "fc-list : file >> %s" %(args.font_list)
     os.system(cmd)
-    with open(args.font_list, mode='r', encoding='utf-8') as f:
+    with open(args.font_list, mode='r', encoding='cp949') as f:
         content = f.readlines()
     content.sort()
     #content = ''.join(map(str, content))
