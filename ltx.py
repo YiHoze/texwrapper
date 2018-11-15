@@ -143,11 +143,11 @@ else:
 
 # Compile mode
 if args.batch_mode or args.full_compile:
-    compile_mode = '-interaction=batchmode'
+    compile_mode = '-interaction=batchmode '
 else:
-    compile_mode = '-synctex=1'
+    compile_mode = '-synctex=1 '
 if args.shell_escape:
-    compile_mode += '-shell-escape -8bit'
+    compile_mode += '-shell-escape -8bit '
 
 # language by which to sort index
 index_modules = {
@@ -166,7 +166,7 @@ except:
 
 # functions
 def compile_once():
-    os.system(cmd_tex)
+    os.system(cmd_tex)    
 
 def compile_twice():
     os.system(cmd_tex)
