@@ -147,7 +147,7 @@ if args.batch_mode or args.full_compile:
 else:
     compile_mode = '-synctex=1 '
 if args.shell_escape:
-    compile_mode += '-shell-escape -8bit '
+    compile_mode += '-shell-escape'
 
 # language by which to sort index
 index_modules = {

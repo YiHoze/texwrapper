@@ -1,7 +1,7 @@
 import os, sys, argparse, glob, subprocess, re, unicodedata
 
 parser = argparse.ArgumentParser(
-    description='With this script, you can 1) count or extract words from a text file; 2) view codes of characters in a file encoded in UTF-8; 3) extract tex macros from a tex file. This script can process PDF files if TeX Live is installed. Be aware that the output file is encoded in EUC-KR as for extracted tex macros.'
+    description='With this script, you can 1) count or extract words from a text file; 2) view codes of characters in a file encoded in UTF-8; 3) extract tex macros from a tex file. A PDF file can be processed for word count if TeX Live is installed. Be aware that the output file produced with the "-tor" option is encoded in EUC-KR.'
 )
 
 parser.add_argument(
@@ -43,7 +43,7 @@ parser.add_argument(
     dest = 'tex_gather',
     action ='store_true',
     default = False,
-    help = 'Gather TeX macors into one file.'
+    help = 'Gather TeX macros into one file.'
 )
 parser.add_argument(
     '-tor',
@@ -85,11 +85,11 @@ if args.tex:
     ]
 # Extract words with TeX macros
 else:
-    tex_patterns = [
-        r'\\[^a-zA-Z]', 
+    tex_patterns = [        
+        r'\\begin(\{.+?\}[*^|+]*)',
+        r'\\end\{.+?\}',
         r'\\[a-zA-Z*^|+]+',
-        r'\\begin\{.+?\}[*^|+]*', 
-        r'\\end\{.+?\}[*^|+]*',
+        r'\\[^a-zA-Z]',         
         r'\w+=',
         r'\w*\d\w*'
     ]
@@ -156,8 +156,8 @@ def extract_words(afile):
         content = f.read()
     # remove numbers and tex macros
     if not args.keep: 
-        for i in range(len(tex_patterns)):
-            content = re.sub(tex_patterns[i], '', content) 
+        for i in range(len(tex_patterns)):            
+            content = re.sub(tex_patterns[i], '', content)    
     p = re.compile('\w+')
     extracted = p.findall(content)
     extracted = set(extracted)
@@ -210,7 +210,7 @@ def pick_tex_macro(afile):
     if args.tex_gather:
         output = tex_picked
         if os.path.exists(output):
-            with open(output, mode='r', encoding='euc-kr') as f:
+            with open(output, mode='r', encoding='utf-8') as f:
                 found = f.read().split('\n')
     else:
         basename = os.path.splitext(afile)[0]
@@ -228,8 +228,11 @@ def pick_tex_macro(afile):
     macros = '\n'.join(sorted(found, key=str.lower))
     if args.tortoise:
         macros = tortoise + macros
-    with open(output, mode='w', encoding='euc-kr') as f:
-        f.write(macros)
+        with open(output, mode='w', encoding='euc-kr') as f:
+            f.write(macros)
+    else:
+        with open(output, mode='w', encoding='utf-8') as f:
+            f.write(macros)
     cmd = 'powershell -command open.py %s' %(output)
     os.system(cmd)
 
