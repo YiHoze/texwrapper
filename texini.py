@@ -132,13 +132,13 @@ def set_texmfhome():
     if not config.has_option('TeX Live', 'TEXMFHOME'):
         print('Make sure to have docenv.ini set properly.')
         return
-    texedit = config.get('TeX Live', 'TEXMFHOME')
-    answer = input('Are you sure to set the TEXMFHOME environment variable to  <%s>?\nEnter [Y] to proceed, [n] to abandon, or another text editor with its option: ' %(texedit))
+    texmfhome = config.get('TeX Live', 'TEXMFHOME')
+    answer = input('Are you sure to set the TEXMFHOME environment variable to  <%s>?\nEnter [Y] to proceed, [n] to abandon, or another path: ' %(texmfhome))
     if answer.lower() == 'n':
         return
     if not (answer.lower() == 'y' or answer == ''):
-        texedit = answer
-    cmd = "powershell \"set-itemproperty -path HKCU:\\Environment -name TEXMFHOME -value '%s'\"" % (texedit)
+        texmfhome = answer
+    cmd = "powershell \"set-itemproperty -path HKCU:\\Environment -name TEXMFHOME -value '%s'\"" % (texmfhome)
     os.system(cmd)
     cmd = "powershell \"(get-itemproperty -path HKCU:\\Environment).'TEXMFHOME'\""
     os.system(cmd)

@@ -106,7 +106,7 @@ def tex_hzbeamer():
 \\institute{}
 \\date{}\n
 \\begin{document}    
-\\begin[fragile, allowframebreaks=1]{frame}{}\n
+\\begin{frame}[fragile, allowframebreaks=1]{}\n
 \\end{frame}
 \\end{document}"""
     return(content)

@@ -33,7 +33,7 @@ parser.add_argument(
     '-p',
     dest = 'pattern',
     default = None,
-    help = 'Specify a file that includes substitution patterns. (foo.tsv)'
+    help = 'Specify a file that includes substitution patterns. (foo.csv/tsv)'
 )
 parser.add_argument(
     '-r',

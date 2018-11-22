@@ -24,6 +24,9 @@ Conservez ce manuel pour un usage ultérieur.
 german DEUTSCH: 
 Bewahren Sie diese Anleitung für spätere Nutzung auf.
 
+greek Ελληνικά:
+Φυλάξτε αυτό το εγχειρίδιο για μελλοντική χρήση.
+
 italian ITALIANO: 
 Conservare questo manuale per utilizzi successivi.
 

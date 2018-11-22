@@ -26,7 +26,7 @@ else:
 
 # Get arguments
 parser = argparse.ArgumentParser(
-    description = 'This script requires TeX Live, Inkscape, and ImageMagick.     With this script you can: 1) view a bitmap image\'s information; 2) resize a bitmap image by changing its resolution or scale; 3) convert a bitmap image to another format [jpg/png]; 4) convert a vector image to another vector or bitmap format [eps/pdf/svg to pdf/eps/jpg/png]. Be aware that SVG cannot be the target format.'
+    description = 'This script requires TeX Live, Inkscape, and ImageMagick. With this script you can: 1) view a bitmap image\'s information; 2) resize a bitmap image by changing its resolution or scale; 3) convert a bitmap image to another format [jpg/png]; 4) convert a vector image to another vector or bitmap format [eps/pdf/svg to pdf/eps/jpg/png]. Be aware that SVG cannot be the target format.'
 )
 parser.add_argument(
     'image',
