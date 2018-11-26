@@ -67,16 +67,15 @@ def generate_pdf():
             end
         }
     }
-    \\ExplSyntaxOn
-    \\NewDocumentCommand \\LottoBall { m }
-    {
+    \\newcommand*\\LottoBall[1]{%%
         \\tikz\\node[
-                circle, shade, draw=white, thin, inner~sep=1pt,
-                ball~color=red,
-                text~width=1em,
-                font=\\sffamily, text~badly~centered, white
-        ]{#1};
+                circle,shade,draw=white,thin,inner sep=1pt,
+                ball color=red,
+                text width=1em,
+                font=\\sffamily,text badly centered,white
+        ]{#1};%%
     }
+    \\ExplSyntaxOn
     \\NewDocumentCommand \\lotto { O{5} }
     {
         \\int_step_inline:nnnn {1}{1}{#1}
@@ -88,7 +87,7 @@ def generate_pdf():
     \\setlength\\parindent{0pt}
     \\begin{document}
     \\lotto[%s]    
-    \\end{document}""" %(str(args.frequency))
+    \\end{document}""" %(str(args.frequency))    
     with open('lotto.tex', mode='w', encoding='utf-8') as f:
         f.write(content)
     os.system('lualatex lotto.tex')
