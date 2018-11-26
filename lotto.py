@@ -41,56 +41,52 @@ def display_on_console():
 def generate_pdf():    
     if os.path.exists('lotto.tex'):
         os.remove('lotto.tex')        
-    content = r"""
-    \documentclass{article}
-    \usepackage{xparse, expl3}
-    \usepackage{luacode}
-    \usepackage{tikz}
-    \newcommand\DrawBalls{
-    \luaexec{
-        local m, n = 6, 45
-        local balls = {}
-        local tmps = {}
-        for i = n-m+1, n do
-            local drawn = math.random(i)
-            if not tmps[drawn] then
-            tmps[drawn] = drawn	   
-            else
-            tmps[i] = i
-            drawn = i
+    content = """
+    \\documentclass{article}
+    \\usepackage{xparse, expl3}
+    \\usepackage{luacode}
+    \\usepackage{tikz}
+    \\newcommand\\DrawBalls{
+        \\luaexec{
+            local m, n = 6, 45
+            local balls = {}
+            local tmps = {}
+            for i = n-m+1, n do
+                local drawn = math.random(i)
+                if not tmps[drawn] then
+                tmps[drawn] = drawn	   
+                else
+                tmps[i] = i
+                drawn = i
+                end
+                balls[\\#balls+1] = drawn
             end
-            balls[\#balls+1] = drawn
-        end
-        table.sort(balls)
-        for i=1,\#balls do
-            tex.print("\\LottoBall{", balls[i], "}")
-        end
-    }
-    }
-    \newcommand*\LottoBall[1]{%	
-        \tikz\node[%
-                circle,shade,draw=white,thin,inner sep=1pt,%
-                ball color=red,%
-                text width=1em,%
-                font=\sffamily,text badly centered,white%
-            ]{#1};}%
-
-    \ExplSyntaxOn
-    \NewDocumentCommand \lotto { O{5} }
-    {
-        \int_step_inline:nnnn {1}{1}{#1}
-        {
-            \DrawBalls\\
+            table.sort(balls)
+            for i=1,\\#balls do
+                tex.print("\\\\LottoBall{", balls[i], "}")
+            end
         }
-
     }
-    \ExplSyntaxOff
-    \setlength\parindent{0pt}
-    \begin{document}
-    \lotto["""
-    content = content + str(args.frequency)
-    content = content + r''']
-    \end{document}'''
+    \\ExplSyntaxOn
+    \\newcommand*\\LottoBall[1]{
+        \\tikz\\node[
+                circle, shade, draw=white, thin, inner~sep=1pt,
+                ball~color=red,
+                text~width=1em,
+                font=\\sffamily, text~badly~centered, white
+        ]{#1};}
+    \\NewDocumentCommand \\lotto { O{5} }
+    {
+        \\int_step_inline:nnnn {1}{1}{#1}
+        {
+            \\DrawBalls\\\\
+        }
+    }
+    \\ExplSyntaxOff
+    \\setlength\\parindent{0pt}
+    \\begin{document}
+    \\lotto[%s]    
+    \\end{document}""" %(str(args.frequency))
     with open('lotto.tex', mode='w', encoding='utf-8') as f:
         f.write(content)
     os.system('lualatex lotto.tex')

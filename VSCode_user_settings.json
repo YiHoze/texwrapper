@@ -4,15 +4,11 @@
         "*.sty": "latex-expl3",
         "*.cls": "latex-expl3",
         "*.tplx": "latex-expl3",
-        "*.ltx": "latex-expl3"
+        "*.ltx": "latex-expl3",
+        "*.txt": "plaintext"
     },   
     "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
     "window.zoomLevel": 0,
-    "[TSV]": {
-        "editor.insertSpaces": false,
-        "editor.autoIndent": false,
-        "editor.renderWhitespace": "boundary"
-    },
     "[latex]": {
         "editor.insertSpaces": false,
         "editor.autoIndent": false
@@ -30,11 +26,12 @@
     },
     "explorer.confirmDelete": false,
     "latex-workshop.latex.autoBuild.cleanAndRetry.enabled": false,
-    "latex-workshop.latex.autoBuild.onSave.enabled": false,
-    "spellright.language": "en",
-    "spellright.documentTypes": [
-        "markdown",
-        "latex",
-        "plaintext"
-    ],    
+    "latex-workshop.latex.autoBuild.onSave.enabled": false,    
+    "latex-workshop.message.update.show": false,
+    "spellright.configurationScope": "user",
+    "spellright.language": [
+        "en"
+    ],      
+    "latex-workshop.intellisense.package.enabled": true,
+    "latex-workshop.view.autoActivateLatex.enabled": false,
 }
