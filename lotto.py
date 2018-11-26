@@ -86,8 +86,8 @@ def generate_pdf():
     \\ExplSyntaxOff
     \\setlength\\parindent{0pt}
     \\begin{document}
-    \\lotto[%s]    
-    \\end{document}""" %(str(args.frequency))    
+    \\lotto[%d]    
+    \\end{document}""" %(args.frequency)
     with open('lotto.tex', mode='w', encoding='utf-8') as f:
         f.write(content)
     os.system('lualatex lotto.tex')
