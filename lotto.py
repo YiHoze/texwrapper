@@ -68,13 +68,15 @@ def generate_pdf():
         }
     }
     \\ExplSyntaxOn
-    \\newcommand*\\LottoBall[1]{
+    \\NewDocumentCommand \\LottoBall { m }
+    {
         \\tikz\\node[
                 circle, shade, draw=white, thin, inner~sep=1pt,
                 ball~color=red,
                 text~width=1em,
                 font=\\sffamily, text~badly~centered, white
-        ]{#1};}
+        ]{#1};
+    }
     \\NewDocumentCommand \\lotto { O{5} }
     {
         \\int_step_inline:nnnn {1}{1}{#1}
