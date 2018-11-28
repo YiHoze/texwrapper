@@ -71,15 +71,15 @@ def generate_pdf():
         ]{#1};%%
     }
     \\ExplSyntaxOn    	
-	\\tl_new:N \\l_red_tl
-	\\tl_new:N \\l_green_tl
-	\\tl_new:N \\l_blue_tl
+	\\tl_new:N \l_R_tl
+	\\tl_new:N \l_G_tl
+	\\tl_new:N \l_B_tl
 	\\NewDocumentCommand \\GetBallColor { }
 	{
-		\\tl_set:Nx \\l_red_tl { \int_rand:nn {0}{1} }
-		\\tl_set:Nx \\l_green_tl { \int_rand:nn {0}{1} }
-		\\tl_set:Nx \\l_blue_tl { \int_rand:nn {0}{1} }
-		\\definecolor{ball}{rgb}{\\l_red_tl, \\l_green_tl, \\l_blue_tl}		
+		\\tl_set:Nx \\l_R_tl { \\int_rand:nn {0}{255} }
+		\\tl_set:Nx \\l_G_tl { \\int_rand:nn {0}{255} }
+		\\tl_set:Nx \\l_B_tl { \\int_rand:nn {0}{255} }
+		\\definecolor{ball}{RGB}{\\l_R_tl, \\l_G_tl, \\l_B_tl}		
 	}
     \\NewDocumentCommand \\lotto { O{5} }
     {
