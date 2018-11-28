@@ -21,20 +21,14 @@ args = parser.parse_args()
 def display_on_console():
     m, n = 6, 45
     balls = []
-    tmps = []
     for x in range(args.frequency):
         balls.clear()
-        tmps.clear()
         for i in range(n-m+1, n+1):
             drawn = randint(1, i) 
-            already = False
-            for j in range(len(balls)):
-                if balls[j] == drawn:            
-                    already = True
-            if not already:
-                balls.append(drawn)
-            else:
+            if drawn in balls:
                 balls.append(i)
+            else:
+                balls.append(drawn)
         balls.sort()
         print(balls)
 
@@ -54,10 +48,10 @@ def generate_pdf():
             for i = n-m+1, n do
                 local drawn = math.random(i)
                 if not tmps[drawn] then
-                tmps[drawn] = drawn	   
+                    tmps[drawn] = drawn	   
                 else
-                tmps[i] = i
-                drawn = i
+                    tmps[i] = i
+                    drawn = i
                 end
                 balls[\\#balls+1] = drawn
             end
@@ -68,14 +62,25 @@ def generate_pdf():
         }
     }
     \\newcommand*\\LottoBall[1]{%%
+        \\GetBallColor
         \\tikz\\node[
                 circle,shade,draw=white,thin,inner sep=1pt,
-                ball color=red,
+                ball color=ball,
                 text width=1em,
                 font=\\sffamily,text badly centered,white
         ]{#1};%%
     }
-    \\ExplSyntaxOn
+    \\ExplSyntaxOn    	
+	\\tl_new:N \\l_red_tl
+	\\tl_new:N \\l_green_tl
+	\\tl_new:N \\l_blue_tl
+	\\NewDocumentCommand \\GetBallColor { }
+	{
+		\\tl_set:Nx \\l_red_tl { \int_rand:nn {0}{1} }
+		\\tl_set:Nx \\l_green_tl { \int_rand:nn {0}{1} }
+		\\tl_set:Nx \\l_blue_tl { \int_rand:nn {0}{1} }
+		\\definecolor{ball}{rgb}{\\l_red_tl, \\l_green_tl, \\l_blue_tl}		
+	}
     \\NewDocumentCommand \\lotto { O{5} }
     {
         \\int_step_inline:nnnn {1}{1}{#1}
@@ -90,11 +95,10 @@ def generate_pdf():
     \\end{document}""" %(args.frequency)
     with open('lotto.tex', mode='w', encoding='utf-8') as f:
         f.write(content)
-    os.system('lualatex lotto.tex')
+    os.system('lualatex -interaction=batchmode lotto.tex')
 
 if args.print:
     generate_pdf()
-else:
-    print(str(args.frequency))
+else:    
     display_on_console()
     
