@@ -113,7 +113,7 @@ def tex_hzbeamer():
 
 def tex_hzguide():
     content = """\\documentclass[language=korean]{hzguide}
-\\LayoutSetup{paper=A4}\n
+\\LayoutSetup{}\n
 \\begin{document}\n
 \\end{document}"""
     return(content)
@@ -156,7 +156,7 @@ def create_template():
     if check_to_remove(tex) is False:
         return    
     content = r"""\documentclass[10pt, openany]{hzguide}
-\LayoutSetup{paper=A4, column=one}
+\LayoutSetup{}
 \HeadingSetup{chapterstyle=tandh}
 \setsecnumdepth{chapter}
 \SectionNewpageOn
@@ -231,7 +231,7 @@ def create_album():
     if args.one_column:
         content = """
         \\documentclass{hzguide}
-        \\LayoutSetup{paper=A4}
+        \\LayoutSetup{ulmargin=15mm, lrmargin=15mm}
         \\HeadingSetup{type=report}
         \\begin{document}
         \\MakeAlbum[%s]{%s}
@@ -240,7 +240,7 @@ def create_album():
         content = """
         \\documentclass{hzguide}
         \\usepackage{multicol}
-        \\LayoutSetup{paper=A4}
+        \\LayoutSetup{ulmargin=15mm, lrmargin=15mm}
         \\HeadingSetup{type=report}
         \\begin{document}
         \\begin{multicols}{2}

@@ -30,6 +30,12 @@ parser.add_argument(
     help = 'Make a backup copy.'
 )
 parser.add_argument(
+    '-o',
+    dest = 'output',
+    default = None,
+    help = 'Specify a filename for output.'
+)
+parser.add_argument(
     '-p',
     dest = 'pattern',
     default = None,
@@ -138,9 +144,14 @@ def replace_to_write_sub(afile):
             if os.path.exists(backup):
                 os.remove(backup)
             os.rename(afile, backup)
-        if os.path.exists(afile):
-            os.remove(afile)
-        os.rename(tmp, afile)
+        if args.output is None:
+            if os.path.exists(afile):
+                os.remove(afile)
+            os.rename(tmp, afile)
+        else:
+            if os.path.exists(args.output):
+                os.remove(args.output)
+            os.rename(tmp, args.output)
 
 if args.detex:
     if args.pattern is None:
