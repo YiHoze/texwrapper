@@ -117,6 +117,7 @@ def generate_pdf(letters):
         \\space\\space
     }
     \\ExplSyntaxOff
+    \\setlength\\parindent{0pt}
     \\begin{document}
     \\permuteword{%s}
     \\end{document}
