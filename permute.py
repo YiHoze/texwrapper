@@ -20,7 +20,7 @@ parser.add_argument(
     dest = 'eng',
     action = 'store_true',
     default = False,
-    help = 'Show only English words of results. Other options are unavailable with this option.'
+    help = 'Show only English words of results. Note that it takes a rahter long time with this option and other options are unavailable.'
 )
 parser.add_argument(
     '-r',
