@@ -1,4 +1,9 @@
 import os, argparse
+from nltk.corpus import wordnet
+
+#>>>import nltk
+#>>>nltk.download()
+#wordnet package
 
 parser = argparse.ArgumentParser(
     description = 'Permute letters.'
@@ -8,6 +13,13 @@ parser.add_argument(
     type = str,
     nargs = 1,
     help = 'Type letters without space.'
+)
+parser.add_argument(
+    '-e',
+    dest = 'eng',
+    action = 'store_true',
+    default = False,
+    help = 'Show only English words of results. Other options are unavailable with this option.'
 )
 parser.add_argument(
     '-r',
@@ -48,18 +60,22 @@ def permute(a, k=0):
     global row
     if k == len(a):
         result = ''.join(a)
-        if args.row:
-            if args.number:
-                num = num + 1                
-                row.append('[%d]%s' %(num, result))
-            else:
-                row.append(result)
-        else:
-            if args.number:
-                num = num + 1
-                print('%6d: %s' %(num, result))
-            else:
+        if args.eng:
+            if wordnet.synsets(result):
                 print(result)
+        else:
+            if args.row:
+                if args.number:
+                    num = num + 1                
+                    row.append('[%d]%s' %(num, result))
+                else:
+                    row.append(result)
+            else:
+                if args.number:
+                    num = num + 1
+                    print('%6d: %s' %(num, result))
+                else:
+                    print(result)
     else:        
         for i in range(k, len(a)):            
             a[k], a[i] = a[i] ,a[k]
