@@ -1,10 +1,10 @@
 import os, argparse
-#from nltk.corpus import wordnet
-from nltk.corpus import words
+from nltk.corpus import wordnet
+# from nltk.corpus import words 
 
 #>>>import nltk
 #>>>nltk.download()
-# words package
+# wordnet/words package
 
 parser = argparse.ArgumentParser(
     description = 'Permute letters.'
@@ -62,8 +62,8 @@ def permute(a, k=0):
     if k == len(a):
         result = ''.join(a)
         if args.eng:
-            # if wordnet.synsets(result):
-            if result in words.words():
+            if wordnet.synsets(result):
+            # if result in words.words(): This method takes too much long
                 print(result)
         else:
             if args.row:
