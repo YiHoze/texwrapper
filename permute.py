@@ -20,7 +20,7 @@ parser.add_argument(
     dest = 'eng',
     action = 'store_true',
     default = False,
-    help = 'Show only English words of results. Note that it takes a rahter long time with this option and other options are unavailable.'
+    help = 'Show only English words of results. Note that it takes a rahter long time. Use the -r option together to remove duplicates.'
 )
 parser.add_argument(
     '-r',
@@ -61,10 +61,13 @@ def permute(a, k=0):
     global row
     if k == len(a):
         result = ''.join(a)
-        if args.eng:
+        if args.eng:            
             if wordnet.synsets(result):
             # if result in words.words(): This method takes too much long
-                print(result)
+                if args.row:
+                    row.append(result)
+                else:
+                    print(result)
         else:
             if args.row:
                 if args.number:
@@ -152,4 +155,6 @@ if args.print:
 else:
     permute(letters)
     if args.row:
+        if args.eng:
+            row = set(row)
         print(' '.join(row))
