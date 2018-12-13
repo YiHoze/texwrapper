@@ -50,6 +50,14 @@ parser.add_argument(
     default = False,
     help = 'Print results in PDF using XeLaTeX. Only the -s option can be used with this option.'
 )
+parser.add_argument(
+    '-heap',
+    dest = 'heap',
+    action = 'store_true',
+    default = False,
+    help = "Use Heap's algorithm. It is the fastest in most cases."
+)
+
 args = parser.parse_args()
 letters = list(args.letters[0])
 
@@ -60,32 +68,59 @@ def permute(a, k=0):
     global num
     global row
     if k == len(a):
-        result = ''.join(a)
-        if args.eng:            
-            if wordnet.synsets(result):
-            # if result in words.words(): This method takes too much long
-                if args.row:
-                    row.append(result)
-                else:
-                    print(result)
-        else:
-            if args.row:
-                if args.number:
-                    num = num + 1                
-                    row.append('[%d]%s' %(num, result))
-                else:
-                    row.append(result)
-            else:
-                if args.number:
-                    num = num + 1
-                    print('%6d: %s' %(num, result))
-                else:
-                    print(result)
+        show(a)        
     else:        
         for i in range(k, len(a)):            
             a[k], a[i] = a[i] ,a[k]
             permute(a, k+1)
             a[k], a[i] = a[i], a[k]
+
+# Heap's algorithm
+def heap(a):
+    n = len(a)
+    idx = []
+    for i in range(n):
+        idx.append(0)
+    show(a)
+    i = 0
+    c = 0
+    while i < n:
+        if idx[i] < i:
+            if (i % 2) == 0:
+                a[0], a[i] = a[i], a[0]
+            else:
+                a[idx[i]], a[i] = a[i], a[idx[i]]
+            show(a)
+            idx[i] = idx[i] + 1
+            i = 0
+        else:
+            idx[i] = 0
+            i = i + 1
+
+def show(a):
+    global row
+    global num
+    result = ''.join(a)
+    if args.eng:      
+        if wordnet.synsets(result):
+        # if result in words.words(): This method takes too much long
+            if args.row:
+                row.append(result)
+            else:
+                print(result)
+    else:
+        if args.row:
+            if args.number:
+                num = num + 1                
+                row.append('[%d]%s' %(num, result))
+            else:
+                row.append(result)
+        else:
+            if args.number:
+                num = num + 1
+                print('%6d: %s' %(num, result))
+            else:
+                print(result)
 
 def generate_pdf(letters):
     if os.path.exists('permute.tex'):
@@ -153,7 +188,10 @@ if args.sort:
 if args.print:
     generate_pdf(''.join(letters))
 else:
-    permute(letters)
+    if args.heap:
+        heap(letters)
+    else:
+        permute(letters)
     if args.row:
         if args.eng:
             row = set(row)
