@@ -55,7 +55,7 @@ parser.add_argument(
     dest = 'heap',
     action = 'store_true',
     default = False,
-    help = "Use Heap's algorithm. It is the fastest in most cases."
+    help = "Use Heap's algorithm. It is known as the fastest method of permutation in most cases."
 )
 
 args = parser.parse_args()
@@ -88,14 +88,17 @@ def heap(a):
         if idx[i] < i:
             if (i % 2) == 0:
                 a[0], a[i] = a[i], a[0]
+                # print(i, idx, a, "even")
             else:
                 a[idx[i]], a[i] = a[i], a[idx[i]]
+                # print(i, idx, a, "odd")
             show(a)
             idx[i] = idx[i] + 1
             i = 0
         else:
             idx[i] = 0
             i = i + 1
+            # print(i, idx, a, "augment")
 
 def show(a):
     global row
