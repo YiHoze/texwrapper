@@ -6,7 +6,7 @@ try:
 except:
     inipath = False
 if inipath is False:
-    inipath = os.path.dirname(sys.argv[0])
+    inipath = os.path.dirname(sys.argv[0]) # the directory where this script exists.
 ini = os.path.join(inipath, 'docenv.ini')
 if os.path.exists(ini):
     config = configparser.ConfigParser()
@@ -30,27 +30,31 @@ parser.add_argument(
     'files',
     type=str,
     nargs='+',
-    help='Specify files to open.')
+    help='Specify files to open.'
+)
 parser.add_argument(
     '-s',
     dest='texlive',
     action='store_true',
     default=False,
-    help='Search TeX Live for the specified file to find and open.')
+    help='Search TeX Live for the specified file to find and open.'
+)
 parser.add_argument(
     '-e',
     dest='editor',
     type=str,
     default=TextEditorPath,
     nargs=1,    
-    help='Specify another text editor to use it.')
+    help='Specify another text editor to use it.'
+)
 parser.add_argument(
     '-o',
     dest='option',
     type=str,
     default=TextEditorOption,
     nargs=1,
-    help='Specify another editor option to use it.')
+    help='Specify another editor option to use it.'
+)
 args = parser.parse_args()
 
 def DetermineFileType(afile):

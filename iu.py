@@ -75,6 +75,13 @@ parser.add_argument(
     help = "Scale (default: 100 %%). If an image's width is 800 pixels and 50 is given for scale, the image is reduced to 400 pixels."
 )
 parser.add_argument(
+    '-g',
+    dest = 'gray',
+    action = 'store_true',
+    default = False,
+    help = 'Covert to grayscale.'
+)
+parser.add_argument(
     '-rec',
     dest = 'recursive',
     action = 'store_true',
@@ -149,7 +156,10 @@ def svg_to_eps(src, trg):
 
 def bitmap_to_bitmap(src, trg):
     global cnt
-    cmd = '\"%s\" %s %s' %(MagickPath, src, trg)
+    if args.gray:
+        cmd = '\"%s\" %s -colorspace gray %s' %(MagickPath, src, trg)
+    else:
+        cmd = '\"%s\" %s %s' %(MagickPath, src, trg)
     os.system(cmd)
     cnt += 1
 
