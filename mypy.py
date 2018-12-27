@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     'columns',
     nargs = '?',
-    help = 'Specify the number of columns (default: 3)'
+    help = 'Specify the number of columns. (default: 3)'
 )
 args = parser.parse_args()
 
