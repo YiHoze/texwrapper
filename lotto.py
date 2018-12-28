@@ -36,7 +36,7 @@ def generate_pdf():
     if os.path.exists('lotto.tex'):
         os.remove('lotto.tex')        
     content = """
-    \\documentclass{article}
+    \\documentclass[12pt, landscape, twocolumn]{article}
     \\usepackage{xparse, expl3}
     \\usepackage{luacode}
     \\usepackage{tikz}
@@ -95,7 +95,8 @@ def generate_pdf():
     \\end{document}""" %(args.frequency)
     with open('lotto.tex', mode='w', encoding='utf-8') as f:
         f.write(content)
-    os.system('lualatex -interaction=batchmode lotto.tex')
+    os.system('powershell -command ltx.py -l -b -c lotto.tex')
+    os.system('powershell -command open.py lotto.pdf')    
 
 if args.print:
     generate_pdf()
