@@ -262,7 +262,6 @@ if not args.no_compile:
         else:
             compile_once()
 
-#if args.no_compile:
 if args.tex is not None:
     if args.index_sort or args.komkindex:
         sort_index()

@@ -165,7 +165,7 @@ def bitmap_to_bitmap(src, trg):
 
 def vector_to_bitmap(src, trg):
     global cnt
-    cmd = '\"%s\" -density %d %s %s' %(MagickPath, args.density, src, trg)
+    cmd = '\"%s\" -units PixelsPerCentimeter -density %d %s %s' %(MagickPath, args.density, src, trg)
     os.system(cmd)
     cnt += 1
 
@@ -245,6 +245,11 @@ def converter(afile):
         elif trgfmt == '.png':
             bitmap_to_bitmap(afile, target)
     elif srcfmt == '.webp':
+        if trgfmt == '.jpg':
+            bitmap_to_bitmap(afile, target)
+        elif trgfmt == '.png':
+            bitmap_to_bitmap(afile, target)
+    elif srcfmt == '.cr2':
         if trgfmt == '.jpg':
             bitmap_to_bitmap(afile, target)
         elif trgfmt == '.png':

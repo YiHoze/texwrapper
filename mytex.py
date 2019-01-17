@@ -126,7 +126,7 @@ def tex_memoir():
     return(content)
 
 def tex_oblivoir():
-    content = """\\documentclass[a4paper]{oblivoir} 
+    content = """\\documentclass{oblivoir} 
 \\usepackage{fapapersize}
 \\usefapapersize{*,*,30mm,*,30mm,*}\n
 \\begin{document}\n
@@ -145,7 +145,7 @@ def create_tex():
     elif args.tex_class == 'memoir':
         content = tex_memoir()
     elif args.tex_class == 'oblivoir':
-        content = tex_hzbeamer()
+        content = tex_oblivoir()
     else:
         content = tex_hzguide()
     with open(tex, mode='w', encoding='utf-8') as f:
