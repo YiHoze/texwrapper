@@ -1,4 +1,5 @@
 *.exe
+daily.ini
 .vscode/
 obsolete/
 pandoc-2.2.2/

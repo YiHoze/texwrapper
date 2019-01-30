@@ -57,8 +57,8 @@ parser.add_argument(
     '-d',
     dest = 'density',
     type = int,
-    default = 100,
-    help = 'Pixel density (default: 100 pixels per centimeter)'
+    # default = 100,
+    help = 'Pixel density (default: 100 pixels per centimeter for bitmap and 254 for vector)'
 )
 parser.add_argument(
     '-m',
@@ -90,7 +90,6 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-widthlimit = args.maxwidth / args.density
 cnt = 0
 
 def check_TeXLive_exists():
@@ -116,7 +115,7 @@ def check_ImageMagick_exists():
         print("Check the path to ImageMagick.")
         sys.exit()
 
-def check_converter(fnpattern):
+def check_converter(fnpattern):    
     srcfmt = os.path.splitext(fnpattern)[1]
     srcfmt = srcfmt.lower()
     if args.view_info:
@@ -165,8 +164,16 @@ def bitmap_to_bitmap(src, trg):
 
 def vector_to_bitmap(src, trg):
     global cnt
-    cmd = '\"%s\" -units PixelsPerCentimeter -density %d %s %s' %(MagickPath, args.density, src, trg)
+    if args.density is None:
+        density = 254
+    else: 
+        density = args.density
+    cmd = '\"%s\" -density %d %s %s' %(MagickPath, density, src, trg)
     os.system(cmd)
+    multiple = density / 100
+    density = int(density / multiple)
+    cmd = '\"%s\" %s -units PixelsPerCentimeter -density %d %s' % (MagickPath, trg, density, trg)
+    os.system(cmd)    
     cnt += 1
 
 def get_bitmap_info(img):
@@ -181,12 +188,15 @@ def get_bitmap_info(img):
 
 def resize_bitmap(img):
     global cnt
+    if args.density is None:
+        density = 100
+    else: 
+        density = args.density
+    widthlimit = args.maxwidth / density
     cmd = '\"%s\" identify -ping -format %%w %s' %(MagickPath, img)
     imgwidth = int(subprocess.check_output(cmd, stderr = subprocess.STDOUT))
     if imgwidth > args.maxwidth:
-        density = imgwidth / widthlimit
-    else:
-        density = args.density
+        density = imgwidth / widthlimit    
     cmd = '\"%s\" %s -auto-orient -units PixelsPerCentimeter -density %d -resize %d%%  %s' % (MagickPath, img, density, args.scale, img)
     os.system(cmd)    
     cnt += 1
