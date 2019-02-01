@@ -4,7 +4,8 @@ from barcode.writer import ImageWriter
 from barcode import generate
 
 parser = argparse.ArgumentParser(
-    description = 'Generate barcodes in SVG. The last check digit will be automatically corrected if it is wrong.'
+    description = '''Generate barcodes in SVG. 
+    The last check digit will be automatically corrected if it is wrong.'''
 )
 parser.add_argument(
     'number',
@@ -15,7 +16,8 @@ parser.add_argument(
     '-n',
     dest = 'filename',
     default = 'barcode',
-    help = 'Specify a filename. The default is "barcode", and it will be sequentailly numbered with two or more numbers.'
+    help = '''Specify a filename. 
+    The default is "barcode", and it will be sequentially numbered with two or more numbers.'''
 )
 parser.add_argument(
     '-p',

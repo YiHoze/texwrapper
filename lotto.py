@@ -7,7 +7,8 @@ parser.add_argument(
     'frequency',
     type = int,
     nargs = '?',
-    default = 5
+    default = 5,
+    help = 'Specify how many times to draw lots. (default: 5)'
 )
 parser.add_argument(
    '-p',
@@ -15,6 +16,13 @@ parser.add_argument(
    action = 'store_true',
    default = False,
    help = 'Print lottery numbers in PDF using LuaLaTeX.'
+)
+parser.add_argument(
+    '-w',
+    dest = 'weeks',
+    type = int,
+    default = 10,
+    help = 'This option is available only with "-p". Specify how many weeks to continue lottery. (default: 10)'
 )
 args = parser.parse_args()
 
@@ -35,8 +43,8 @@ def display_on_console():
 def generate_pdf():    
     if os.path.exists('lotto.tex'):
         os.remove('lotto.tex')        
-    content = """
-    \\documentclass[12pt, landscape, twocolumn]{article}
+    content = """        
+    \\documentclass[11pt, landscape, twocolumn]{article}
     \\usepackage{xparse, expl3}
     \\usepackage{luacode}
     \\usepackage{tikz}
@@ -71,9 +79,9 @@ def generate_pdf():
         ]{#1};%%
     }
     \\ExplSyntaxOn    	
-	\\tl_new:N \l_R_tl
-	\\tl_new:N \l_G_tl
-	\\tl_new:N \l_B_tl
+	\\tl_new:N \\l_R_tl
+	\\tl_new:N \\l_G_tl
+	\\tl_new:N \\l_B_tl
 	\\NewDocumentCommand \\GetBallColor { }
 	{
 		\\tl_set:Nx \\l_R_tl { \\int_rand:nn {0}{255} }
@@ -81,18 +89,32 @@ def generate_pdf():
 		\\tl_set:Nx \\l_B_tl { \\int_rand:nn {0}{255} }
 		\\definecolor{ball}{RGB}{\\l_R_tl, \\l_G_tl, \\l_B_tl}		
 	}
-    \\NewDocumentCommand \\lotto { O{5} }
-    {
-        \\int_step_inline:nnnn {1}{1}{#1}
+	\\NewDocumentCommand \\DrawWeek { m }
+	{
+		\\int_step_inline:nnnn {1}{1}{#1}
         {
             \\DrawBalls\\\\
         }
-    }
-    \\ExplSyntaxOff
+	}	
+	\\ExplSyntaxOff
+    \\newcommand*\\lotto[2]{
+		\\luaexec{
+			today = os.time{year=os.date(\"\\%%Y\"), month=os.date(\"\\%%m\"), day=os.date(\"\\%%d\")}
+			saturday_index = 6 - (os.date(\"\\%%w\"))
+			for i=1, #1 do    
+				next_saturday = today + (saturday_index * 86400)				
+				date = os.date(\"\\%%Y-\\%%m-\\%%d\", next_saturday)
+				tex.print(\"\\\\par\",date,\"\\\\par\")
+				tex.print(\"\\\\DrawWeek{#2}\")
+				saturday_index = saturday_index + 7
+			end
+		}              
+    }	
     \\setlength\\parindent{0pt}
+	\\setlength\\parskip{.5ex}
     \\begin{document}
-    \\lotto[%d]    
-    \\end{document}""" %(args.frequency)
+	\\lotto{%d}{%d}
+    \\end{document} """ %(args.weeks, args.frequency)
     with open('lotto.tex', mode='w', encoding='utf-8') as f:
         f.write(content)
     os.system('powershell -command ltx.py -l -b -c lotto.tex')
