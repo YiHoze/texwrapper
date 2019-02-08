@@ -44,7 +44,8 @@ def generate_pdf():
     if os.path.exists('lotto.tex'):
         os.remove('lotto.tex')        
     content = """        
-    \\documentclass[11pt, landscape, twocolumn]{article}
+    \\documentclass[12pt, twocolumn]{article}
+    \\usepackage[a5paper,margin=1.5cm]{geometry}
     \\usepackage{xparse, expl3}
     \\usepackage{luacode}
     \\usepackage{tikz}
@@ -104,7 +105,7 @@ def generate_pdf():
 			for i=1, #1 do    
 				next_saturday = today + (saturday_index * 86400)				
 				date = os.date(\"\\%%Y-\\%%m-\\%%d\", next_saturday)
-				tex.print(\"\\\\par\",date,\"\\\\par\")
+				tex.print(\"\\\\par\\\\textbf{\",date,\"}\\\\par\")
 				tex.print(\"\\\\DrawWeek{#2}\")
 				saturday_index = saturday_index + 7
 			end

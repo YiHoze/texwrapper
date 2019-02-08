@@ -4,123 +4,130 @@ import os, sys, glob, argparse, re
 # from foo import *
 
 parser = argparse.ArgumentParser(
-    description='Convert a TeX file to PDF using XeLaTeX or LuaLaTeX.'
+    description = 'Convert a TeX file to PDF using XeLaTeX or LuaLaTeX.'
 )
 parser.add_argument(
     'tex',
-    type=str,
-    nargs='?',
-    help='Specify a TeX file.'
-)
-parser.add_argument(
-    '-n',
-    dest='no_compile',
-    action='store_true',
-    default=False,
-    help='Do not compile.'
+    type = str,
+    nargs = '?',
+    help = 'Specify a TeX file.'
 )
 parser.add_argument(
     '-b',
-    dest='batch_mode',
-    action='store_true',
-    default=False,
-    help='LaTeX does not halt even with syntax errors.'
+    dest = 'batch_mode',
+    action = 'store_true',
+    default = False,
+    help = 'LaTeX does not halt even with syntax errors. (batch-mode)'
 )
 parser.add_argument(
     '-s',
-    dest='shell_escape',
-    action='store_true',
-    default=False,
-    help='Allow an external program to run during a XeLaTeX run.'
+    dest = 'shell_escape',
+    action = 'store_true',
+    default = False,
+    help = 'Allow an external program to run during a XeLaTeX run. (shell-escape)'
 )
 parser.add_argument(
     '-w',
-    dest='twice_compile',
-    action='store_true',
-    default=False,
-    help='Compile twice.'
+    dest = 'twice_compile',
+    action = 'store_true',
+    default = False,
+    help = 'Compile twice.'
 )
 parser.add_argument(
     '-f',
-    dest='full_compile',
-    action='store_true',
-    default=False,
-    help='Compile fully.'
+    dest = 'full_compile',
+    action = 'store_true',
+    default = False,
+    help = 'Compile fully.'
+)
+parser.add_argument(
+    '-v',
+    dest = 'view',
+    action = 'store_true',
+    default = False,
+    help = 'Open the PDF file to view.'
+)
+parser.add_argument(
+    '-n',
+    dest = 'no_compile',
+    action = 'store_true',
+    default = False,
+    help = 'Without compilation, do other processing such as index sorting.'
 )
 parser.add_argument(
     '-i',
-    dest='index_sort',
-    action='store_true',
-    default=False,
-    help='Sort index using TeXindy.'
+    dest = 'index_sort',
+    action = 'store_true',
+    default = False,
+    help = 'Sort index using TeXindy.'
 )
 parser.add_argument(
     '-l',
-    dest='lualatex',
-    action='store_true',
-    default=False,
-    help='Use LuaLaTeX instead of XeLaTeX.'
+    dest = 'lualatex',
+    action = 'store_true',
+    default = False,
+    help = 'Use LuaLaTeX instead of XeLaTeX.'
 )
 parser.add_argument(
     '-lang',
-    dest='language',
-    default='korean',
-    help='Specify a language to sort index entries. For example, \"german\" or \"ger\" for German. The default is \"korean\".'
+    dest = 'language',
+    default = 'korean',
+    help = 'Specify a language to sort index entries. For example, \"german\" or \"ger\" for German. The default is \"korean\".'
 )
 parser.add_argument(
     '-k',
-    dest='komkindex',
-    action='store_true',
-    default=False,
-    help='Use komkindex instead of TeXindy.'
+    dest = 'komkindex',
+    action = 'store_true',
+    default = False,
+    help = 'Use komkindex instead of TeXindy.'
 )
 parser.add_argument(
     '-ist',
-    dest='index_style',
-    default='kotex',
-    help='Specify an index style for komkindex. The dafault is kotex.ist.'
+    dest = 'index_style',
+    default = 'kotex',
+    help = 'Specify an index style for komkindex. The dafault is kotex.ist.'
 )
 parser.add_argument(
     '-a',
-    dest='keep_aux',
-    action='store_true',
-    default=False,
-    help='After a full compilation (-f), auxiliary files are deleted. Use this option to keep them.'    
+    dest = 'keep_aux',
+    action = 'store_true',
+    default = False,
+    help = 'After a full compilation (-f), auxiliary files are deleted. Use this option to keep them.'    
 )
 parser.add_argument(
     '-m',
-    dest='bookmark_index',
-    action='store_true',
-    default=False,
-    help='Bookmark all index entries. This option is available only with full compilation (-f). This feature does not support komkindex.'
+    dest = 'bookmark_index',
+    action = 'store_true',
+    default = False,
+    help = 'Bookmark all index entries. This option is available only with full compilation (-f). This feature does not support komkindex.'
 )
 parser.add_argument(
     '-p',
-    dest='bookmark_python',
-    action='store_true',
-    default=False,
-    help='Bookmark index entries which are Python functions extracted from docstrings. This option is available only with full compilation (-f).'
+    dest = 'bookmark_python',
+    action = 'store_true',
+    default = False,
+    help = 'Bookmark index entries which are Python functions extracted from docstrings. This option is available only with full compilation (-f).'
 )
 parser.add_argument(
     '-c',
-    dest='clean_aux',
-    action='store_true',
-    default=False,
-    help='Remove auxiliary files after compilation.'
+    dest = 'clean_aux',
+    action = 'store_true',
+    default = False,
+    help = 'Remove auxiliary files after compilation.'
 )
 parser.add_argument(
     '-fin',
-    dest='finalizer',
-    action='store_true',
-    default=False,
-    help='Find \\FinalizerOff to replace it with \\FinalizerOn in the tex file.'    
+    dest = 'finalizer',
+    action = 'store_true',
+    default = False,
+    help = 'Find \\FinalizerOff to replace it with \\FinalizerOn in the tex file.'    
 )
 parser.add_argument(
     '-d',
-    dest='draft',
-    action='store_true',
-    default=False,
-    help='Find \\FinalizerON to replace it with \\FinalizerOff in the tex file.'    
+    dest = 'draft',
+    action = 'store_true',
+    default = False,
+    help = 'Find \\FinalizerON to replace it with \\FinalizerOff in the tex file.'    
 )
 args = parser.parse_args()
 
@@ -131,6 +138,7 @@ if args.tex is not None:
     tex = basename + '.tex'
     idx = basename + '.idx'
     ind = basename + '.ind'
+    pdf = basename + '.pdf'
     if not os.path.exists(tex):
         msg = '%s is not found.' % (tex)
         print(msg)
@@ -147,7 +155,7 @@ if args.batch_mode or args.full_compile:
 else:
     compile_mode = '-synctex=1 '
 if args.shell_escape:
-    compile_mode += '-shell-escape'
+    compile_mode +=  '-shell-escape'
 
 # language by which to sort index
 index_modules = {
@@ -205,7 +213,7 @@ def bookmark_index():
     tmp = 't@mp.ind'
     if os.path.exists(tmp):
         os.remove(tmp)
-    with open(tmp, mode='w', encoding='utf-8') as new_file, open(ind, mode='r', encoding='utf-8') as old_file:
+    with open(tmp, mode = 'w', encoding = 'utf-8') as new_file, open(ind, mode = 'r', encoding = 'utf-8') as old_file:
         if args.bookmark_python:
             for line in old_file.readlines():
                 new_file.write(bookmark_index_item(line, r'\\item (.+?)\(\)'))
@@ -221,8 +229,8 @@ def bookmark_index_item(line, pattern):
         page = re.findall(r'\\hyperpage\{(\d+)\}', line)
         append = ''
         for i in range(len(page)):
-            append += '\t\\bookmark[level=2, page=%s]{%s}\n' %(page[i], entry.group(1))                    
-        line += append
+            append +=  '\t\\bookmark[level = 2, page = %s]{%s}\n' %(page[i], entry.group(1))                    
+        line +=  append
     return(line)  
 
 def clean_aux():
@@ -233,17 +241,17 @@ def clean_aux():
             os.remove(afile)
 
 def finalizer():
-    with open(tex, mode='r', encoding='utf-8') as f:
+    with open(tex, mode = 'r', encoding = 'utf-8') as f:
         content = f.read()
     content = re.sub("\\\\FinalizerOff", "\\\\FinalizerOn", content)
-    with open(tex, mode='w', encoding='utf-8') as f:
+    with open(tex, mode = 'w', encoding = 'utf-8') as f:
         f.write(content)
 
 def draft():
-    with open(tex, mode='r', encoding='utf-8') as f:
+    with open(tex, mode = 'r', encoding = 'utf-8') as f:
         content = f.read()
     content = re.sub("\\\\FinalizerOn", "\\\\FinalizerOff", content)
-    with open(tex, mode='w', encoding='utf-8') as f:
+    with open(tex, mode = 'w', encoding = 'utf-8') as f:
         f.write(content)
 
 
@@ -269,4 +277,8 @@ if args.tex is not None:
         bookmark_index()
 
 if args.clean_aux:
-    clean_aux()    
+    clean_aux()  
+
+if args.view:
+    if os.path.exists(pdf):        
+        os.system('powershell -command open.py %s' %(pdf))
