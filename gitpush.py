@@ -9,7 +9,7 @@ if inipath is False:
     inipath = os.path.dirname(sys.argv[0])
 ini = os.path.join(inipath, 'gitpush.ini')
 if not os.path.exists(ini):
-    print('gitpush.ini is not found.  Set the DOCENV environment variable to the directory containing daily.ini.')
+    print('gitpush.ini is not found. Set the DOCENV environment variable to the directory containing daily.ini.')
     sys.exit()
 
 repository_list = []
