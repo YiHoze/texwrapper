@@ -58,7 +58,7 @@ for alias in args.repository:
         index = repository_aliases.index(alias)
         os.chdir(repository_list[index]['local'])
         os.system('git add *')
-        os.system('git commit -m %s' %(args.commit_message))
+        os.system('git commit -m "%s"' %(args.commit_message))        
         os.system('git push origin master')
     except:
         show_repository_aliases()
