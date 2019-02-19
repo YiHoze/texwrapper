@@ -74,7 +74,7 @@ parser.add_argument(
     dest = 'luaotfload',
     action = 'store_true',
     default = False,
-    help = 'Run luaotfload-tool for LuaLaTeX.'
+    help = 'Update the font database for LuaLaTeX.'
 )
 args = parser.parse_args()
 
@@ -192,7 +192,7 @@ def cache_font():
         os.system(cmd)     
 
 def luaotfload():    
-    answer = input('Are you sure to run luaotfload-tool?\nEnter [Y] to proceed or [n] to abandon: ')
+    answer = input('Are you sure to update the font database?\nEnter [Y] to proceed or [n] to abandon: ')
     if (answer.lower() == 'y' or answer == ''):
         cmd = 'luaotfload-tool --update --force --verbose=3'
         os.system(cmd)     
