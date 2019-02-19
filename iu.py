@@ -169,7 +169,7 @@ def vector_to_bitmap(src, trg):
     else: 
         density = args.density
     cmd = '\"%s\" -density %d %s %s' %(MagickPath, density, src, trg)
-    os.system(cmd)
+    os.system(cmd)        
     multiple = density / 100
     density = int(density / multiple)
     cmd = '\"%s\" %s -units PixelsPerCentimeter -density %d %s' % (MagickPath, trg, density, trg)

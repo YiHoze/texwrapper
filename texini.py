@@ -60,7 +60,7 @@ parser.add_argument(
     dest = 'cache_font',
     action = 'store_true',
     default = False,
-    help = 'Cache fonts for xelatex.'
+    help = 'Cache fonts for XeLaTeX.'
 )
 parser.add_argument(
     '-u',
@@ -68,6 +68,13 @@ parser.add_argument(
     action = 'store_true',
     default = False,
     help = 'Update TeX Live.'
+)
+parser.add_argument(
+    '-l',
+    dest = 'luaotfload',
+    action = 'store_true',
+    default = False,
+    help = 'Run luaotfload-tool for LuaLaTeX.'
 )
 args = parser.parse_args()
 
@@ -182,7 +189,13 @@ def cache_font():
     answer = input('Are you sure to cache fonts?\nEnter [Y] to proceed or [n] to abandon: ')
     if (answer.lower() == 'y' or answer == ''):
         cmd = 'fc-cache -v -r'
-        os.system(cmd)        
+        os.system(cmd)     
+
+def luaotfload():    
+    answer = input('Are you sure to run luaotfload-tool?\nEnter [Y] to proceed or [n] to abandon: ')
+    if (answer.lower() == 'y' or answer == ''):
+        cmd = 'luaotfload-tool --update --force --verbose=3'
+        os.system(cmd)     
 
 if args.copy_to_local:
     copy_to_local()
@@ -198,3 +211,5 @@ if args.sumatrapdf:
     set_sumatrapdf()
 if args.cache_font:
     cache_font()
+if args.luaotfload:
+    luaotfload()

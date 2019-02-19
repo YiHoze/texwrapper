@@ -1,0 +1,1 @@
+c:\home\bin\pdf2htmlex\pdf2htmlex --zoom=1.75 lshort-ko.pdf

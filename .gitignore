@@ -1,7 +1,7 @@
 *.exe
 daily.ini
 .vscode/
-obsolete/
+hmltotex/
 pandoc-2.2.2/
 pdf2htmlEX/
 pdf2svg/
