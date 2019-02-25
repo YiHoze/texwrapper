@@ -156,9 +156,15 @@ def svg_to_eps(src, trg):
 def bitmap_to_bitmap(src, trg):
     global cnt
     if args.gray:
-        cmd = '\"%s\" %s -colorspace gray %s' %(MagickPath, src, trg)
+        if trgfmt == ".png":
+            cmd = '\"%s\" %s -colorspace gray -transparent white %s' %(MagickPath, src, trg)
+        else:
+            cmd = '\"%s\" %s -colorspace gray %s' %(MagickPath, src, trg)
     else:
-        cmd = '\"%s\" %s %s' %(MagickPath, src, trg)
+        if trgfmt == ".png":
+            cmd = '\"%s\" %s -transparent white %s' %(MagickPath, src, trg)
+        else:
+            cmd = '\"%s\" %s %s' %(MagickPath, src, trg)
     os.system(cmd)
     cnt += 1
 

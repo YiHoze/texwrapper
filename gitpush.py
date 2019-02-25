@@ -1,3 +1,9 @@
+# git init
+# git add README.md
+# git commit -m "first commit"
+# git remote add origin https://github.com/YiHoze/foo.git
+# git push -u origin master
+
 import os, sys, argparse, configparser
 import datetime
 
