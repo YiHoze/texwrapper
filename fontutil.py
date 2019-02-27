@@ -10,29 +10,29 @@ if dir_called is False:
 examfile = os.path.join(dir_called, 'fontglyph.txt')
 
 parser = argparse.ArgumentParser(
-    description = 'View the list of installed fonts, or see what glyphs a font contains using XeLaTeX and example text.'
+    description = 'View the list of installed fonts, or see what glyphs a font contains using an example text. This script requires TeX Live.'
 )
 parser.add_argument(
     'font',
     nargs = '?',
-    help = "a font's filename (foo.ttf)"
+    help = "Specify a font's filename (foo.ttf)."
 )
 parser.add_argument(
     '-l',
-    dest = 'font_list',    
-    default = 'font_list.txt',
-    help = 'a filename for list of fonts (default: font_list.txt)'
+    dest = 'fonts_list',    
+    default = 'fonts_list.txt',
+    help = 'Specify a filename for the list of fonts (default: fonts_list.txt).'
 )
 parser.add_argument(
     '-e',
     dest = 'example',
     default = examfile,
-    help = 'a file as example text (default: fontglyph.txt)'
+    help = 'Specify a file as example text (default: fontglyph.txt).'
 )
 parser.add_argument(
     '-o',
     dest = 'output',  
-    help = 'a filename for output of glyphs (default: font filename)'
+    help = 'Specify a filename for the output of glyphs (default: font filename). The filename must have no space.'
 )
 args = parser.parse_args()
 
@@ -70,20 +70,22 @@ def show_glyphs():
     os.system('powershell -command open.py %s' %(pdf))
 
 def enumerate_fonts():
-    if os.path.exists(args.font_list):
-        os.remove(args.font_list)
-    # fc-list :outline -f "%{family}\n"
-    cmd = "fc-list : file >> %s" %(args.font_list)
+    tmplist = []
+    if os.path.exists(args.fonts_list):
+        os.remove(args.fonts_list)
+    cmd = 'fc-list : -f "%%{fullname} > %%{file}\\n" >> %s' %(args.fonts_list)        
     os.system(cmd)
-    with open(args.font_list, mode='r', encoding='cp949') as f:
-        content = f.readlines()
-    content.sort()
-    #content = ''.join(map(str, content))
-    with open(args.font_list, mode='w', encoding='utf-8') as f:
+    with open(args.fonts_list, mode='r', encoding='utf-8') as f:
+        content = f.readlines()    
+    # for line, item in enumerate(content):
+    #     content[line] = os.path.basename(item)
+    content = set(content)
+    content = ''.join(sorted(content, key=str.lower))
+    # content.sort(key=lambda x: x.lower())    
+    with open(args.fonts_list, mode='w', encoding='utf-8') as f:
         for line in content:
-            f.write(os.path.basename(line))
-            # f.write(line)
-    os.system("powershell -command open.py %s" %(args.font_list))
+            f.write(line)
+    os.system("powershell -command open.py %s" %(args.fonts_list))
 
 if args.font is None:
     enumerate_fonts()
