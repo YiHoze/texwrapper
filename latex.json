@@ -1,0 +1,374 @@
+{
+	"class": {
+		"prefix": "cls",
+		"body": "\\documentclass[$0]{hzguide}",
+	},
+
+  	"usepackage": {
+    	"prefix": "usep",
+		"body": "\\usepackage{$0}",
+    },
+      
+    "makeatletter": {
+    "prefix": "makeat",
+    "body": [
+        "\\makeatletter", 
+        "$0", 
+        "\\makeatother"
+        ],
+    },
+
+    "setmainfont": {
+        "prefix": "setmainf",
+        "body": "\\setmainfont{$0}[Ligatures=TeX, Scale=MatchUppercase, $1]"
+    },
+
+    "setsansfont": {
+        "prefix": "setsansf",
+        "body": "\\setsansfont{$0}[Ligatures=TeX, Scale=MatchUppercase, $1]"
+    },
+
+    "setmainhanfulfont": {
+        "prefix": "setmainh",
+        "body": "\\setmainhangulfont{$0}[Ligatures=TeX, Scale=MatchUppercase, $1]"
+    },
+
+    "setsanshangulfont": {
+        "prefix": "setsansh",
+        "body": "\\setsanshangulfont{$0}[Ligatures=TeX, Scale=MatchUppercase, $1]"
+    },
+
+	"ExplSyntax": {
+		"prefix": "expl",
+		"body": [
+			"\\ExplSyntaxOn",
+			"$0",
+			"\\ExplSyntaxOff"
+		],
+	},
+    
+    "NewDocumentCommand": {
+    	"prefix": "newcom",
+    	"body": [
+			"\\NewDocumentCommand $0 { }",
+			"{" ,
+			"\t",
+			"}"
+		],
+	},
+
+  	"document": {
+    	"prefix": "doc",
+    	"body": [
+			"\\begin{document}",
+			"$0",
+			"\\end{document}"
+		],
+	},
+
+	"chapter": { 
+		"prefix": "ch",
+		"body": "\\chapter{$0}",
+	},
+
+	"section": { 
+		"prefix": "se",
+		"body": "\\section{$0}",
+	},
+
+	"subsection": { 
+		"prefix": "ss",
+		"body": "\\subsection{$0}",
+	},
+
+	"subsubsection": { 
+		"prefix": "sss",
+		"body": "\\subsubsection{$0}",
+	},
+
+	"topic": { 
+		"prefix": "tp",
+		"body": "\\topic{$0}",
+	},
+
+  	"itemize": {
+    	"prefix": "itemi",
+    	"body": [
+			"\\begin{itemize}", 
+			"\\item $0", 
+			"\\end{itemize}"
+		],
+	},
+
+	"enumerate": {
+    	"prefix": "enum",
+    	"body": [
+			"\\begin{enumerate}", 
+			"\\item $0", 
+			"\\end{enumerate}"
+		],
+	},
+
+    "description": {
+    	"prefix": "desc",
+    	"body": [
+			"\\begin{description}", 
+			"\\item $0", 
+			"\\end{description}"
+		],
+	},
+
+	"terms": {
+    	"prefix": "ter",
+    	"body": [
+			"\\begin{terms}",
+			"\\item[$0]",
+			"\\end{terms}"
+		],
+	},
+
+	"UserInterface": {
+    	"prefix": "useri",
+    	"body": [
+			"\\begin{UI}",
+			"\\item[$0]",
+			"\\end{UI}"
+		],
+	},
+
+	"callout": {
+    	"prefix": "callo",
+    	"body": [
+			"\\begin{callout}", 
+			"\\item $0", 
+			"\\end{callout}"
+		],
+	},
+
+	"minipage": {
+		"prefix": "minip",
+		"body": [
+			"\\begin{minipage}{\\linewidth}",
+			"$0",
+			"\\end{minipage}"
+		],
+	},
+
+	"flushleft": {
+		"prefix": "flushl",
+		"body": [
+			"\\begin{flushleft}",
+			"$0",
+			"\\end{flushleft}"
+		],
+	},
+
+	"center": {
+		"prefix": "cntr",
+		"body": [
+			"\\begin{center}",
+			"$0",
+			"\\end{center}"
+		],
+	},
+
+	"flushright": {
+		"prefix": "flushr",
+		"body": [
+			"\\begin{flushright}",
+			"$0",
+			"\\end{flushright}"
+		],
+	},
+
+	"verbatim": {
+		"prefix": "verb",
+		"body": [
+			"\\begin{verbatim}",
+			"$0",
+			"\\end{verbatim}"
+		],
+	},
+
+  	"Table": {
+    	"prefix": "table",
+    	"body": [
+			"\\begin{Table}",
+			"\\begin{tabu}{$0}",
+			"\\end{tabu}",
+			"\\end{Table}"
+		],
+	},
+
+	"SpecTable": {
+		"prefix": "spect",
+		"body": [
+			"\\begin{SpecTable}",
+			"$0",
+			"\\end{SpecTable}"
+		],
+	},
+
+	"ImageTable": {
+		"prefix": "imgt",
+		"body": [
+			"\\begin{ImageTable}",
+			"$0",
+			"\\end{ImageTable}"
+		],
+	},
+
+  	"reference": {
+    	"prefix": "ref",
+    	"body": [
+			"\\begin{reference}",
+			"$0",
+			"\\end{reference}"
+		],
+	  },
+
+  	"instance": {
+	    "prefix": "ins",
+    	"body": [
+			"\\begin{instance}",
+			"$0",
+			"\\end{instance}"
+		],
+	},
+
+  	"warning": {
+	    "prefix": "warni",
+    	"body": [ 
+			"\\begin{warning}",
+			"$0",
+			"\\end{warning}"
+		],
+	},
+
+  	"caution": {
+    	"prefix": "caut",
+    	"body": [
+			"\\begin{caution}",
+			"$0",
+			"\\end{caution}"
+		],
+	},
+
+  	"note": {
+    	"prefix": "nt",
+    	"body": [
+			"\\begin{note}",
+			"$0",
+			"\\end{note}"
+		],
+    },
+
+  	"image": {
+    	"prefix": "im",
+    	"body": "\\image{$0}",
+	},
+
+  	"lineimg": {
+    	"prefix": "lm",
+    	"body": "\\lineimg{$0}",
+	},
+
+	"IllustImage": {
+		"prefix": "illu",
+		"body": [
+			"\\begin{IllustImage}{$0}",
+			"",
+			"\\end{IllustImage}"
+		],
+	},
+
+  	"IlluEnum": {
+    	"prefix": "illue",
+    	"body": [
+			"\\begin{IllustEnum}{$0}",
+			"\\item ",
+			"\\end{IllustEnum}"
+		],
+	},
+
+	"item_term": {
+    	"prefix": "ie",
+    	"body": "\\item[$0]",
+	},	
+
+	"ui": {
+    	"prefix": "ui",
+    	"body": "\\ui{$0}",
+	},
+
+	"action": {
+    	"prefix": "ac",
+    	"body": "\\action{$0}",
+	},
+
+	"titleref": {
+    	"prefix": "tr",
+    	"body": "\\titleref{${0:label}}",
+	},
+
+	"pageref": {
+    	"prefix": "pr",
+    	"body": "\\pageref{${0:label}}",
+	},
+
+    "example": {
+    	"prefix": "exa",
+    	"body": [
+			"\\begin{example}",
+			"$0",
+			"\\end{example}"
+		],
+	},
+
+    "quote": {
+    	"prefix": "quo",
+    	"body": [
+			"\\begin{quote}",
+			"$0",
+			"\\end{quote}"
+		],
+	},
+
+	"frame": {
+    	"prefix": "frm",
+    	"body": [
+			"\\begin{frame}{${1:frame title}}",
+			"$0",
+			"\\end{frame}"
+		],
+	},
+
+  	"exampleblock": {
+    	"prefix": "exab",
+    	"body": [
+			"\\begin{exampleblock}{${1:block title}}",
+			"$0",
+			"\\end{exampleblock}"
+		],
+	},
+
+    "verbread" : {
+        "prefix": "vread",
+        "body": [
+            "\\begin{verbsave}",
+            "$0",
+            "\\end{verbsave}",
+            "\\verbread"
+        ]
+    },
+
+    "verbrender" : {
+        "prefix": "vrend",
+        "body": [
+            "\\begin{verbsave}",
+            "$0",
+            "\\end{verbsave}",
+            "\\verbrender"
+        ]
+    }
+}
