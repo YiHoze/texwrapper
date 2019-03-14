@@ -1,0 +1,71 @@
+{ 
+    "explorer.confirmDelete": false,
+    "editor.detectIndentation": false,
+    "files.associations": {
+        "*.sty": "latex-expl3",
+        "*.cls": "latex-expl3",
+        "*.tplx": "latex-expl3",
+        "*.ltx": "latex-expl3",
+        "*.txt": "plaintext",
+        "*.ind": "latex",
+        "*.idx": "latex"
+    },   
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "window.zoomLevel": 0,
+    "[latex]": {
+        "editor.insertSpaces": false,
+        "editor.autoIndent": false
+    },
+    "[latex-expl3]": {
+        "editor.insertSpaces": false,
+        "editor.autoIndent": false
+    },
+    "latex-workshop.view.pdf.viewer": "external",
+    "latex-workshop.view.pdf.external.command": {
+        "command": "C:\\Program Files\\SumatraPDF\\SumatraPDF.exe",
+        "args": [
+            "%PDF%"
+        ]
+    },
+    "spellright.configurationScope": "user",
+    "spellright.language": [
+        "en"
+    ],      
+    "latex-workshop.intellisense.package.enabled": true,
+    "[tsv]": {
+        "editor.insertSpaces": false,
+        "editor.autoIndent": false,
+        "editor.renderWhitespace": "boundary"        
+    },
+    "spellright.documentTypes": [
+        "markdown"
+    ],
+    "spellright.parserByClass": {
+        "tsv": {
+            "parser": "plain"
+        }
+    },
+    "latex-workshop.latex.autoBuild.cleanAndRetry.enabled": false,
+    "latex-workshop.latex.autoBuild.run": "never",
+    "editor.fontFamily": "Consolas,  monospace"
+    "surround.custom": {
+        "term": {
+            "label": "#term",
+            "description": "\\term{ ... }",
+            "disabled": false,
+            "snippet": "\\term{$TM_SELECTED_TEXT}$0"
+        }
+        "anota": {
+            "label": "#anota",
+            "description": "\\anota{ ... }",
+            "disabled": false,
+            "snippet": "\\anota{$TM_SELECTED_TEXT}$0"
+        }
+        "anota*": {
+            "label": "#anota*",
+            "description": "\\anota*{ ... }",
+            "disabled": false,
+            "snippet": "\\anota*{$TM_SELECTED_TEXT}$0"
+        }
+    }    
+}

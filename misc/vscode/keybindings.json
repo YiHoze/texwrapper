@@ -9,5 +9,17 @@
         "key": "ctrl+`",
         "command": "workbench.action.terminal.focus", 
         "when": "!terminalFocus" 
+    },
+    {
+        "key": "alt+a",
+        "command": "surround.with.anota"
+    },
+    {
+        "key": "alt+a alt+s",
+        "command": "surround.with.anota*"
+    },
+    {
+        "key": "alt+t",
+        "command": "surround.with.term"
     }
 ]
