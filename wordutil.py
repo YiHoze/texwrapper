@@ -172,7 +172,8 @@ def display_unicode(string):
     for s in enumerate(string):
         c = s[1]
         if (c != '\n') and (c != ' ') and ( c != '\t'):
-            codes += '%s\tU+%04X\t%s\n' %(c, ord(c), unicodedata.name(c).lower())            
+            codes += '%s\tU+%04X\t%s\n' %(c, ord(c), unicodedata.name(c).lower())
+            # codes += '%s\tU+%04X\n' %(c, ord(c))
     return codes
 
 def get_unicode(afile):

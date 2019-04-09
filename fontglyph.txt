@@ -1,7 +1,7 @@
 0 1 2 3 4 5 6 7 8 9 
 
 english: 
-Keep this manual for future use.
+© Keep this manual® for future use. These---lines--are-dashes.   
 
 chinese 中文: 
 请妥善保存本手册，以备将来使用。

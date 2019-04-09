@@ -1,4 +1,4 @@
-import os, sys, argparse
+import os, sys, re, argparse
 
 try:
     dir_called = os.environ['DOCENV'].split(os.pathsep)[0]
@@ -47,6 +47,7 @@ def show_glyphs():
     if args.output is None:
         args.output = args.font
     filename = os.path.splitext(args.output)[0] 
+    filename = re.sub(' ', '', filename)    
     tex = filename + '.tex'
     pdf = filename + '.pdf'
     if os.path.exists(tex):
