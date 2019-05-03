@@ -1,4 +1,5 @@
 *.exe
+*.spec
 c.cmd
 daily.ini
 .vscode/
