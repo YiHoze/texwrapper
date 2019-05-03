@@ -1,7 +1,11 @@
 *.exe
+c.cmd
 daily.ini
 .vscode/
 hmltotex/
 pandoc-2.2.2/
 pdf2htmlEX/
 pdf2svg/
+__pycache__/
+build/
+dist/

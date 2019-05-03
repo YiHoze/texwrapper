@@ -194,6 +194,11 @@ def get_bitmap_info(img):
 
 def resize_bitmap(img):
     global cnt
+    srcfmt = os.path.splitext(img)[1]
+    srcfmt = srcfmt.lower()
+    if srcfmt != '.jpg' and srcfmt != '.png':
+        print('Specify JPG or PNG images.')
+        return
     if args.density is None:
         density = 100
     else: 
@@ -249,6 +254,11 @@ def converter(afile):
         if trgfmt == '.png':
             bitmap_to_bitmap(afile, target)
         elif trgfmt == '.pdf':
+            bitmap_to_bitmap(afile, target)
+    elif srcfmt == '.bmp':
+        if trgfmt == '.jpg':
+            bitmap_to_bitmap(afile, target)
+        elif trgfmt == '.png':
             bitmap_to_bitmap(afile, target)
     elif srcfmt == '.ppm':
         if trgfmt == '.jpg':
