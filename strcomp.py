@@ -1,9 +1,5 @@
 import os, sys, argparse, csv
-#, codecs
 from difflib import SequenceMatcher
-
-stra = 'Show only English words of results. Note that it takes a rahter long time.'
-strb = 'Show only English words of results. Note this it takes a rahter long time.'
 
 parser = argparse.ArgumentParser(
     description = 'Get the match rate between two strings.'
