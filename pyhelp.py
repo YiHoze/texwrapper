@@ -1,4 +1,10 @@
-import  os, argparse
+import sys
+import argparse
+
+if sys.version_info.major < 3 and sys.version_info.minor < 4:
+    from imp import import_module
+else:
+    from importlib import import_module
 
 parser = argparse.ArgumentParser(
     description = 'Get help for a python component.'
@@ -6,7 +12,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     'component',
     type = str,
-    nargs = 1,
     help = 'Type what you want to learn about.'
 )
 parser.add_argument(
@@ -17,14 +22,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-tmppy = args.component[0] + "tmp.py"
-
-content = ''
 if args.module is not None:
-    content = 'import %s\n' %(args.module)
-content += 'help(%s)' %(args.component[0])
+    import_module(args.module)
 
-with open(tmppy, mode='w') as f:
-    f.write(content)
-os.system(tmppy)
-os.remove(tmppy)
+help(args.component)
