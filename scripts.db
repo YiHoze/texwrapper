@@ -1,0 +1,3988 @@
+[gencode]
+description = [Python] Generate barcodes or QR codes in PNG.
+code_output = gencode.py
+code = ```
+	```# pip python-barcode
+	```# pip install qrcode[pil]
+	```
+	```import os, argparse
+	```import barcode, qrcode, qrcode.image.svg, codecs, re, webbrowser
+	```from pyzbar.pyzbar import decode
+	```from PIL import Image
+	```from barcode.writer import ImageWriter
+	```from barcode import generate
+	```
+	```
+	```class GenerateCode(object):
+	```
+	```    def __init__(self, codes=None, **kwargs):
+	```
+	```        self.options = {
+	```            'qrcode': False,
+	```            'output': None,
+	```            'svg': False,
+	```            'decode': False,
+	```            'zero': 2
+	```        }
+	```
+	```        self.reconfigure(kwargs)
+	```
+	```        if codes is not None:
+	```            if self.options['decode']:
+	```                self.decode_qrcode(codes)
+	```            else:
+	```                if self.options['qrcode']:
+	```                    self.encode_qrcode(codes)
+	```                else:
+	```                    self.encode_barcode(codes)
+	```
+	```
+	```    def reconfigure(self, options) -> None:
+	```
+	```        for key in self.options.keys():
+	```            if key in options:
+	```                self.options[key] = options.get(key)
+	```
+	```
+	```    def name_file(self, code_quantity, counter) -> str:
+	```
+	```        name = os.path.splitext(self.options['output'])[0]
+	```        if code_quantity > 1:
+	```            zero_pad = "0{}d".format(self.options['zero'])
+	```            return "{}_{:{z}}".format(name, counter, z=zero_pad)
+	```        else:
+	```            return name
+	```
+	```
+	```    def encode_barcode(self, codes, **options) -> None:
+	```
+	```        if len(options) > 0:
+	```            self.reconfigure(options)
+	```
+	```        if self.options['output'] is None:
+	```            self.options['output'] = 'barcode'
+	```        EAN = barcode.get_barcode_class('ean13')
+	```        counter = 1
+	```        for code in codes:
+	```            filename = self.name_file(len(codes), counter)
+	```            ean = EAN(code, writer=ImageWriter())
+	```            ean.save(filename)
+	```            if self.options['svg']:
+	```                generate('EAN13', code, output=filename)
+	```            counter += 1
+	```
+	```
+	```    def encode_qrcode(self, codes, **options) -> None:
+	```
+	```        if len(options) > 0:
+	```            self.reconfigure(options)
+	```
+	```        if self.options['output'] is None:
+	```            self.options['output'] = 'qrcode'
+	```        counter = 1
+	```        qr = qrcode.QRCode(
+	```            version=1,
+	```            error_correction=qrcode.constants.ERROR_CORRECT_M,
+	```            box_size=10,
+	```            border=4,
+	```        )
+	```        for code in codes:
+	```            filename = self.name_file(len(codes), counter)
+	```            qr.add_data(code)
+	```            qr.make(fit=True)
+	```            img = qr.make_image()
+	```            png = filename + '.png'
+	```            img.save(png)
+	```            qr.clear()
+	```            if self.options['svg']:
+	```                factory = qrcode.image.svg.SvgPathImage
+	```                img = qrcode.make(code, image_factory=factory)
+	```                svg = filename + '.svg'
+	```                img.save(svg)
+	```            counter +=1
+	```
+	```
+	```    def decode_qrcode(self, images, **options) -> None:
+	```
+	```
+	```        if len(options) > 0:
+	```            self.reconfigure(options)
+	```
+	```        for img in images:
+	```            if not os.path.exists(img):
+	```                print('{} does not exist.'.format(img))
+	```                return
+	```            data = decode(Image.open(img))[0][0]
+	```            data = data.decode('utf-8')
+	```            link = data.replace('\\:', ':')
+	```            link = link.replace(';', '')
+	```            result = re.search('http.*', link)
+	```            if result is not None:
+	```                uri = result.group()
+	```                print(uri)
+	```                webbrowser.open_new_tab(uri)
+	```            else:
+	```                print(data)
+	```
+	```
+	```def parse_args() -> argparse.Namespace:
+	```    example = '''examples:
+	```gencode.py 979118986911
+	```    A barcode image named "barcode.png" is created.
+	```gencode.py 979118986911 -s
+	```    "barcode.svg" is created in addition to barcode.png.
+	```gencdoe.py 979118986911 -o foo
+	```    "foo.png" is created.
+	```gencode.py 979118986911 979118986912
+	```    "barcode_01.png" and "barcode_02.png" are created.
+	```gencode.py -q https://github.com/yihoze
+	```    A QR code image named "qrcode.png" is created.
+	```gencode.py -d qrcode.png
+	```    The decoded result is displayed.
+	```    If the content is a web address, it is opened by the default web browser.
+	```    '''
+	```    parser = argparse.ArgumentParser(
+	```        epilog = example,
+	```        formatter_class = argparse.RawDescriptionHelpFormatter,
+	```        description = 'Generate barcodes or QR codes in PNG. The last check digit of barcode will be automatically corrected if it is wrong.'
+	```    )
+	```    parser.add_argument(
+	```        'codes',
+	```        nargs = '+',
+	```        help = 'Specify a 13-digit number or more for barcodes or a text or more for QR  codes.'
+	```    )
+	```    parser.add_argument(
+	```        '-q',
+	```        dest = 'qrcode',
+	```        action = 'store_true',
+	```        default = False,
+	```        help = 'Create QR codes.'
+	```    )
+	```    parser.add_argument(
+	```        '-o',
+	```        dest = 'output',
+	```        default = None,
+	```        help = 'Specify a file name for output. The default is "barcode" or "qrcode.'
+	```    )
+	```    parser.add_argument(
+	```        '-s',
+	```        dest = 'svg',
+	```        action = 'store_true',
+	```        default = False,
+	```        help = 'Additionaly generate barcodes or QR codes in SVG.'
+	```    )
+	```    parser.add_argument(
+	```        '-d',
+	```        dest = 'decode',
+	```        action = 'store_true',
+	```        default = False,
+	```        help = 'Decode a QR code of PNG or JPG image.'
+	```    )
+	```    parser.add_argument(
+	```        '-z',
+	```        dest = 'zero',
+	```        default = 2,
+	```        help = 'Specify the number of zeroes with which to pad file names.'
+	```    )
+	```    return parser.parse_args()
+	```
+	```
+	```if __name__ == '__main__':
+	```    args = parse_args()
+	```    gencode = GenerateCode(
+	```        codes = args.codes,
+	```        qrcode = args.qrcode,
+	```        output = args.output,
+	```        svg = args.svg,
+	```        decode = args.decode,
+	```        zero = args.zero)
+	```
+	```
+
+[crypto]
+description = [Python] Encrypt or decrypt files.
+code_output = crypto.py
+code = 
+	```import os
+	```import argparse
+	```from cryptography.fernet import Fernet
+	```
+	```class FileEncryptor(object):
+	```
+	```    def parse_args(self):
+	```
+	```        parser = argparse.ArgumentParser(
+	```            description = 'Encrypt or decrypt files.'
+	```        )
+	```
+	```        parser.add_argument(
+	```            'files',
+	```            nargs = '+',
+	```            help = 'Specify one or more text files.'
+	```        )
+	```        parser.add_argument(
+	```            '-k',
+	```            dest = 'key_file',
+	```            default = 'crypto.key',
+	```            help = 'Specify a key file.'
+	```        )
+	```        parser.add_argument(
+	```            '-d',
+	```            dest = 'decrypt',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Decrypt files.'
+	```        )
+	```
+	```        args = parser.parse_args()
+	```
+	```        self.files = args.files
+	```        self.key_file = args.key_file
+	```        self.decrypt_bool  = args.decrypt
+	```
+	```    def generate_key(self):
+	```
+	```        key = Fernet.generate_key()
+	```        with open(self.key_file, "wb") as key_file:
+	```            key_file.write(key)
+	```
+	```    def load_key(self):
+	```
+	```        if not os.path.exists(self.key_file):
+	```            self.generate_key()
+	```        return open(self.key_file, "rb").read()
+	```
+	```    def encrypt_file(self, file):
+	```
+	```        with open(file, mode='rb') as f:
+	```            content = f.read()
+	```
+	```        # content = content.encode()
+	```        content = self.encryptor.encrypt(content)
+	```
+	```        output = self.add_suffix(file)
+	```        with open(output, mode='wb') as f:
+	```            f.write(content)
+	```
+	```    def decrypt_file(self, file):
+	```
+	```        with open(file, mode='rb') as f:
+	```            content = f.read()
+	```
+	```        content = self.encryptor.decrypt(content)
+	```        # content = content.decode()
+	```
+	```        output = self.add_suffix(file)
+	```        with open(output, mode='wb') as f:
+	```            f.write(content)
+	```
+	```    def add_suffix(self, file):
+	```            basename = os.path.basename(file)
+	```            filename = os.path.splitext(basename)[0]
+	```            extension = os.path.splitext(basename)[1]
+	```            if self.decrypt_bool:
+	```                if '_encrypted' in filename:
+	```                    return filename.replace('_encrypted', '_decrypted') + extension
+	```                else:
+	```                    return filename + '_decrypted' + extension
+	```
+	```            else:
+	```                return filename + '_encrypted' + extension
+	```
+	```    def determine_task(self):
+	```
+	```        self.key = self.load_key()
+	```        self.encryptor = Fernet(self.key)
+	```        for f in self.files:
+	```            if self.decrypt_bool:
+	```                self.decrypt_file(f)
+	```            else:
+	```                self.encrypt_file(f)
+	```
+	```if __name__ == "__main__":
+	```    fencryptor = FileEncryptor()
+	```    fencryptor.parse_args()
+	```    fencryptor.determine_task()
+
+[bookspine]
+description = [Python] Get the spine width for a book.
+code_output = bookspine.py
+code = 
+	```import argparse
+	```
+	```class BookSpineWidth(object):
+	```    def __init__(self, pages=0, type='vellum', weight=120, margin=1):
+	```        self.papers = {
+	```            'vellum':{70:0.08, 80:0.09, 95:0.115, 100:0.12, 120:0.14, 150:0.17, 180:0.2, 220:0.24},
+	```            'art':{80:0.06, 100:0.08, 120:0.095, 150:0.12, 180:0.15, 200:0.17, 250:0.22, 300:0.27},
+	```            'snow': {80:0.07, 100:0.09, 120:0.105, 150:0.14, 180:0.18, 200:0.19, 250:0.26},
+	```            'mat':{70:0.07, 80:0.08, 90:0.095, 100:0.11},
+	```            'elight':{70:0.11, 80:0.13},
+	```            'arte':{105:0.155, 130:0.19, 160:0.23, 190:0.27, 210:0.3, 230:0.32},
+	```            'rendezvous':{90:0.13, 105:0.14, 130:0.17, 160:0.22, 190:0.25, 210:0.29, 240:0.33},
+	```            'montblanc':{90:0.12, 100:0.13, 130:0.18, 160:0.23, 190:0.26, 210:0.29, 240:0.32}
+	```        }
+	```        self.paper_types = {
+	```            'vellum':'Vellum',
+	```            'art':'Art',
+	```            'snow':'Snow',
+	```            'mat':'M-Mat',
+	```            'elight':'E-Light',
+	```            'arte':'Arte',
+	```            'rendezvous':'Rendezvous',
+	```            'montblanc':'Mont Blanc'
+	```        }
+	```        self.pages = pages
+	```        self.paper_type = type
+	```        self.paper_weight = weight
+	```        self.margin = margin
+	```        self.list_bool = False
+	```
+	```    def parse_args(self):
+	```        example = '''examples:
+	```    bookspine.py -t snow -w 80 200
+	```        caculates the spine width for 200 pages with Snow paper whose weight is 80 grams.
+	```        '''
+	```        parser = argparse.ArgumentParser(
+	```            epilog = example,
+	```            formatter_class = argparse.RawDescriptionHelpFormatter,
+	```            description = 'Get the spine width for a book.'
+	```        )
+	```        parser.add_argument(
+	```            'pages',
+	```            nargs = '?',
+	```            type = int,
+	```            help = 'Specify a page count'
+	```        )
+	```        parser.add_argument(
+	```            '-t',
+	```            dest = 'paper_type',
+	```            default = 'vellum',
+	```            help = 'Specify a paper type. The default is vellum'
+	```        )
+	```        parser.add_argument(
+	```            '-w',
+	```            dest = 'paper_weight',
+	```            type = int,
+	```            default = 120,
+	```            help = 'Specify the paper weight. The default is 120.'
+	```        )
+	```        parser.add_argument(
+	```            '-m',
+	```            dest = 'margin',
+	```            type = int,
+	```            default = 1,
+	```            help = 'Specify the margin for binding. The default is 1 (mm).'
+	```        )
+	```        parser.add_argument(
+	```            '-l',
+	```            dest = 'list',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Display paper details.'
+	```        )
+	```        args = parser.parse_args()
+	```        self.pages = args.pages
+	```        self.paper_type = args.paper_type
+	```        self.paper_weight = args.paper_weight
+	```        self.margin = args.margin
+	```        self.list_bool = args.list
+	```
+	```    def show_papers(self):
+	```        for paper in self.paper_types:
+	```            print('\n{}:'.format(self.paper_types[paper]))
+	```            paper_feature = self.papers[paper]
+	```            for weight in paper_feature:
+	```                print('{:>3} g \t {} mm'.format(weight, paper_feature[weight]))
+	```            answer = input('\nPress Enter to continue or Q to quit.')
+	```            if answer.lower() == 'q':
+	```                return
+	```
+	```    def calculate(self):
+	```        try:
+	```            name = self.paper_types[self.paper_type]
+	```            thickness = self.papers[self.paper_type][self.paper_weight]
+	```            msg = '\nWith {} g {} paper of which thickness is {:0.3f} mm, {} pages make the spine:'.format(self.paper_weight,  ```name, thickness, self.pages)
+	```            print(msg)
+	```            spine = (self.pages / 2 * thickness) + self.margin
+	```            msg = '{:0.2f} mm with a margin of {} mm from the paper thickness'.format(spine, self.margin)
+	```            print(msg)
+	```        except:
+	```            print('\nNo corresponding thickness data is found.')
+	```        spine = (self.paper_weight * self.pages * 0.6 / 1000) + self.margin
+	```        msg = '{:0.2f} mm with a margin of {} mm from the paper weight\n'.format(spine, self.margin)
+	```        print(msg)
+	```
+	```if __name__ == '__main__':
+	```    spine = BookSpineWidth()
+	```    spine.parse_args()
+	```    if spine.list_bool:
+	```        spine.show_papers()
+	```    else:
+	```        spine.calculate()
+
+[loop]
+description = [Python] A given command will be repeated with each one matching wildcard characters.
+code_output = loop.py
+code = ```
+	```import os
+	```import sys
+	```import glob
+	```import argparse
+	```import re
+	```
+	```example = '''examples:
+	```loop.py "cpdf -pages *.pdf"
+	```    cpdf will display the number of pages in each PDF file.
+	```loop.py -c "pdfcrop foo_*.pdf goo_*.pdf"
+	```    This is the same as
+	```        pdfcrop foo_1.pdf goo_1.pdf
+	```        pdfcrop foo_2.pdf goo_2.pdf
+	```loop.py -c "magick foo_*.png -rotate 270 foo_*.png"
+	```    This is the same as
+	```        magick foo_1.png -rotate 270 foo_1.png
+	```        magick foo_2.png -rotate 270 foo_2.png
+	```'''
+	```
+	```parser = argparse.ArgumentParser(
+	```    epilog = example,
+	```    formatter_class = argparse.RawDescriptionHelpFormatter,
+	```    description = 'A given command will be repeated with each one matching wildcard characters.'
+	```)
+	```parser.add_argument(
+	```    'cmd',
+	```    nargs = 1,
+	```    help = 'Type a command with arguments including wildcard characters.'
+	```)
+	```parser.add_argument(
+	```    '-c',
+	```    dest = 'consecutive_bool',
+	```    action = 'store_true',
+	```    default = False,
+	```    help = 'Change wildcard characters to consecutive numbers and check if matching files exist. Only numbers precedeing the extension is valid like "foo_01.ext".'
+	```)
+	```parser.add_argument(
+	```    '-z',
+	```    dest = 'zeros',
+	```    default = 1,
+	```    help = 'With the -c option, specify how many zeros to pad. (default: 1)'
+	```)
+	```args = parser.parse_args()
+	```
+	```# find the argument that contains '*'
+	```cmd = args.cmd[0].split(' ')
+	```for i in cmd:
+	```    if i.count('*') > 0:
+	```        selection = i
+	```        break
+	```
+	```cmd = ' '.join(cmd)
+	```if args.consecutive_bool:
+	```    for i in glob.glob(selection):
+	```        num = re.findall(r'(\d+)\.', i)
+	```        if len(num) > 0:
+	```            cnt = '{}'.format(num[0].zfill(args.zeros))
+	```            real_cmd = cmd.replace('*', cnt)
+	```            # print(real_cmd)
+	```            os.system(real_cmd)
+	```        else:
+	```            print('No numbered files are found.')
+	```            break
+	```else:
+	```    ext =  os.path.splitext(os.path.basename(selection))[1]
+	```    for i in glob.glob(selection):
+	```        filename = os.path.splitext(os.path.basename(i))[0] + ext
+	```        filename = '"{}"'.format(filename)
+	```        real_cmd = cmd.replace(selection, filename)
+	```        os.system(real_cmd)
+	```
+
+[datecal]
+description = [Python] Find out the date certain days before or after a given date.
+code_output = datecal.py
+code = 
+	```import argparse
+	```from datetime import datetime, date, timedelta
+	```import calendar
+	```import pytz
+	```from dateutil.relativedelta import relativedelta
+	```
+	```calendar.setfirstweekday(calendar.SUNDAY)
+	```
+	```class DateCalculator(object):
+	```
+	```    def __init__(self, daydate=None, basis=None, week=False, weekday=False, calendar=False):
+	```
+	```        self.daydate = daydate
+	```        self.basis = basis
+	```        self.week_bool = week
+	```        self.weekday_bool = weekday
+	```        self.calendar_bool = calendar
+	```
+	```        self.weekdays = {
+	```            0:'Monday',
+	```            1:'Tuesday',
+	```            2:'Wednesday',
+	```            3:'Thursday',
+	```            4:'Friday',
+	```            5:'Saturday',
+	```            6:'Sunday'
+	```        }
+	```
+	```        self.timezones = {
+	```            'London':'Europe/London',
+	```            'Los Angeles':'America/Los_Angeles',
+	```            'New York':'America/New_York',
+	```            'Paris':'Europe/Paris',
+	```            'Rome':'Europe/Rome',
+	```            'Seoul':'Asia/Seoul',
+	```            'Sydney':'Australia/Sydney',
+	```            'Toronto':'America/Toronto'
+	```        }
+	```
+	```    def parse_args(self):
+	```
+	```        example = '''examples:
+	```    datecal.py -20 -10 10 20
+	```        shows dates 20 and 10 days before and after today.
+	```    datecal.py -b 2010-07-07 10
+	```        These show the date 10 days after 2010-07-07.
+	```    datecal.py -w 10
+	```        shows the date 10 weeks after today.
+	```    datecal.py 2021-01-01
+	```        shows the number of days between tody and 2021-01-01.
+	```    datecal.py -W 2021-01-01
+	```        shows the day of week on 2021-01-01.
+	```    datecal.py -c 2021-01
+	```        displays a monthly calendar for January 2021.
+	```    datecal.py -c 2021
+	```        displays a yearly calendar for 2021.
+	```    datecal.py -z Toronto
+	```        shows Toronto's current local time.
+	```    '''
+	```
+	```        parser = argparse.ArgumentParser(
+	```            epilog = example,
+	```            formatter_class = argparse.RawDescriptionHelpFormatter,
+	```            description = 'Find out the date certain days before or after a given date.'
+	```        )
+	```
+	```        parser.add_argument(
+	```            'daydate',
+	```            nargs = '+',
+	```            help = 'Specify one or more days or dates.'
+	```        )
+	```        parser.add_argument(
+	```            '-b',
+	```            dest = 'basis',
+	```            default = None,
+	```            help = 'Specify a date in the yyyy-mm-dd format.'
+	```        )
+	```        parser.add_argument(
+	```            '-w',
+	```            dest = 'week',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Use week as the unit of time.'
+	```        )
+	```        parser.add_argument(
+	```            '-W',
+	```            dest = 'weekday',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Find days of week.'
+	```        )
+	```        parser.add_argument(
+	```            '-c',
+	```            dest = 'calendar',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Display calendars.'
+	```        )
+	```        parser.add_argument(
+	```            '-z',
+	```            dest = 'timezone',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = "Display a given city's current local time."
+	```        )
+	```
+	```        args = parser.parse_args()
+	```
+	```        self.daydate = args.daydate
+	```        self.basis = self.validate(args.basis)
+	```        self.week_bool = args.week
+	```        self.weekday_bool = args.weekday
+	```        self.calendar_bool = args.calendar
+	```        self.timezone_bool = args.timezone
+	```
+	```    def validate(self, basis:str):
+	```
+	```        if basis is None:
+	```            return date.today()
+	```
+	```        try:
+	```            basis = datetime.strptime(basis, '%%Y-%%m-%%d')
+	```        except:
+	```            try:
+	```                basis = datetime.strptime(basis, '%%Y-%%m')
+	```            except:
+	```                print('This date is wrong so today is used as the basis.')
+	```                basis = date.today()
+	```
+	```        return basis
+	```
+	```
+	```    def days_or_date(self, daydate):
+	```
+	```        try:
+	```            daydate = int(daydate)
+	```            return daydate
+	```        except:
+	```            daydate = self.validate(daydate)
+	```            return daydate
+	```
+	```
+	```    def print_date(self, days: int):
+	```
+	```        if self.week_bool:
+	```            days = days * 7
+	```        diff = timedelta(days = days)
+	```        result = self.basis + diff
+	```        output = '{}: {} days from {}'.format(result.strftime('%%Y-%%m-%%d'), days, self.basis.strftime('%%Y-%%m-%%d'))
+	```        print(output)
+	```
+	```
+	```    def print_days(self, target_date):
+	```
+	```        date1 = self.basis.strftime('%%Y-%%m-%%d')
+	```        date2 = target_date.strftime('%%Y-%%m-%%d')
+	```        result = datetime.strptime(date1, '%%Y-%%m-%%d') - datetime.strptime(date2, '%%Y-%%m-%%d')
+	```        output = '{} days between {} and {}'.format(abs(result.days), date1, date2)
+	```        print(output)
+	```
+	```
+	```    def print_weekday(self, target_date):
+	```
+	```        weekday = self.weekdays[target_date.weekday()]
+	```        output = '{} on {}'.format(weekday, target_date.strftime('%%Y-%%m-%%d'))
+	```        print(output)
+	```
+	```
+	```    def print_calendar(self, target_date):
+	```
+	```        if type(target_date) is int:
+	```            print(calendar.calendar(target_date))
+	```        else:
+	```            print(calendar.month(target_date.year, target_date.month))
+	```
+	```
+	```    def print_local_time(self):
+	```
+	```        utcnow = pytz.timezone('utc').localize(datetime.utcnow())
+	```        here_time = utcnow.astimezone(pytz.timezone('Asia/Seoul')).replace(tzinfo=None)
+	```
+	```        for city in self.daydate:
+	```            city = ' '.join([word.capitalize() for word in city.split(" ")])
+	```            try:
+	```                city_timezone = self.timezones[city]
+	```                there_time = utcnow.astimezone(pytz.timezone(city_timezone)).replace(tzinfo=None)
+	```                offset = relativedelta(there_time, here_time)
+	```                output = 'The current local time at {} is {}, {} hours from Seoul.'.format(city, there_time.strftime           ('%%H:%%M on %%Y-%%m-%%d'), offset.hours)
+	```            except:
+	```                output = '{} is not in the list of time zones.'.format(city)
+	```            print(output)
+	```
+	```
+	```    def calculate(self):
+	```
+	```        for i in self.daydate:
+	```            daydate = self.days_or_date(i)
+	```            if type(daydate) is int:
+	```                if self.calendar_bool:
+	```                    self.print_calendar(daydate)
+	```                else:
+	```                    self.print_date(daydate)
+	```            else:
+	```                if self.weekday_bool:
+	```                    self.print_weekday(daydate)
+	```                elif self.calendar_bool:
+	```                    self.print_calendar(daydate)
+	```                else:
+	```                    self.print_days(daydate)
+	```
+	```
+	```    def determine_task(self):
+	```
+	```        if self.timezone_bool:
+	```            self.print_local_time()
+	```        else:
+	```            self.calculate()
+	```
+	```
+	```if __name__ == '__main__':
+	```    datecal = DateCalculator()
+	```    datecal.parse_args()
+	```    datecal.determine_task()
+
+[increase]
+description = [Python] Multiply an increase by step and add to the sum.
+code_output = increase.py
+code = ```
+	```import argparse
+	```
+	```parser = argparse.ArgumentParser(
+	```    description = 'Multiply an increase by step and add to the sum.'
+	```)
+	```parser.add_argument(
+	```    'numbers',
+	```    type = int,
+	```    nargs = '+',
+	```    help = 'Enter numbers for steps and increase.'
+	```)
+	```args = parser.parse_args()
+	```
+	```numbers = len(args.numbers)
+	```if numbers < 2:
+	```    final = args.numbers[0]
+	```    increase = 1
+	```elif numbers < 3:
+	```    final = args.numbers[0]
+	```    increase = args.numbers[1]
+	```
+	```sum = 0
+	```print('Step Increased        Sum')
+	```for n in range(final):
+	```    n += 1
+	```    multiplied_increase = n * increase
+	```    sum = sum + multiplied_increase
+	```    print('{:3} {:10,} {:10,}'.format(n, multiplied_increase, sum))
+
+[factorial]
+description = [Python] Find a number's factorial.
+code_output = factorial.py
+code = 
+	```import argparse
+	```from math import factorial
+	```from PyQt5.QtWidgets import  QWidget, QDesktopWidget, QLabel, QLineEdit, QPushButton, QPlainTextEdit, QGridLayout, QApplication
+	```
+	```parser = argparse.ArgumentParser(
+	```    description = "Find a number's factorial."
+	```)
+	```
+	```parser.add_argument(
+	```    'integers',
+	```    nargs = '*',
+	```    type = int,
+	```    help = 'Specify one or more integers.'
+	```)
+	```parser.add_argument(
+	```    '-g',
+	```    dest = 'GUI',
+	```    action = 'store_true',
+	```    default = False,
+	```    help = 'Open the GUI.'
+	```)
+	```args = parser.parse_args()
+	```
+	```class factorial_GUI(QWidget):
+	```
+	```    def __init__(self, input=None):
+	```        super().__init__()
+	```        self.input = input
+	```        self.initUI()
+	```
+	```    def initUI(self):
+	```        self.setWindowTitle('Factorial')
+	```        self.resize(500, 300)
+	```        self.center()
+	```
+	```        inputLabel = QLabel('Enter an integer')
+	```        self.inputEdit = QLineEdit()
+	```        clearButton = QPushButton('Clear')
+	```        self.result = QPlainTextEdit('0')
+	```        self.result.setReadOnly(True)
+	```
+	```        grid = QGridLayout()
+	```        grid.addWidget(inputLabel, 1, 0)
+	```        grid.addWidget(self.inputEdit, 1, 1)
+	```        grid.addWidget(clearButton, 2, 0)
+	```        grid.addWidget(self.result, 2, 1)
+	```        self.setLayout(grid)
+	```
+	```        self.inputEdit.returnPressed.connect(self.onChanged)
+	```        clearButton.clicked.connect(self.clear)
+	```        if self.input is not None:
+	```            self.GetFactorial(self.input)
+	```        self.show()
+	```
+	```    def onChanged(self):
+	```        val = self.inputEdit.text()
+	```        self.GetFactorial(val)
+	```
+	```    def GetFactorial(self, val):
+	```        try:
+	```            r = factorial(int(val))
+	```            r = format(r, ',')
+	```            self.result.setPlainText(r)
+	```        except:
+	```            msg = '"{}" is not an integer'.format(val)
+	```            self.result.setPlainText(msg)
+	```
+	```
+	```    def clear(self):
+	```        self.inputEdit.clear()
+	```        self.result.clear()
+	```
+	```    def center(self):
+	```        qr = self.frameGeometry()
+	```        cp = QDesktopWidget().availableGeometry().center()
+	```        qr.moveCenter(cp)
+	```        self.move(qr.topLeft())
+	```
+	```if __name__ == '__main__':
+	```    if args.GUI:
+	```        app = QApplication([])
+	```        fac = factorial_GUI(args.integers[0])
+	```        app.exec_()
+	```    else:
+	```        for i in args.integers:
+	```            r = factorial(i)
+	```            print('{:,}'.format(r))
+
+[myip]
+description = [Python] Find your local and public IP addresses.
+code_output = myip.py
+code = ```# description = Find your local and public IP addresses.
+	```
+	```import socket
+	```from requests import get
+	```
+	```ip = socket.gethostbyname(socket.gethostname())
+	```print('Your local IP address is: ', ip)
+	```ip = get('https://api.ipify.org').text
+	```print('Your public IP address is: ', ip)
+
+[dogage]
+description = [Python] Calculate a dog's age as human.
+code_output = dogage.py
+code = 
+	```import argparse
+	```import numpy as np
+	```import matplotlib.pyplot as plt
+	```
+	```class DogAge(object):
+	```    def __init__(self, age=[1], plot=False):
+	```        self.age = age
+	```        self.plot_bool = plot
+	```
+	```    def parse_args(self):
+	```        parser = argparse.ArgumentParser(
+	```            description = "Calculate a dog's age as human."
+	```        )
+	```        parser.add_argument(
+	```            'age',
+	```            nargs = '*',
+	```            type = float,
+	```            default = [1],
+	```            help = 'Enter a number, or two numbers as a range.'
+	```        )
+	```        parser.add_argument(
+	```            '-p',
+	```            dest = 'plot',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = "Draw a curve plot displaying dog's age rate"
+	```        )
+	```        args = parser.parse_args()
+	```        self.age = args.age
+	```        self.plot_bool = args.plot
+	```        if len(self.age) == 1:
+	```            self.age.append(self.age[0])
+	```
+	```    def age_print(self, age):
+	```        dog, human = self.age_calculate(age)
+	```        print('{0:5.2f} ≈ {1:5.2f}'.format(dog, human))
+	```
+	```    def age_calculate(self, dog):
+	```        human = 16 * np.log(dog) + 31
+	```        return(dog, human)
+	```
+	```    def age_draw(self, age):
+	```        dogs, humans = [], []
+	```        i = 0
+	```        if age < 1:
+	```            incr = 0.1
+	```        else:
+	```            incr = 1
+	```        while i <= age:
+	```            i = i + incr
+	```            dog, human = self.age_calculate(i)
+	```            dogs.append(dog)
+	```            humans.append(human)
+	```        plt.xlabel('Dog age')
+	```        plt.ylabel('Human age')
+	```        plt.title("Dog's age as human")
+	```        plt.plot(dogs, humans)
+	```        plt.show()
+	```
+	```    def compare(self):
+	```        if self.plot_bool:
+	```            self.age_draw(self.age[0])
+	```        else:
+	```            print('dog year(s) ≈ human year(s)')
+	```            if self.age[0] < self.age[1]:
+	```                age_limit = self.age[1]
+	```            else:
+	```                age_limit = self.age[0]
+	```            age = self.age[0]
+	```            while age <= age_limit:
+	```                self.age_print(age)
+	```                age += 1
+	```
+	```if __name__ == '__main__':
+	```    dogage = DogAge()
+	```    dogage.parse_args()
+	```    dogage.compare()
+
+[msdoc]
+description = [VBScript] Convert a document into another format.
+code_output = msdoc.vbs
+code = 
+	```'#>msdoc.vbs directory source_format target_format
+	```'#>msdoc . docx pdf
+	```
+	```'Const wdFormatDocument = 0
+	```'Const wdFormatDocument97 = 0
+	```'Const wdFormatDocumentDefault = 16
+	```'Const wdFormatDOSText = 4
+	```'Const wdFormatDOSTextLineBreaks = 5
+	```'Const wdFormatEncodedText = 7
+	```'Const wdFormatFilteredHTML = 10
+	```'Const wdFormatFlatXML = 19
+	```'Const wdFormatFlatXMLMacroEnabled = 20
+	```'Const wdFormatFlatXMLTemplate = 21
+	```'Const wdFormatFlatXMLTemplateMacroEnabled = 22
+	```'Const wdFormatHTML = 8
+	```'Const wdFormatPDF = 17
+	```'Const wdFormatRTF = 6
+	```'Const wdFormatTemplate = 1
+	```'Const wdFormatTemplate97 = 1
+	```'Const wdFormatText = 2
+	```'Const wdFormatTextLineBreaks = 3
+	```'Const wdFormatUnicodeText = 7
+	```'Const wdFormatWebArchive = 9
+	```'Const wdFormatXML = 11
+	```'Const wdFormatXMLDocument = 12
+	```'Const wdFormatXMLDocumentMacroEnabled = 13
+	```'Const wdFormatXMLTemplate = 14
+	```'Const wdFormatXMLTemplateMacroEnabled = 15
+	```'Const wdFormatXPS = 18
+	```'Const wdFormatOfficeDocumentTemplate = 23
+	```
+	```Option Explicit
+	```
+	```Sub main()
+	```Dim ArgCount
+	```ArgCount = WScript.Arguments.Count
+	```Select Case ArgCount
+	```	Case 3
+	```		Dim SrcFilePaths,objshell, SrcFileExtension, TrgFileExtension
+	```		SrcFilePaths = WScript.Arguments(0)
+	```		SrcFileExtension = WScript.Arguments(1)
+	```		TrgFileExtension = WScript.Arguments(2)
+	```		StopWordApp
+	```		Set objshell = CreateObject("scripting.filesystemobject")
+	```		If objshell.FolderExists(SrcFilePaths) Then
+	```			Dim flag,FileNumber
+	```			flag = 0
+	```			FileNumber = 0
+	```			Dim Folder,TrgFiles,TrgFile
+	```			Set Folder = objshell.GetFolder(SrcFilePaths)
+	```			Set TrgFiles = Folder.Files
+	```			For Each TrgFile In TrgFiles
+	```				FileNumber=FileNumber+1
+	```				SrcFilePath = TrgFile.Path
+	```				If GetSrcFile(SrcFilePath, SrcFileExtension) Then
+	```					ConvertSrcToTrg SrcFilePath, TrgFileExtension
+	```					flag=flag+1
+	```				End If
+	```			Next
+	```			WScript.Echo  flag & " files in the folder are converted."
+	```		Else
+	```			If GetSrcFile(SrcFilePaths, SrcFileExtension) Then
+	```				Dim SrcFilePath
+	```				SrcFilePath = SrcFilePaths
+	```				ConvertSrcToTrg SrcFilePath, TrgFileExtension
+	```				WScript.Echo  SrcFilePath & " is successfully converted."
+	```			End If
+	```		End If
+	```	Case  Else
+	```	 	WScript.Echo "Usage: msdoc.vbs path source-extension target-extension."
+	```End Select
+	```End Sub
+	```
+	```Function GetFileType(FileType)
+	```	Dim i, FileTypes(8,2)
+	```	FileTypes(0,0) = "doc"
+	```	FileTypes(0,1) = 0
+	```	FileTypes(1,0) = "rtf"
+	```	FileTypes(1,1) = 6
+	```	FileTypes(2,0) = "txt"
+	```	FileTypes(2,1) = 7
+	```	FileTypes(3,0) = "html"
+	```	FileTypes(3,1) = 8
+	```	FileTypes(4,0) = "xml"
+	```	FileTypes(4,1) = 11
+	```	FileTypes(5,0) = "docx"
+	```	FileTypes(5,1) = 16
+	```	FileTypes(6,0) = "pdf"
+	```	FileTypes(6,1) = 17
+	```	For i=0 to UBound(FileTypes)
+	```		If StrComp(FileType, FileTypes(i, 0), vbTextCompare) = 0 Then
+	```			GetFileType = FileTypes(i, 1)
+	```			Exit For
+	```		End If
+	```	Next
+	```End Function
+	```
+	```Function ConvertSrcToTrg(SrcFilePath, TrgFileExtension)
+	```	Dim objshell, ParentFolder, BaseName, WordFilePath, wordapp, doc
+	```	Set objshell= CreateObject("scripting.filesystemobject")
+	```	ParentFolder = objshell.GetParentFolderName(SrcFilePath)
+	```	BaseName = objshell.GetBaseName(SrcFilePath)
+	```	WordFilePath = parentFolder & "\" & BaseName & "." & TrgFileExtension
+	```	Set wordapp = CreateObject("Word.Application")
+	```	Set doc = wordapp.documents.open(SrcFilePath)
+	```	doc.saveas WordFilePath, GetFileType(TrgFileExtension)
+	```	doc.close
+	```	wordapp.quit
+	```	Set objshell = Nothing
+	```End Function
+	```
+	```Function GetSrcFile(SrcFilePath, SrcFileExtension)
+	```	Dim objshell
+	```	Set objshell= CreateObject("scripting.filesystemobject")
+	```	Dim Arrs ,Arr
+	```	Arrs = Array(SrcFileExtension)
+	```	Dim blnIsTrgFile,FileExtension
+	```	blnIsTrgFile= False
+	```	FileExtension = objshell.GetExtensionName(SrcFilePath)
+	```	For Each Arr In Arrs
+	```		If InStr(UCase(FileExtension),UCase(Arr)) <> 0 Then
+	```			blnIsTrgFile= True
+	```			Exit For
+	```		End If
+	```	Next
+	```	GetSrcFile = blnIsTrgFile
+	```	Set objshell = Nothing
+	```End Function
+	```
+	```Function StopWordApp
+	```	Dim strComputer,objWMIService,colProcessList,objProcess
+	```	strComputer = "."
+	```	Set objWMIService = GetObject("winmgmts:" _
+	```		& "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+	```	Set colProcessList = objWMIService.ExecQuery _
+	```		("SELECT * FROM Win32_Process WHERE Name = 'Winword.exe'")
+	```	For Each objProcess in colProcessList
+	```		objProcess.Terminate()
+	```	Next
+	```End Function
+	```
+	```Call main
+
+[nb2pdf]
+description = [Python] Convert Jupyter notebook files (.ipynb) to PDF using nbconvert and LaTeX.
+template_output = nb2pdf.tplx
+template = 
+	```((=
+	```  "latex": {
+	```    "title": "An Example of Jupyter Notebook",
+	```    "author": "John Doe",
+	```    "language": "english"
+	```  },
+	```=))
+	```
+	```((*- extends 'display_priority.tplx' -*))
+	```((* block data_text *))
+	```\begin{verbatim}
+	```((( output.data['text/plain'] )))
+	```\end{verbatim}
+	```((* endblock data_text *))
+	```
+	```((* block error *))
+	```\begin{Verbatim}[commandchars=\\\{\}]
+	```((( super() )))
+	```\end{Verbatim}
+	```((* endblock error *))
+	```((* block traceback_line *))
+	```((( line | indent | strip_ansi | escape_latex )))
+	```((* endblock traceback_line *))
+	```
+	```((* block stream *))
+	```\begin{Verbatim}[commandchars=\\\{\}]
+	```((( output.text | escape_latex | ansi2latex )))
+	```\end{Verbatim}
+	```((* endblock stream *))
+	```
+	```((* block data_latex -*))
+	```((( output.data['text/latex'] | strip_files_prefix )))
+	```((* endblock data_latex *))
+	```
+	```((* block data_markdown -*))
+	```((( output.data['text/markdown'] | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash', 'latex'))))
+	```((* endblock data_markdown *))
+	```
+	```((*- block data_png -*))((( draw_figure(output.metadata.filenames['image/png']) )))((*- endblock -*))
+	```((*- block data_jpg -*))((( draw_figure(output.metadata.filenames['image/jpeg']) )))((*- endblock -*))
+	```((*- block data_svg -*))((( draw_figure(output.metadata.filenames['image/svg+xml']) )))((*- endblock -*))
+	```((*- block data_pdf -*))((( draw_figure(output.metadata.filenames['application/pdf']) )))((*- endblock -*))
+	```
+	```((* macro draw_figure(filename) -*))
+	```((* set filename = filename | posix_path *))
+	```((*- block figure scoped -*))
+	```\begin{center}
+	```\adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{((( filename )))}
+	```\end{center}
+	```{ \hspace*{\fill} \\}
+	```((*- endblock figure -*))
+	```((*- endmacro *))
+	```
+	```((* block markdowncell scoped *))
+	```    ((( cell.source | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash', 'json',extra_args=[]) | resolve_references | convert_pandoc('json','latex'))))
+	```((* endblock markdowncell *))
+	```
+	```((* block unknowncell scoped *))
+	```((* endblock unknowncell *))
+	```
+	```((* block header *))
+	```    ((* block docclass *))
+	```    ((*- if nb.metadata.latex -*))
+	```        ((*- if nb.metadata.latex.language -*))
+	```        \documentclass[((( nb.metadata.latex.language )))]{hzguide}
+	```        ((*- endif -*))
+	```    ((*- else -*))
+	```        \documentclass{hzguide}
+	```    ((*- endif -*))
+	```        \usepackage{hzjupyter}
+	```    ((* endblock docclass *))
+	```
+	```    ((* block title *))
+	```    ((*- if nb.metadata.latex -*))
+	```        ((*- if nb.metadata.latex.title -*))
+	```        \title{((( nb.metadata.latex.title )))}
+	```        ((*- else -*))
+	```        \title{((( resources.metadata.name | ascii_only | escape_latex )))}
+	```        ((*- endif -*))
+	```    ((*- else -*))
+	```        \title{((( resources.metadata.name | ascii_only | escape_latex )))}
+	```    ((*- endif -*))
+	```    ((* endblock title *))
+	```
+	```    ((* block author *))
+	```    ((*- if nb.metadata.latex -*))
+	```        ((*- if nb.metadata.latex.author -*))
+	```        \author{((( nb.metadata.latex.author )))}
+	```        ((*- else -*))
+	```        \author{}
+	```        ((*- endif -*))
+	```    ((*- else -*))
+	```    ((*- endif -*))
+	```    ((* endblock author *))
+	```
+	```    ((* block date *))\date{}((* endblock date *))
+	```((* endblock header *))
+	```
+	```((* block body *))
+	```    \begin{document}
+	```    ((* block predoc *))
+	```    ((* block maketitle *))
+	```        \maketitle
+	```        \tableofcontents*
+	```    ((* endblock maketitle *))
+	```    ((* block abstract *))((* endblock abstract *))
+	```    ((* endblock predoc *))
+	```    ((( super() )))
+	```    ((* block postdoc *))
+	```    ((* block bibliography *))
+	```    \makeatletter
+	```    \if@hangul
+	```        \def\refname{참고 문헌}
+	```        \def\bibname{참고 문헌}
+	```    \fi
+	```    \makeatother
+	```        \bibliographystyle{apacite}
+	```        \bibliography{references}
+	```    ((* endblock bibliography *))
+	```    ((* endblock postdoc *))
+	```    \end{document}
+	```((* endblock body *))
+	```
+	```((* block input scoped *))
+	```    \begin{Verbatim}[commandchars=\\\{\}]
+	```    ((*- if resources.global_content_filter.include_input_prompt *))
+	```    ((( cell.source | highlight_code(strip_verbatim=True, metadata=cell.metadata) | add_prompts )))
+	```    ((* else *))
+	```    ((( cell.source | highlight_code(strip_verbatim=True, metadata=cell.metadata) )))
+	```    ((* endif *))
+	```    \end{Verbatim}
+	```((* endblock input *))
+	```
+	```((* block execute_result scoped *))
+	```    ((*- for type in output.data | filter_data_type -*))
+	```        ((*- if resources.global_content_filter.include_output_prompt -*))
+	```            ((*- if type in ['text/plain'] *))
+	```((( add_prompt(output.data['text/plain'], cell, 'Out') )))
+	```            ((*- else -*))
+	```\verb+Out[((( cell.execution_count )))]:+((( super() )))
+	```            ((*- endif -*))
+	```        ((*- endif -*))
+	```    ((*- endfor -*))
+	```((* endblock execute_result *))
+	```
+	```((* macro add_prompt(text, cell, prompt) -*))
+	```    ((*- if cell.execution_count is defined -*))
+	```    ((*- set execution_count = "" ~ (cell.execution_count | replace(None, " ")) -*))
+	```    ((*- else -*))
+	```    ((*- set execution_count = " " -*))
+	```    ((*- endif -*))
+	```    ((*- set indentation = " " * (execution_count | length + 7) -*))
+	```\begin{verbatim}
+	```(((- text | add_prompts(first=prompt ~ '[' ~ execution_count ~ ']: ', cont=indentation) -)))
+	```\end{verbatim}
+	```((*- endmacro *))
+code_output = nb2pdf.py
+code = 
+	```import os
+	```import sys
+	```import configparser
+	```import argparse
+	```import glob
+	```
+	```dirCalled = os.path.dirname(__file__)
+	```sys.path.append(os.path.abspath(dirCalled))
+	```from ltx import LatexCompiler
+	```
+	```class ipynb_to_pdf(object):
+	```
+	```    def __init__(self, ipynb=None):
+	```        self.ini_bool = self.initialize()
+	```        self.ipynb = ipynb
+	```
+	```    def check_template(self):
+	```        if os.path.exists(self.template):
+	```            return True
+	```        else:
+	```            print('{} is not found.'.format(self.template))
+	```            return False
+	```
+	```    def initialize(self):
+	```        inipath = os.path.dirname(__file__)
+	```        ini = os.path.join(inipath, 'docenv.conf')
+	```        if os.path.exists(ini):
+	```            config = configparser.ConfigParser()
+	```            config.read(ini)
+	```            try:
+	```                self.template = config.get('Jupyter Template', 'latex')
+	```                self.template = os.path.join(inipath, self.template)
+	```                return self.check_template()
+	```            except:
+	```                print('Make sure to have docenv.conf set properly.')
+	```                return False
+	```        else:
+	```             self.template = 'nb2pdf.tplx'
+	```             return self.check_template()
+	```#            print('docenv.conf is not found.')
+	```#            return False
+	```
+	```    def parse_args(self):
+	```        parser = argparse.ArgumentParser(
+	```            description = 'Convert Jupyter notebook files (.ipynb) to PDF using nbconvert and LaTeX.'
+	```        )
+	```        parser.add_argument(
+	```            'ipynb',
+	```            nargs = '+',
+	```            help = 'Specify one or more Jupyter notebook files.'
+	```        )
+	```        parser.add_argument(
+	```            '-t',
+	```            dest = 'template',
+	```            help = 'To use another latex template, specify the path to it.'
+	```        )
+	```        args, self.compile_option = parser.parse_known_args()
+	```        self.ipynb = args.ipynb
+	```        if args.template is not None:
+	```            self.template = args.template
+	```            self.ini_bool = self.check_template()
+	```
+	```    def convert_each(self, afile):
+	```        basename, ext = os.path.splitext(afile)
+	```        if ext == '.ipynb':
+	```            tex = basename + '.tex'
+	```            # Convert to tex
+	```            cmd = 'jupyter-nbconvert --to=latex --template={} --SVG2PDFPreprocessor.enabled=True {}'.format(self.template, afile)
+	```            os.system(cmd)
+	```            # Compile tex
+	```            if os.path.exists(tex):
+	```                if len(self.compile_option) == 0:
+	```                     self.compile_option.append('-w')
+	```                LatexCompiler(tex, self.compile_option)
+	```        else:
+	```            print('{} is not a Jupyter notebook.'.format(afile))
+	```
+	```    def convert(self):
+	```        if self.ini_bool:
+	```            for fnpattern in self.ipynb:
+	```                for afile in glob.glob(fnpattern):
+	```                    self.convert_each(afile)
+	```
+	```if __name__ == '__main__':
+	```    nb2pdf = ipynb_to_pdf()
+	```    nb2pdf.parse_args()
+	```    nb2pdf.convert()
+
+[locatepy]
+description = [Python] Pinpoint a python module.
+code_output = locatepy.py
+code = 
+	```import os
+	```import sys
+	```import argparse
+	```
+	```mydir = os.path.dirname(__file__)
+	```sys.path.append(os.path.abspath(mydir))
+	```mydir = os.path.join(mydir, os.pardir)
+	```sys.path.append(os.path.abspath(mydir))
+	```from open import FileOpener
+	```
+	```parser = argparse.ArgumentParser(
+	```    description = 'Locate a python module, view its version or help, or open the file.'
+	```)
+	```parser.add_argument(
+	```    'module',
+	```    nargs = '?',
+	```    help = 'Specify a python module.'
+	```)
+	```parser.add_argument(
+	```    '-H',
+	```    dest = 'help_bool',
+	```    action = 'store_true',
+	```    default = False,
+	```    help = 'Show the help of the specified module.'
+	```)
+	```parser.add_argument(
+	```    '-v',
+	```    dest = 'version_bool',
+	```    action = 'store_true',
+	```    default = False,
+	```    help = 'Show the version of the specified module.'
+	```)
+	```parser.add_argument(
+	```    '-o',
+	```    dest = 'open_bool',
+	```    action = 'store_true',
+	```    default = False,
+	```    help = 'Open the specified module.'
+	```)
+	```args = parser.parse_args()
+	```
+	```def show_version(module):
+	```    if hasattr(module, '__version__'):
+	```        print('{}=={}'.format(module.__name__, module.__version__))
+	```    else:
+	```        print("{}'s version is not specified".format(module.__name__))
+	```
+	```if args.module is None:
+	```    parser.print_help()
+	```    sys.exit()
+	```
+	```try:
+	```    module = __import__(args.module)
+	```except:
+	```    print('{} is not found.'.format(args.module))
+	```    sys.exit()
+	```
+	```if args.version_bool:
+	```    show_version(module)
+	```elif args.help_bool:
+	```    help(module)
+	```elif args.open_bool:
+	```    opener = FileOpener()
+	```    opener.open_txt(module.__file__)
+	```else:
+	```    print(module.__file__)
+
+[exrate]
+description = [Python] View exchage rates.
+code_output = exrate.py
+code = ```
+	```import urllib.request
+	```from bs4 import BeautifulSoup
+	```import argparse
+	```import re
+	```import unicodedata
+	```
+	```class ExchangeRate(object):
+	```
+	```    def __init__(self, amount=1.0, currency='USD', list=False):
+	```        self.amount = amount
+	```        self.currency = currency
+	```        self.list_bool = list
+	```
+	```        URL = 'https://finance.naver.com/marketindex/exchangeDetail.nhn?marketindexCd=FX_USDKRW'
+	```        page = urllib.request.urlopen(URL)
+	```        self.soup = BeautifulSoup(page, 'html.parser')
+	```
+	```        # getting currencies from <select>
+	```        lines = ''
+	```        for i in self.soup.find_all('option'):
+	```            lines = lines + str(i) + '\n'
+	```        p = re.compile('>(.+?)<')
+	```        found = p.findall(lines)
+	```        i = 0
+	```        while i < len(found):
+	```            found[i] = found[i].strip()
+	```            i += 1
+	```        found = set(found)
+	```        self.currencies = {}
+	```        for i in found:
+	```            words = i.split()
+	```            self.currencies[words[-1]] = i
+	```
+	```    def parse_args(self):
+	```        parser = argparse.ArgumentParser(
+	```            description = 'View exchage rates.'
+	```        )
+	```        parser.add_argument(
+	```            'amount',
+	```            nargs = '?',
+	```            type = str,
+	```            default = "1.0",
+	```            help = 'Specify an amount.'
+	```        )
+	```        parser.add_argument(
+	```            dest = 'currency',
+	```            nargs = '?',
+	```            default = 'USD',
+	```            help = 'specify a currency. (default: USD) '
+	```        )
+	```        parser.add_argument(
+	```            '-l',
+	```            dest = 'list',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Show the ist of currencies.'
+	```        )
+	```        args = parser.parse_args()
+	```        self.amount = float(args.amount.replace(',', ''))
+	```        self.currency = args.currency
+	```        self.list_bool = args.list
+	```
+	```    def align_string(self, string: str, width: int):
+	```        nfc_string = unicodedata.normalize('NFC', string)
+	```        wide_chars = [unicodedata.east_asian_width(c) for c in nfc_string]
+	```        num_wide_chars = sum(map(wide_chars.count, ['W', 'F']))
+	```        width = max(width - num_wide_chars, num_wide_chars)
+	```        return '{:{w}}'.format(nfc_string, w=width)
+	```
+	```    def show_currencies(self, columns=2):
+	```        currencies = sorted(self.currencies.keys())
+	```        cur_countries = []
+	```        for i in currencies:
+	```            country = self.currencies[i]
+	```            # Removing 'CNY' from '중국 위안 CNY'
+	```            country = country.rsplit(' ', 1)[0]
+	```            country = self.align_string(country, 25)
+	```            cur_countries.append('{0}: {1}'.format(i, country))
+	```        cnt = 0
+	```        line = ''
+	```        for i in cur_countries:
+	```            line += i
+	```            cnt += 1
+	```            if cnt == columns:
+	```                print(line)
+	```                line = ''
+	```                cnt = 0
+	```        if line != '':
+	```            print(line)
+	```
+	```    def calcurate(self):
+	```        self.currency = self.currency.upper()
+	```        try:
+	```            exchange_rate = self.soup.find('option', text=self.currencies[self.currency]).attrs['value']
+	```        except:
+	```            print('Make sure the currency abbreviation is correct.')
+	```            return
+	```        basis = self.soup.find('option', text=self.currencies[self.currency]).attrs['label']
+	```
+	```        # foreign : KRW for the basis
+	```        exchange_rate = float(exchange_rate)
+	```        basis = float(basis)
+	```        won = basis * exchange_rate
+	```        won = '{:,.2f}'.format(won)
+	```        basis = '{:,.2f}'.format(basis)
+	```        print('{} {} = {} KRW'.format(basis, self.currency, won))
+	```
+	```        # foreign : KRW for the given
+	```        won_amount = self.amount * exchange_rate
+	```        foreign_amount = self.amount
+	```        won_amount = '{:,.2f}'.format(won_amount)
+	```        foreign_amount = '{:,.2f}'.format(foreign_amount)
+	```        print('{} {} = {} KRW'.format(foreign_amount, self.currency, won_amount))
+	```
+	```        # KRW : foreign for the given
+	```        won_amount = self.amount
+	```        foreign_amount = self.amount / exchange_rate
+	```        won_amount = '{:,.2f}'.format(won_amount)
+	```        foreign_amount = '{:,.2f}'.format(foreign_amount)
+	```        print('{} KRW = {} {}'.format(won_amount, foreign_amount, self.currency))
+	```
+	```if __name__ == '__main__':
+	```    exrate = ExchangeRate()
+	```    exrate.parse_args()
+	```    if exrate.list_bool:
+	```        exrate.show_currencies()
+	```    else:
+	```        exrate.calcurate()
+
+[taxrate]
+description = [Python] Calculate income tax.
+code_output = taxrate.py
+code = ```
+	```import argparse
+	```import numpy as np
+	```from collections import OrderedDict
+	```import matplotlib.pyplot as plt
+	```from matplotlib import rc
+	```rc('font', family="Noto Sans CJK KR")
+	```
+	```class TaxRate(object):
+	```
+	```
+	```    def __init__(self):
+	```
+	```        # 1200만 원 초과 ~ 4600만 원 이하: 15%%
+	```        self.unit = 10000
+	```        self.last_section = 1000000001
+	```        self.rate_sections = {12000000:6, 46000000:15, 88000000:24, 150000000:35, 300000000:38, 500000000:40, 1000000000:42, self.last_section:45}
+	```        self.rate_sections = OrderedDict(sorted(self.rate_sections.items()))
+	```        self.progressive_sections = {}
+	```        self.deduction_sections = {}
+	```        self.initialize()
+	```
+	```
+	```    def initialize(self):
+	```
+	```        accumulated = 0
+	```        preceding = 0
+	```        for limit in self.rate_sections:
+	```            rate = self.rate_sections[limit] / 100
+	```            if preceding == 0:
+	```                self.progressive_sections[limit] = 0
+	```                self.deduction_sections[limit] = 0
+	```            else:
+	```                self.progressive_sections[limit] = int(accumulated)
+	```                deduction = limit * rate - ( (limit - preceding) * rate + accumulated )
+	```                self.deduction_sections[limit] = int(deduction)
+	```            accumulated = accumulated + ((limit - preceding) * rate)
+	```            preceding = limit
+	```
+	```
+	```    def parse_args(self):
+	```
+	```        parser = argparse.ArgumentParser(
+	```            description = 'Calculate income tax.'
+	```        )
+	```        parser.add_argument(
+	```            'salary',
+	```            nargs = '?',
+	```            type = str,
+	```            default = '0',
+	```            help = 'Specify an amount of salary in unit of 10,000 or use decimal point for a precise amount, such as 2186.9760'
+	```        )
+	```        parser.add_argument(
+	```            '-m',
+	```            dest = 'minimum', # 8720 in 2021
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Specify minimum wage per hour to calculate annual salary and monthly pay.'
+	```        )
+	```        parser.add_argument(
+	```            '-s',
+	```            dest = 'show',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Dispay rate sections by income.'
+	```        )
+	```        parser.add_argument(
+	```            '-p',
+	```            dest = 'plot',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Draw a bar plot for rate sections.'
+	```        )
+	```        args = parser.parse_args()
+	```        if args.minimum:
+	```            self.salary = int(float(args.salary) * 209 * 12)
+	```        else:
+	```            self.salary = int(float(args.salary) * self.unit)
+	```
+	```        self.show_bool = args.show
+	```        self.plot_bool = args.plot
+	```
+	```
+	```    def rate_section_show(self):
+	```
+	```        if self.show_bool is True:
+	```            self.rate_section_itemize()
+	```        if self.plot_bool is True:
+	```            self.rate_section_draw()
+	```
+	```
+	```    def rate_section_itemize(self):
+	```
+	```        for limit in self.rate_sections:
+	```            if limit == self.last_section:
+	```                salary = '{:.0f}'.format(preceding/self.unit)
+	```                print(" Over {:5}: {} %% {:.0f}".format(salary, self.rate_sections[limit], self.deduction_sections[limit]/self.unit))
+	```            else:
+	```                salary = '{:.0f}'.format(limit/self.unit)
+	```                print("Up to {:>5}: {:>2} %% {:.0f}".format(salary, self.rate_sections[limit], self.deduction_sections[limit]/self.unit))
+	```                preceding = limit
+	```
+	```
+	```
+	```    def rate_section_draw(self):
+	```
+	```        sections, rates = [], []
+	```        for limit in self.rate_sections:
+	```            if limit == self.last_section:
+	```                salary = '>'+'{:.0f}'.format(preceding/self.unit)
+	```                sections.append(salary)
+	```            else:
+	```                salary = '≤'+'{:.0f}'.format(limit/self.unit)
+	```                sections.append(salary)
+	```                preceding = limit
+	```            rates.append(self.rate_sections[limit])
+	```        x = np.arange(len(self.rate_sections))
+	```        plt.bar(x,rates)
+	```        plt.xticks(x, sections)
+	```        plt.xlabel('연봉(만 원)')
+	```        plt.ylabel('세율(%%)')
+	```        plt.title('소득세')
+	```        plt.show()
+	```
+	```
+	```    def calculate_tax(self, salary):
+	```
+	```        # corresponding = 0
+	```        # for limit in self.rate_sections:
+	```        #     if salary > limit:
+	```        #         if limit == self.last_section:
+	```        #             preceding = corresponding
+	```        #         corresponding = limit
+	```        #     else:
+	```        #         preceding = corresponding
+	```        #         corresponding = limit
+	```        #         break
+	```        # accumulated = self.progressive_sections[corresponding]
+	```        # rate = self.rate_sections[corresponding] / 100
+	```        # tax = accumulated + ((salary - preceding) * rate)
+	```
+	```        for limit in self.rate_sections:
+	```            if salary < limit:
+	```                section = limit
+	```                break
+	```        if salary > self.last_section:
+	```            section = self.last_section
+	```
+	```        rate = self.rate_sections[section] / 100
+	```        tax = int((salary * rate) - self.deduction_sections[section])
+	```        return self.trunc_ones(tax)
+	```
+	```
+	```    def trunc_ones(self, num):
+	```
+	```        num = int(num)
+	```        return int(num - num %% 10)
+	```
+	```
+	```    def display_pay(self, salary):
+	```
+	```        tax = self.calculate_tax(salary)
+	```        yearly_tax_rate = tax * 100 / salary
+	```
+	```        monthly_pay = salary / 12
+	```        monthly_tax = tax / 12
+	```
+	```        state_pension = monthly_pay * 0.045
+	```        health_care = monthly_pay * 0.0343 + monthly_pay * 0.0343 * 0.1152 # 장기요양보험 포함
+	```        employment_insurance = monthly_pay * 0.008
+	```        deduction = health_care + state_pension + employment_insurance
+	```
+	```        monthly_tax = monthly_tax - deduction
+	```        post_tax_pay = monthly_pay - (deduction + monthly_tax)
+	```        actual_tax_rate = (monthly_tax * 12) * 100 / salary
+	```
+	```        output = '''
+	```Annual salary: {:,}
+	```Annual tax: {:,} ({:.2f}%%)
+	```-------------------------------------------
+	```Monthly pay: {:,}
+	```  Total deduction: {:,}
+	```    State pension: {:,}
+	```    Health care: {:,}
+	```    Employment insurance: {:,}
+	```  Monthly tax: {:,} (Actual rate: {:.2f}%%)
+	```-------------------------------------------
+	```Post-tax pay: {:,}
+	```            '''.format(
+	```                salary,
+	```                tax,
+	```                yearly_tax_rate,
+	```                self.trunc_ones(monthly_pay),
+	```                self.trunc_ones(deduction),
+	```                self.trunc_ones(state_pension),
+	```                self.trunc_ones(health_care),
+	```                self.trunc_ones(employment_insurance),
+	```                self.trunc_ones(monthly_tax),
+	```                actual_tax_rate,
+	```                self.trunc_ones(post_tax_pay)
+	```            )
+	```        print(output)
+	```        self.rate_section_show()
+	```
+	```if __name__=="__main__":
+	```
+	```    taxrate = TaxRate()
+	```    taxrate.parse_args()
+	```    if taxrate.salary == 0:
+	```        if taxrate.show_bool or taxrate.plot_bool:
+	```            taxrate.rate_section_show()
+	```    else:
+	```        taxrate.display_pay(taxrate.salary)
+
+[shortcut]
+description = [Python] Create a shortcut into a favorite or specific directory.
+code_output = shortcut.py
+code = ```# Install pywin32 to use win32com
+	```import os
+	```import sys
+	```import glob
+	```import argparse
+	```import winshell
+	```from win32com.client import Dispatch
+	```
+	```def parse_args() -> argparse.Namespace:
+	```
+	```    parser = argparse.ArgumentParser(
+	```        description = 'Create a shortcut into a favorite or specific directory.'
+	```    )
+	```    parser.add_argument(
+	```        'files',
+	```        nargs = '*',
+	```        help = 'Specify a file or more to create their shortcuts.'
+	```    )
+	```    parser.add_argument(
+	```        '-d',
+	```        dest = 'destination',
+	```        default = r'C:\Users\yihoze\Favorites\링크',
+	```        help = 'Specify a directory where to create shortcuts for specified files.'
+	```    )
+	```    parser.add_argument(
+	```        '-s',
+	```        dest = 'show',
+	```        action = 'store_true',
+	```        default = False,
+	```        help = 'Show the destination directory.'
+	```    )
+	```
+	```    return parser.parse_args()
+	```
+	```
+	```def create_shortcut(files, destination) -> None:
+	```
+	```    shell = Dispatch('WScript.Shell')
+	```    for fnpattern in files:
+	```        for afile in glob.glob(fnpattern):
+	```            target_path = os.path.abspath(afile)
+	```            filename = os.path.basename(afile) + '.lnk'
+	```            shortcut_path = os.path.join(destination, filename)
+	```            shortcut = shell.CreateShortCut(shortcut_path)
+	```            shortcut.Targetpath = target_path
+	```            shortcut.save()
+	```
+	```
+	```args = parse_args()
+	```if args.show:
+	```    print(args.destination)
+	```else:
+	```    create_shortcut(files=args.files, destination=args.destination)
+	```
+
+[lotto]
+description = [Python] Pick lotto numbers or permute letters.
+code_output = lotto.py
+code = ```
+	```# How to download nltk packages:
+	```# >>> import nltk
+	```# >>> nltk.download()
+	```# Then the NLTKDownloader window appears.
+	```# Click the All Packages tab, scroll down to the wordnet item, and then click the Download button
+	```# Scroll down to the words item, and click the Download button
+	```
+	```import os
+	```import sys
+	```import argparse
+	```from random import randint
+	```from itertools import permutations
+	```from itertools import combinations
+	```from nltk.corpus import wordnet
+	```# from nltk.corpus import words
+	```
+	```# dirCalled = os.path.dirname(__file__)
+	```# sys.path.append(os.path.abspath(dirCalled))
+	```# from mytex import LatexTemplate
+	```
+	```class Lotto(object):
+	```
+	```    def __init__(self,
+	```    letters=None, combination=None, wordnet=False, number=False, frequency=5, weeks=8):
+	```        self.letters = letters
+	```        self.combination = combination
+	```        self.number_bool = number
+	```        self.wordnet_bool = wordnet
+	```        self.frequency = frequency
+	```        self.weeks = weeks
+	```
+	```    def parse_args(self):
+	```
+	```        example = '''examples:
+	```    lotto.py -f 10 -w 20
+	```        Lotto numbers are picked at random.
+	```        With "-f 10", 10 set of lotto numbers are presented.
+	```        With "-w 20", lotto numbers are presented for coming 20 weeks.
+	```    lotto.py -c 3-4 -W -n 12ab가나
+	```        These characters are permuted.
+	```        With "-c 3-4", characters are selected within the specified range
+	```            and each set is permuted.
+	```        With "-c 2", characters are selected from the specified number
+	```            up to the length of the given characters.
+	```        With "-W", only meaningful words among the results are displayed.
+	```    lotto.py -n [...]
+	```        Each result is numbered.
+	```    '''
+	```
+	```        parser = argparse.ArgumentParser(
+	```            epilog = example,
+	```            formatter_class = argparse.RawDescriptionHelpFormatter,
+	```            description = 'Pick lotto numbers or permute letters.'
+	```        )
+	```        parser.add_argument(
+	```            'letters',
+	```            type = str,
+	```            nargs = '?',
+	```            help = 'Type characters without space for permutation or nothing for lotto.'
+	```        )
+	```        parser.add_argument(
+	```            '-c',
+	```            dest = 'combination',
+	```            default = None,
+	```            help = 'Specify a range of combination.'
+	```        )
+	```        parser.add_argument(
+	```            '-n',
+	```            dest = 'number',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Show results with numbers.'
+	```        )
+	```        parser.add_argument(
+	```            '-W',
+	```            dest = 'wordnet',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Show only meaningful words. Note that it takes a rather long time.'
+	```        )
+	```        parser.add_argument(
+	```            '-f',
+	```            dest = 'frequency',
+	```            type = int,
+	```            default = 5,
+	```            help = 'Specify how many times to pick numbers for lotto. (default: 5)'
+	```        )
+	```        parser.add_argument(
+	```            '-w',
+	```            dest = 'weeks',
+	```            default = '8',
+	```            help = 'Specify how many weeks to print for lotto. (default: 8)'
+	```        )
+	```        args = parser.parse_args()
+	```        self.letters = args.letters
+	```        self.combination = args.combination
+	```        self.number_bool = args.number
+	```        self.wordnet_bool = args.wordnet
+	```        self.frequency = args.frequency
+	```        self.weeks = args.weeks
+	```
+	```
+	```    def determine_task(self):
+	```
+	```        if self.letters is None:
+	```            self.run_lotto()
+	```        else:
+	```            self.letters = self.letters.upper()
+	```            if self.combination is not None:
+	```                cnt = self.combination
+	```                cnt = self.combination.split('-')
+	```                try:
+	```                    if len(cnt) == 1:
+	```                        start = int(cnt[0])
+	```                        end = len(self.letters)
+	```                    elif len(cnt) == 2:
+	```                        start = int(cnt[0])
+	```                        end = int(cnt[1])
+	```                except:
+	```                    print('Wrong combination range')
+	```                    return False
+	```                if start > end:
+	```                    start = end
+	```                if start < 2:
+	```                    start = 2
+	```                if end > len(self.letters):
+	```                    end = len(self.letters)
+	```                self.display_results(self.run_combinations(self.letters, start, end))
+	```            else:
+	```                self.display_results(self.run_permutations(self.letters))
+	```
+	```
+	```    def run_lotto(self):
+	```
+	```        m, n = 6, 45
+	```        balls = []
+	```        cnt = 0
+	```        while cnt < self.frequency:
+	```            balls.clear()
+	```            for i in range(n-m+1, n+1):
+	```                drawn = randint(1, i)
+	```                if drawn in balls:
+	```                    balls.append(i)
+	```                else:
+	```                    balls.append(drawn)
+	```            balls.sort()
+	```            for index, value in enumerate(balls):
+	```                balls[index] = '{:>2}'.format(str(value))
+	```            cnt += 1
+	```            result = ', '.join(balls)
+	```            if self.number_bool:
+	```                print('{:2d}: {}'.format(cnt, result))
+	```            else:
+	```                print(result)
+	```
+	```
+	```    def run_combinations(self, letters, start, end):
+	```
+	```        letters = list(letters)
+	```        perms = []
+	```        while start <= end:
+	```            combs = combinations(letters, start)
+	```            for i in list(combs):
+	```                perms.extend(self.run_permutations(''.join(i)))
+	```            start += 1
+	```        return perms
+	```
+	```
+	```    def run_permutations(self, letters):
+	```
+	```        letters = list(letters)
+	```        return list(permutations(letters))
+	```
+	```    def display_results(self, results):
+	```
+	```        for index, value in enumerate(results):
+	```            results[index] = ''.join(value)
+	```        results = set(results)
+	```
+	```        if self.wordnet_bool:
+	```            picked = []
+	```            for i in results:
+	```                if wordnet.synsets(i):
+	```                    picked.append(i)
+	```            results = picked
+	```
+	```        results = sorted(results)
+	```        if self.number_bool:
+	```            digits = len(results)
+	```            digits = len(str(digits))
+	```            if self.combination is not None:
+	```                results = sorted(results, key=len)
+	```                for index, value in enumerate(results):
+	```                    print('{}.{:{d}}: {}'.format(len(value), index+1, value, d=digits))
+	```            else:
+	```                for index, value in enumerate(results):
+	```                    print('{:{d}}: {}'.format(index+1, value, d=digits))
+	```        else:
+	```            if self.combination is not None:
+	```                results = sorted(results, key=len)
+	```                letters = len(results[0])
+	```                comb = []
+	```                for i in results:
+	```                    if letters == len(i):
+	```                        comb.extend([i])
+	```                    else:
+	```                        comb = sorted(comb)
+	```                        print('{} letters: {}'.format(letters, ', '.join(comb)))
+	```                        letters = len(i)
+	```                        comb = [i]
+	```                print('{} letters: {}'.format(letters, ', '.join(comb)))
+	```            else:
+	```                print(', '.join(results))
+	```
+	```
+	```if __name__ == '__main__':
+	```    lotto = Lotto()
+	```    lotto.parse_args()
+	```    lotto.determine_task()
+
+[userpath]
+description = [PowerShell] View the PATH environment variable.
+code_output = userpath.ps1
+code = 
+	```# userpath.ps1 -a "C:\Program Files\Python37\"
+	```
+	```[Cmdletbinding()]
+	```param
+	```(
+	```  [alias("a")][switch] $append_bool = $false,
+	```  [alias("r")][switch] $remove_bool = $false,
+	```  [alias("s")][switch] $set_bool = $false,
+	```  [alias("c")][switch] $admin_bool = $false,
+	```  [alias("p")][switch] $system_properties_bool = $false,
+	```  [alias("h")][switch] $help = $false,
+	```  [String] $directory
+	```)
+	```
+	```function help()
+	```{
+	```  write-output "
+	```  View the local PATH environment variable.
+	```  Usage:
+	```    userpath.ps1 [option] [directory]
+	```  Options:
+	```    -a: Append to the PATH
+	```    -r: Remove from the PATH
+	```    -s: Set to the PATH
+	```    -p: Open the System Properties window
+	```    -c: Check if running as administrator
+	```    -h: help
+	```  "
+	```}
+	```
+	```function CheckLocalAdmin()
+	```{
+	```  $result  = ([security.principal.windowsprincipal][security.principal.windowsidentity]::GetCurrent()).isinrole([Security.Principal.WindowsBuiltInRole] "Administrator")
+	```  If ($result) {
+	```    write-output "Running as administrator"
+	```  } else {
+	```    write-output "NOT Running as administrator"
+	```  }
+	```}
+	```
+	```function GetLocalPath()
+	```{
+	```  write-output ""
+	```  $env:path.split(";")
+	```  write-output ""
+	```}
+	```
+	```function AppendLocalPath()
+	```{
+	```  if (!(TEST-PATH $directory)) {
+	```    write-output "'$directory' does not Exist, cannot be added to the PATH."
+	```    return
+	```  }
+	```  $PathasArray = ($Env:PATH).split(';')
+	```  if ($PathasArray -contains $directory -or $PathAsArray -contains $directory+'\') {
+	```    write-output "'$Directory' is already in the PATH."
+	```    return
+	```  }
+	```  If (!($directory[-1] -match '\\')) {
+	```    $directory  =  $directory + '\'
+	```  }
+	```  $env:path  =  $directory + ";" + $env:path
+	```  GetLocalPath
+	```}
+	```
+	```function RemoveLocalPath()
+	```{
+	```  If ( $env:path.split(';') -contains $directory ) {
+	```    $env:path = $env:path.replace($directory,$NULL)
+	```    $env:path = $env:path.replace(';;',';')
+	```  }
+	```  GetLocalPath
+	```}
+	```
+	```function SetLocalPath()
+	```{
+	```  $env:path  =  $directory
+	```  GetLocalPath
+	```}
+	```
+	```if ($help) { help; break }
+	```if ($admin_bool) { CheckLocalAdmin; break }
+	```if ($system_properties_bool) { control.exe sysdm.cpl,System,3; break }
+	```if (! $directory) { GetLocalPath; break }
+	```if ($append_bool) { AppendLocalPath; break }
+	```if ($remove_bool) { RemoveLocalPath; break }
+	```if ($set_bool) { SetLocalPath; break }
+
+[tabexp]
+description = [PowerShell] TabExpansion2 modified for PowerShell
+code_output = tabexp.ps1
+code = 
+	```Function TabExpansion2 {
+	```    [CmdletBinding(DefaultParameterSetName = 'ScriptInputSet')]
+	```    Param(
+	```        [Parameter(ParameterSetName = 'ScriptInputSet', Mandatory = $true, Position = 0)]
+	```        [string] $inputScript,
+	```
+	```        [Parameter(ParameterSetName = 'ScriptInputSet', Mandatory = $true, Position = 1)]
+	```        [int] $cursorColumn,
+	```
+	```        [Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 0)]
+	```        [System.Management.Automation.Language.Ast] $ast,
+	```
+	```        [Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 1)]
+	```        [System.Management.Automation.Language.Token[]] $tokens,
+	```
+	```        [Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 2)]
+	```        [System.Management.Automation.Language.IScriptPosition] $positionOfCursor,
+	```
+	```        [Parameter(ParameterSetName = 'ScriptInputSet', Position = 2)]
+	```        [Parameter(ParameterSetName = 'AstInputSet', Position = 3)]
+	```        [Hashtable] $options = $null
+	```    )
+	```
+	```    End
+	```    {
+	```        $source = $null
+	```        if ($psCmdlet.ParameterSetName -eq 'ScriptInputSet')
+	```        {
+	```            $source = [System.Management.Automation.CommandCompletion]::CompleteInput(
+	```                <#inputScript#>  $inputScript,
+	```                <#cursorColumn#> $cursorColumn,
+	```                <#options#>      $options)
+	```        }
+	```        else
+	```        {
+	```            $source = [System.Management.Automation.CommandCompletion]::CompleteInput(
+	```                <#ast#>              $ast,
+	```                <#tokens#>           $tokens,
+	```                <#positionOfCursor#> $positionOfCursor,
+	```                <#options#>          $options)
+	```        }
+	```        $field = [System.Management.Automation.CompletionResult].GetField('completionText', 'Instance, NonPublic')
+	```        $source.CompletionMatches | ForEach-Object {
+	```            $item = $_.CompletionText
+	```            $ext = [io.path]::GetExtension($item)
+	```            $cnt = ($item.ToCharArray() | Where-Object {$_ -eq '\'} | Measure-Object).Count
+	```            # write-host $item, $cnt
+	```            # only at the current directory
+	```            if ($item.StartsWith('.\')) {
+	```                if ($cnt -eq 1) {
+	```                    If ($ext -ne '.cmd' -and $ext -ne '.bat' -and $ext -ne '.ps1' -and $ext -ne '.py' -and $ext -ne '.exe') {
+	```                        $field.SetValue($_, [io.path]::GetFileName($_.CompletionText))
+	```                    }
+	```                }
+	```            }
+	```        }
+	```        Return $source
+	```    }
+	```}
+
+[loan]
+description = [Python] Calculate monthly loan payment.
+code_output = loan.py
+code = ```
+	```import os
+	```import argparse
+	```import math
+	```
+	```
+	```class LoanCalculator(object):
+	```
+	```    def __init__(self):
+	```
+	```        self.parse_args()
+	```        self.calculate_monthly_repayment()
+	```
+	```
+	```    def parse_args(self):
+	```        example = '''If 100 million is loaned at 2.9%% rate of interest for 10 years:
+	```        loan.py 10000 2.9 10'''
+	```
+	```        parser = argparse.ArgumentParser(
+	```            epilog = example,
+	```            formatter_class = argparse.RawDescriptionHelpFormatter,
+	```            description = 'Calculate monthly loan payment.'
+	```        )
+	```        parser.add_argument(
+	```            'loan',
+	```            nargs=3,
+	```            type=float
+	```        )
+	```        parser.add_argument(
+	```            '-m',
+	```            dest = 'month_bool',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Treat the last argument as the number of months, not years.'
+	```        )
+	```        parser.add_argument(
+	```            '-r',
+	```            dest = 'round_bool',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Round up after the decimal point. All decimal places are removed by default.'
+	```        )
+	```        parser.add_argument(
+	```            '-l',
+	```            dest = 'list_bool',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Enumerate monthly principal and interest.'
+	```        )
+	```        parser.add_argument(
+	```            '-p',
+	```            dest = 'pdf_bool',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Print the result in PDF.'
+	```        )
+	```        self.args = parser.parse_args()
+	```
+	```        self.loan = self.args.loan[0]
+	```        self.rate = self.args.loan[1]
+	```        self.years = self.args.loan[2]
+	```
+	```    def calculate_monthly_repayment(self):
+	```
+	```        rate_monthly = (self.rate * 0.01) / 12
+	```        if self.args.month_bool:
+	```            self.months = int(self.years)
+	```        else:
+	```            self.months = int(self.years * 12)
+	```
+	```        self.loan = int(self.loan * 10000)
+	```
+	```        # \[ P = L \times \frac{r}{12} \times \frac{ \left(1+\frac{r}{12}\right)^{12\cdot n} }{ \left(1+\frac{r}{12}\right)^{12\cdot n} - 1 } \]
+	```        progression = math.pow(1+rate_monthly, self.months)
+	```        repayment_monthly = self.loan * rate_monthly * (progression / (progression - 1))
+	```        repayment_monthly = int(repayment_monthly)
+	```
+	```        result = 'A loan of {:,} at {:4.2f}%% rate of interest is paid back\n{:,} per month for {} months.\n'.format(self.loan, self.rate, repayment_monthly, self.months)
+	```        print(result)
+	```        tex = result
+	```
+	```        interest_accumulated = 0
+	```        balance = self.loan
+	```        principal_accumulated = 0
+	```
+	```        result = '# | Interest | Principal | P accumulated | Balance'
+	```        if self.args.list_bool:
+	```            print(result)
+	```        elif self.args.pdf_bool:
+	```            tex = tex + '\n' + result
+	```
+	```        for n in range(self.months):
+	```
+	```            interest_monthly = balance * rate_monthly
+	```            # round off or truncate to get rid of all decimal places
+	```            if self.args.round_bool:
+	```                interest_monthly = math.ceil(interest_monthly)
+	```            else:
+	```                interest_monthly = int(interest_monthly)
+	```
+	```            if n+1 == self.months:
+	```                principal_monthly = balance
+	```            else:
+	```                principal_monthly = repayment_monthly - interest_monthly
+	```
+	```            principal_accumulated += principal_monthly
+	```            balance -= principal_monthly
+	```            interest_accumulated += interest_monthly
+	```
+	```            result = '{:>3} {:>9,} {:>9,} {:>12,} {:>12,}'.format(n+1, interest_monthly, principal_monthly, principal_accumulated, balance)
+	```
+	```            if self.args.list_bool:
+	```                print(result)
+	```            elif self.args.pdf_bool:
+	```                tex = tex + '\n' + result
+	```
+	```        repayment_accumulated = principal_accumulated + interest_accumulated
+	```        rate_actual = interest_accumulated * 100 / principal_accumulated
+	```
+	```        result = 'Accumulated repayment: {:>12,}\nAccumulated interest:  {:>12,}\nActual rate of interest:     {:4.2f}%%'.format(repayment_accumulated, interest_accumulated, rate_actual)
+	```        print(result)
+	```
+	```        if self.args.pdf_bool:
+	```            tex = tex + '\n' + result
+	```            self.make_pdf(tex)
+	```
+	```
+	```    def make_pdf(self, content):
+	```
+	```        filename = 'loan.tex'
+	```
+	```        tex_before = r'''
+	```\documentclass[a4paper]{article}
+	```\setlength\parindent{0pt}
+	```\begin{document}
+	```\begin{verbatim}
+	```'''
+	```        tex_after = r'''
+	```\end{verbatim}
+	```\end{document}'''
+	```
+	```        content = tex_before + content + tex_after
+	```
+	```        if os.path.exists(filename):
+	```            answer = input('{} already exists. Are you sure to overwrite it? [y/N] '.format(filename))
+	```            if answer.lower() == 'y':
+	```                os.remove(filename)
+	```            else:
+	```                return False
+	```
+	```        with open(filename, mode='w', encoding='utf-8') as f:
+	```            f.writelines(content)
+	```
+	```        os.system('pdflatex.exe {}'.format(filename))
+	```
+	```
+	```if __name__ == '__main__':
+	```    LoanCalculator()
+	```
+
+[strcomp]
+description = [Python] Get the match rate between two strings.
+code_output = strcomp.py
+code = import os
+	```import sys
+	```import argparse
+	```import csv
+	```from difflib import SequenceMatcher
+	```
+	```
+	```class StringCompare(object):
+	```
+	```    def __init__(self):
+	```
+	```        self.parse_args()
+	```        if len(self.strings) == 1:
+	```            self.compare_in_TSV()
+	```        else:
+	```            self.compare()
+	```
+	```
+	```    def parse_args(self):
+	```
+	```        parser = argparse.ArgumentParser(
+	```            description = 'Get the match rate between two strings.'
+	```        )
+	```        parser.add_argument(
+	```            'strings',
+	```            nargs = '+',
+	```            help = 'Type two strings wrapped with quotes, or Specify a TSV file that contains strings in two columns.'
+	```        )
+	```        args = parser.parse_args()
+	```        self.strings = args.strings
+	```
+	```
+	```    def compare_in_TSV(self):
+	```
+	```        lines = 0
+	```        matches = 0
+	```        basename = os.path.basename(self.strings[0])
+	```        filename = os.path.splitext(basename)[0]
+	```        infile = filename + '.tsv'
+	```        outfile = filename + '_result.tsv'
+	```        if not os.path.exists(infile):
+	```            print('{} does not exist.'.format(infile))
+	```            return
+	```        with open(infile, mode='r', encoding='utf-8') as source, open(outfile, mode='w', encoding='utf-8') as result:
+	```            reader = csv.reader(source, delimiter='\t')
+	```            writer = csv.writer(result, delimiter='\t', lineterminator='\n')
+	```            for line in reader:
+	```                s = SequenceMatcher(None, line[0], line[1])
+	```                lines += 1
+	```                match = '{0:.1f}%%'.format(s.ratio() * 100)
+	```                matches += s.ratio()
+	```                writer.writerow([line[0], line[1], match])
+	```            matches = matches / lines
+	```            average = 'Average match rate: {0:.1f}%%'.format(matches * 100)
+	```            print(average)
+	```            writer.writerow([average])
+	```
+	```
+	```    def compare(self):
+	```
+	```        s = SequenceMatcher(None, self.strings[0], self.strings[1])
+	```        print('{0:.1f}%%'.format(s.ratio() * 100))
+	```
+	```
+	```if __name__ == '__main__':
+	```    StringCompare()
+
+[rasterpdf]
+description = [Python] Convert PDF pages to PNG.
+code_output = rasterpdf.py
+code = ```import os
+	```import argparse
+	```import glob
+	```import subprocess
+	```import img2pdf
+	```from PyPDF2 import PdfFileReader
+	```from pdf2image import convert_from_path
+	```from PIL import Image
+	```
+	```class RasterizePDF(object):
+	```
+	```    def __init__(self):
+	```
+	```        self.parse_args()
+	```        self.rasterize()
+	```
+	```    def parse_args(self):
+	```
+	```        parser = argparse.ArgumentParser(
+	```            description = 'Convert PDF pages to PNG.'
+	```        )
+	```        parser.add_argument(
+	```            'pdf',
+	```            nargs = '+',
+	```            help = 'Specify one or more PDF files.'
+	```        )
+	```        parser.add_argument(
+	```            '-j',
+	```            dest = 'jpg_bool',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Convert to JPEG.'
+	```        )
+	```        parser.add_argument(
+	```            '-k',
+	```            dest = 'remove_bool',
+	```            action = 'store_false',
+	```            default = True,
+	```            help = 'Keep secondary image files.',
+	```        )
+	```        self.args = parser.parse_args()
+	```
+	```    def count_page_digits(self, img):
+	```
+	```        with open(img, 'rb') as f:
+	```            pdf = PdfFileReader(f)
+	```            pages = pdf.getNumPages()
+	```
+	```        digits = 0
+	```        while(pages >= 1):
+	```            digits += 1
+	```            pages = pages / 10
+	```        return digits
+	```
+	```    def rasterize(self):
+	```
+	```        for i in self.args.pdf:
+	```            for j in glob.glob(i):
+	```                self.convert_pages(j)
+	```
+	```    def convert_pages(self, pdf):
+	```
+	```        if self.args.jpg_bool:
+	```            image_format = 'jpeg'
+	```        else:
+	```            image_format = 'png'
+	```
+	```        filename = os.path.splitext(pdf)[0]
+	```        digits = self.count_page_digits(pdf)
+	```
+	```        # save pages as images
+	```        pages = convert_from_path(pdf)
+	```        for i in range(len(pages)):
+	```            output = '{}_{}.{}'.format(filename, str(i+1).zfill(digits), image_format)
+	```            pages[i].save(output, image_format)
+	```
+	```        # adjust the density
+	```        page_images = filename + '_*.' + image_format
+	```        for i in glob.glob(page_images):
+	```            img = Image.open(i)
+	```            img.save(i, dpi=(200,200))
+	```
+	```        # merge images into pdf
+	```        output = filename + '_rasterized.pdf'
+	```        with open(output, 'wb') as f:
+	```            f.write(img2pdf.convert(glob.glob(page_images)))
+	```
+	```        if self.args.remove_bool:
+	```            for i in glob.glob(page_images):
+	```                os.remove(i)
+	```
+	```
+	```if __name__ == '__main__':
+	```    RasterizePDF()
+
+[countind]
+description = [Python] Count how many page numbers each index entry has.
+code_output = countind.py
+code = import os
+	```import sys
+	```import argparse
+	```import re
+	```
+	```parser = argparse.ArgumentParser(
+	```    description = 'Count how many page numbers each index entry has.')
+	```parser.add_argument(
+	```    'file',
+	```    metavar='IND',
+	```    type=str,
+	```    nargs=1,
+	```    help='Specify an ind file.'
+	```    )
+	```args = parser.parse_args()
+	```file = args.file[0]
+	```
+	```if not os.path.exists(file):
+	```    print('{} is not found.'.format(file))
+	```    sys.exit()
+	```if not file.endswith('.ind'):
+	```    print('{} is not an index file. Specify an .ind file.'.format(file))
+	```    sys.exit()
+	```
+	```def CountHyperpage(line):
+	```    page = line.count('hyperpage')
+	```    if page > 1:
+	```        found = re.search('(\\\\w*item .+?),', line)
+	```        if found:
+	```            substitute = '{} ({}),'.format(found.group(1), page)
+	```            line = line.replace(found.group(0), substitute)
+	```    return line
+	```
+	```trgfile = 't@mp.ind'
+	```src = open(file, mode='r', encoding='utf-8')
+	```trg = open(trgfile, mode='w', encoding='utf-8')
+	```
+	```lines = src.readlines()
+	```for line in lines:
+	```    trg.write(CountHyperpage(line))
+	```
+	```src.close()
+	```trg.close()
+	```
+	```os.remove(file)
+	```os.rename(trgfile, file)
+
+[rannum]
+description = [Python] Pick a number as large as specified randomly.
+code_output = rannum.py
+code = ```# description = Pick a number as large as specified randomly.
+	```
+	```import sys
+	```from numpy.random import randint
+	```
+	```if len(sys.argv) > 1:
+	```    try:
+	```        digits = int(sys.argv[1])
+	```    except:
+	```        digits = 8
+	```else:
+	```    digits = 8
+	```
+	```numerals = randint(0, 10, digits)
+	```PIN = ''
+	```for i, numeral in enumerate(numerals):
+	```    PIN += str(numeral)
+	```    if (i+1) %% 4 == 0:
+	```        PIN += ' '
+	```
+	```print(PIN)
+
+[barchart]
+description = [Python] Make and save a chart.
+meta_output = barchart_example.ini
+meta = [chart]
+	title = 2020 수입
+	xlabel = 월
+	ylabel = 금액 (₩)
+	groups = A 사업부, B 사업부
+data_output = barchart_example.tsv
+data = 1	120,447,000	10,414,280
+	2	110,069,000	5,660,980
+	3	104,623,000	23,494,330
+	4	72,895,000	43,241,440
+	5	72,644,000	21,084,490
+	6	95,191,000	34,032,900
+	7	159,352,000	70,903,710
+	8	67,856,600	10,803,670
+	9	78,559,000	20,574,910
+	10	143,319,000	35,325,760
+	11	124,301,230	37,861,020
+	12	78,773,800	11,145,450
+default_arguments = barchart_example.tsv
+code_output = barchart.py
+code = import os
+	```import argparse
+	```import configparser
+	```import csv
+	```import matplotlib.pyplot as plt
+	```import matplotlib as mpl
+	```import numpy as np
+	```
+	```class BarChart(object):
+	```
+	```    def __init__(self):
+	```
+	```        plt.rcParams["font.family"] = 'Malgun Gothic'
+	```
+	```        self.parse_args()
+	```        datfile = self.args.file[0]
+	```        name = os.path.splitext(datfile)[0]
+	```        if self.args.output is None:
+	```            self.args.output = name + '.pdf'
+	```        inifile = name + '.ini'
+	```
+	```        self.metadata = self.read_ini(inifile)
+	```        data = self.read_tsv(datfile)
+	```        if data:
+	```            self.make_chart(data)
+	```
+	```    def parse_args(self):
+	```
+	```        parser = argparse.ArgumentParser(
+	```            description = 'Make and save a chart.'
+	```        )
+	```        parser.add_argument(
+	```            'file',
+	```            nargs = 1,
+	```            help = 'Specify a data file.'
+	```        )
+	```        parser.add_argument(
+	```            '-o',
+	```            dest = 'output',
+	```            help = 'Specify a file name for the output, such as "foo.png". The default image format is PDF.'
+	```        )
+	```        parser.add_argument(
+	```            '-g',
+	```            dest = 'grid_bool',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'Show grid on the chart.'
+	```        )
+	```        parser.add_argument(
+	```            '-v',
+	```            dest = 'view_bool',
+	```            action = 'store_true',
+	```            default = False,
+	```            help = 'View the chart on the screen.'
+	```        )
+	```        self.args = parser.parse_args()
+	```
+	```
+	```    def read_tsv(self, file):
+	```
+	```        if os.path.exists(file):
+	```            with open(file, mode='r', encoding='utf-8') as f:
+	```                src = list(csv.reader(f, delimiter='\t'))
+	```        else:
+	```            return False
+	```
+	```        # gather column values as a group
+	```        data = []
+	```        rows = len(src)
+	```        fields = len(src[0])
+	```        for f in range(fields):
+	```            data.append([])
+	```            for r in range(rows):
+	```                data[f].append(0)
+	```
+	```        for r in range(rows):
+	```            for f in range(fields):
+	```                if f == 0:
+	```                    data[f][r] = src[r][f]
+	```                else:
+	```                    data[f][r] = int(src[r][f].replace(',', ''))
+	```
+	```        return data
+	```
+	```
+	```    def read_ini(self, file):
+	```
+	```        metadata = {'title':'Untitled', 'xlabel':'Month', 'ylabel':'Amount', 'groups':[]}
+	```
+	```        if os.path.exists(file):
+	```            ini = configparser.ConfigParser()
+	```            ini.read(file, encoding='utf-8')
+	```            metadata['title'] = ini.get('chart', 'title', fallback='')
+	```            metadata['xlabel'] = ini.get('chart', 'xlabel', fallback='')
+	```            metadata['ylabel'] = ini.get('chart', 'ylabel', fallback='')
+	```            groups = ini.get('chart', 'groups', fallback='')
+	```            groups = groups.replace(', ', ',')
+	```            groups = groups.split(',')
+	```            metadata['groups'] = groups
+	```        return metadata
+	```
+	```
+	```    def make_chart(self, data):
+	```
+	```        # sum by group for legend
+	```        xticks = data[0]
+	```        del data[0]
+	```        total = []
+	```        for i in data:
+	```            t = sum(j for j in i)
+	```            total.append(t)
+	```            # total.append('{:,}'.format(t))
+	```
+	```        groups = len(data)
+	```        entries = len(data[0])
+	```
+	```        fig, ax = plt.subplots()
+	```
+	```        # basic options for bars
+	```        index = np.arange(entries)
+	```        bar_width = 10 / (groups * entries)
+	```        opacity = 1
+	```        ax.yaxis.set_major_formatter(mpl.ticker.StrMethodFormatter('{x:,.0f}'))
+	```
+	```        # group name + sum for legend
+	```        if len(self.metadata['groups']) > 1:
+	```            for i, v in enumerate(total):
+	```                total[i] = '{}: {:15,}'.format(self.metadata['groups'][i], v)
+	```        else:
+	```            for i, v in enumerate(total):
+	```                total[i] = '{:15,}'.format(v)
+	```
+	```
+	```        # draw bars
+	```        for i in range(groups):
+	```            plt.bar(index + bar_width*i, data[i], bar_width,
+	```                alpha=opacity,
+	```                # color='b',
+	```                label=total[i])
+	```
+	```        # labels
+	```        plt.title(self.metadata['title'])
+	```        plt.xlabel(self.metadata['xlabel'])
+	```        plt.xticks(index + bar_width*(groups-1)/2, xticks)
+	```        plt.ylabel(self.metadata['ylabel'])
+	```        plt.legend()
+	```
+	```        # save or display
+	```        if self.args.grid_bool:
+	```             plt.grid()
+	```        fig.tight_layout()
+	```        plt.savefig(self.args.output)
+	```        if self.args.view_bool:
+	```            plt.show()
+	```
+	```
+	```if __name__ == '__main__':
+	```    BarChart()
+
+[collateUI]
+description = [Python] Collate multilingual UI strings for translation.
+code_output = collateUI.py
+code = ```import os
+	```import io
+	```import re
+	```import argparse
+	```import pandas as pd
+	```
+	```
+	```class collateUI(object):
+	```
+	```    def __init__(self):
+	```
+	```        self.parse_args()
+	```        if len(self.args.files) < 2:
+	```            print('At least two files are required.')
+	```        else:
+	```            self.collate()
+	```
+	```
+	```    def parse_args(self):
+	```
+	```        parser = argparse.ArgumentParser(
+	```            description = 'Collate multilingual UI strings for translation.'
+	```        )
+	```        parser.add_argument(
+	```            'files',
+	```            nargs='+',
+	```            help = 'Specify two or more UI string files.'
+	```        )
+	```        parser.add_argument(
+	```            '-o',
+	```            dest = 'output',
+	```            default = 'UIstrings.xlsx',
+	```            help = 'Specify a file name for output. The default is UIstrings.xlsx.'
+	```        )
+	```        parser.add_argument(
+	```            '-s',
+	```            dest = 'sort_bool',
+	```            default = False,
+	```            action = 'store_true',
+	```            help = 'Sort by the alphabets of the first file after collate.'
+	```        )
+	```        parser.add_argument(
+	```            '-t',
+	```            dest = 'tsv_bool',
+	```            default = False,
+	```            action = 'store_true',
+	```            help = 'Export to .tsv as well.'
+	```        )
+	```        self.args = parser.parse_args()
+	```
+	```
+	```    # CHANGE THE REGEXES BELOW ACCORDING TO THE FORM OF THE FILES.
+	```    def collate(self):
+	```
+	```        # Read the first specified file, skipping useless lines, to make the criterion list.
+	```        with open(self.args.files[0], mode='r', encoding='utf-8') as f:
+	```            lines = f.readlines()
+	```        basis_strings = []
+	```
+	```        for line in lines:
+	```            result = re.match('^.+=', line)
+	```            if result is not None:
+	```                line = line.replace('\n', '')
+	```                basis_strings.append(line.split('='))
+	```
+	```        # Read up to the last file one by one to add the strings to the list.
+	```        for i, foreign_file in enumerate(self.args.files):
+	```            if i == 0:
+	```                continue
+	```            with open(foreign_file, mode='r', encoding='utf-8') as f:
+	```                foreign_strings = f.read()
+	```            for i in range(len(basis_strings)):
+	```                p = '(?<={}=).+$'.format(basis_strings[i][0])
+	```                found = re.search(p, foreign_strings, flags=re.MULTILINE)
+	```                if found is None:
+	```                    basis_strings[i].append('')
+	```                else:
+	```                    basis_strings[i].append(found[0])
+	```
+	```
+	```        # Convert the list to a string.
+	```        for i in range(len(basis_strings)):
+	```            basis_strings[i] = '\t'.join(basis_strings[i])
+	```        basis_strings = '\n'.join(basis_strings)
+	```
+	```        # Add a header to the string.
+	```        header = 'ID'
+	```        for i in self.args.files:
+	```            header = '{}\t{}'.format(header, os.path.splitext(i)[0])
+	```        header += '\n'
+	```        basis_strings = header + basis_strings
+	```
+	```        # Write as .xlsx and .tsv
+	```        df = pd.read_csv(io.StringIO(basis_strings), sep='\t')
+	```        if self.args.sort_bool:
+	```            df = df.sort_values(by=[self.args.files[0], 'ID'], ascending=[True, True])
+	```        df.to_excel(self.args.output, index=False)
+	```        if self.args.tsv_bool:
+	```            output = os.path.splitext(self.args.output)[0] + '.tsv'
+	```            df.to_csv(output, sep='\t', index=False)
+	```
+	```
+	```if __name__ == '__main__':
+	```    collateUI()
+
+[doctopdf]
+description = [Python] Covert doc, docx, ppt or pptx files to pdf using Word or PowerPoint.
+code_output = doctopdf.py
+code = ```import os
+	```import argparse
+	```import glob
+	```import comtypes.client
+	```
+	```
+	```def parse_args() -> argparse.Namespace:
+	```
+	```    parser = argparse.ArgumentParser(
+	```        description = 'Covert doc, docx, ppt or pptx files to pdf using Word or PowerPoint.'
+	```    )
+	```
+	```    parser.add_argument(
+	```        'input_files',
+	```        nargs='+',
+	```        help='Specify one or more files.'
+	```    )
+	```
+	```    parser.add_argument(
+	```        '-s',
+	```        dest='suffix',
+	```        help='Specify a suffix to add it to the output filename.'
+	```    )
+	```
+	```    return parser.parse_args()
+	```
+	```
+	```def doc_to_pdf(input_file, output_file) -> None:
+	```
+	```    # wdFormatPDF = 17
+	```    Word = comtypes.client.CreateObject('Word.Application')
+	```    doc = Word.Documents.Open(input_file)
+	```    doc.SaveAs(output_file, FileFormat=17)
+	```    doc.Close()
+	```    Word.Quit()
+	```
+	```
+	```def ppt_to_pdf(input_file, output_file) -> None:
+	```
+	```    Powerpoint = comtypes.client.CreateObject('Powerpoint.Application')
+	```    ppt = Powerpoint.Presentations.Open(input_file)
+	```    # Powerpoint.Visible = True
+	```    try:
+	```        ppt.SaveAs(output_file, FileFormat=32)
+	```    except:
+	```        print('Make sure {} is editable.'.format(os.path.basename(input_file)))
+	```    ppt.Close()
+	```    Powerpoint.Quit()
+	```
+	```
+	```args = parse_args()
+	```
+	```cnt = 0
+	```for fnpattern in args.input_files:
+	```    for input_file in glob.glob(fnpattern):
+	```        ext = os.path.splitext(input_file)[1]
+	```        input_file= os.path.abspath(input_file)
+	```        filename = os.path.splitext(input_file)[0]
+	```        if args.suffix is None:
+	```            output_file = '{}.pdf'.format(filename)
+	```        else:
+	```            output_file = '{}_{}.pdf'.format(filename, args.suffix)
+	```        if ext.lower() == '.ppt' or ext.lower() == '.pptx':
+	```            ppt_to_pdf(input_file, output_file)
+	```        else:
+	```            doc_to_pdf(input_file, output_file)
+	```        cnt += 1
+	```print('{} files have been converted.'.format(cnt))
+
+[hzxls]
+description = [Visual Basic] Sort sheets, add hyperlinks to sheets, or save columns as separate text
+code_output = hzxls.bas
+code = ```Attribute VB_Name = "Module1"
+	```
+	```Sub SortSheets()
+	```Dim i As Integer
+	```Dim j As Integer
+	```Dim iAnswer As VbMsgBoxResult
+	```'
+	```' Prompt the user as which direction they wish to
+	```' sort the worksheets.
+	```'
+	```   iAnswer = MsgBox("Sort Sheets in Ascending Order?" & Chr(10) _
+	```     & "Clicking No will sort in Descending Order", _
+	```     vbYesNoCancel + vbQuestion + vbDefaultButton1, "Sort Worksheets")
+	```   For i = 1 To Sheets.Count
+	```      For j = 1 To Sheets.Count - 1
+	```'
+	```' If the answer is Yes, then sort in ascending order.
+	```'
+	```         If iAnswer = vbYes Then
+	```            If UCase$(Sheets(j).Name) > UCase$(Sheets(j + 1).Name) Then
+	```               Sheets(j).Move After:=Sheets(j + 1)
+	```            End If
+	```'
+	```' If the answer is No, then sort in descending order.
+	```'
+	```         ElseIf iAnswer = vbNo Then
+	```            If UCase$(Sheets(j).Name) < UCase$(Sheets(j + 1).Name) Then
+	```               Sheets(j).Move After:=Sheets(j + 1)
+	```            End If
+	```         End If
+	```      Next j
+	```   Next i
+	```End Sub
+	```
+	```Sub HyperlinkSheets()
+	```    For Each c In Selection
+	```      c.Hyperlinks.Add Anchor:=c, Address:="#'" & c.Value & "'!A1"
+	```    Next c
+	```End Sub
+	```
+	```Public Sub GetSheetNames()
+	```'Columns(1).Insert
+	```    For i = 1 To Sheets.Count
+	```        Cells(i, 1) = Sheets(i).Name
+	```    Next i
+	```End Sub
+	```
+	```Public Sub GetSheetValues()
+	```    For i = 2 To Sheets.Count
+	```        'Cells(i, 1) = Sheets(i).Name
+	```        Cells(i, 2) = Sheets(i).Cells(14, 1)
+	```        Cells(i, 3) = Sheets(i).Cells(9, 1)
+	```        Cells(i, 4) = Sheets(i).Cells(10, 1)
+	```        Cells(i, 6) = Sheets(i).Cells(11, 1)
+	```        Cells(i, 7) = Sheets(i).Cells(10, 1)
+	```        Cells(i, 11) = Sheets(i).Cells(32, 7)
+	```        Cells(i, 12) = Sheets(i).Cells(30, 1)
+	```    Next i
+	```End Sub
+	```
+	```Public Sub SaveColumnsAsSeparateText()
+	```Dim Sheet As Worksheet: Set Sheet = ThisWorkbook.Worksheets("Sheet1")
+	```Dim Column As Integer
+	```Dim Row As Integer
+	```Dim stream
+	```Set stream = CreateObject("ADODB.Stream")
+	```stream.Charset = "utf-8"
+	```Dim Path As String: Path = "c:\temp\"
+	```Dim Name As String
+	```Dim Filename As String
+	```For Column = 2 To 18
+	```    stream.Open
+	```    For Row = 2 To Sheet.Cells(Sheet.Rows.Count, Column).End(xlUp).Row
+	```        stream.WriteText Sheet.Cells(Row, Column).Value2, 1
+	```    Next Row
+	```    Name = Sheet.Cells(1, Column).Value2
+	```    Filename = Path & Name & ".tex"
+	```    stream.SaveToFile Filename, 2
+	```    stream.Close
+	```Next Column
+	```End Sub
+
+[hzppt]
+description = [Visual Basic] Normalize character spacing in a PowerPoint.
+code_output = hzppt.bas
+code = ```Attribute VB_Name = "Module1"
+	```
+	```Sub SpacingNormalization()
+	```
+	```On Error GoTo Errmsg
+	```
+	```Dim oshp As Shape
+	```Dim otbl As Table
+	```Dim iRow As Integer
+	```Dim iCol As Integer
+	```Dim osld As Slide
+	```
+	```For Each osld In ActivePresentation.Slides
+	```    For Each oshp In osld.Shapes
+	```        Select Case oshp.HasTable
+	```            Case Is = True
+	```                Set otbl = oshp.Table
+	```                For iRow = 1 To otbl.Rows.Count
+	```                    For iCol = 1 To otbl.Columns.Count
+	```                        otbl.Cell(iRow, iCol).Shape.TextFrame2.TextRange.Font.Spacing = 0
+	```                    Next iCol
+	```                Next iRow
+	```            Case Is = False
+	```                If oshp.HasTextFrame Then
+	```                    If oshp.TextFrame.HasText Then
+	```                        oshp.TextFrame2.TextRange.Font.Spacing = 0
+	```                    End If
+	```                End If
+	```        End Select
+	```    Next oshp
+	```Next osld
+	```
+	```MsgBox ("All segments have been normalized!")
+	```Exit Sub
+	```
+	```Errmsg:
+	```MsgBox "Error " & Err.Description
+	```
+	```End Sub
+	```
+
+[detex]
+description = [Tab-separated values] Regular expressions to rid files of TeX macros.
+code_output = detex.tsv
+code = ```(?<!\\)%%.*?$
+	```\\documentclass.+$
+	```\\input.+$
+	```\\include.+$
+	```FrontLogoImage\s?=.+$
+	```BackLogoImage\s?=.+$
+	```ProductImage\s?=.+$
+	```FrontImage\s?=.+$
+	```BackImage\s?=.+$
+	```\\ifdoc[*|^]{0,2}\{.+\}\[.+\]
+	```\\ifdoc[*|^]{0,2}\{.+\}
+	```\\image[*|^]{0,2}\{.+\}
+	```\\image[*|^]{0,2}\[.+\]\{.+\}
+	```\\img.+?\}
+	```\\listimg.+?\}
+	```\\cellimg.+?\}
+	```\\fullimage.+?\}
+	```\\illustimage[*|^]{0,2}\{.+?\}
+	```\\illustimage[*|^]{0,2}\[.+\]\{.+?\}
+	```\{IllustImage\}[*|^]{0,2}\{.+?\}
+	```\{IllustImage\}[*|^]{0,2}\[.+\]\{.+?\}
+	```\{IllustEnum\}[*|^]{0,2}\{.+?\}
+	```\{IllustEnum\}[*|^]{0,2}\[.+\]\{.+?\}
+	```\\begin\{FullImage\}\{.+?\}
+	```\{Table\}[*|^]{0,2}\[.+\]
+	```\{SpecTable\}[*]\[.+\]
+	```\{SpecTable\}[*]
+	```\{tblr\}.+$
+	```\\SetCell\[.+\]\{.+?\}
+	```\\label.+?\}
+	```\\pageref.+?\}
+	```\\titleref.+?\}
+	```\\fref.+?\}
+	```\\cirnum.+\}
+	```\\mi.+\}
+	```\\textsb.+\}
+	```\\end\{.+\}
+	```\\begin\{.+\}.+$
+	```\\begin\{.+\}$
+	```\\[a-zA-Z*]{1,25}
+	```\{
+	```\}
+	```\[
+	```\]
+	```\\\\
+	```\\\s
+	```\\,
+	```\\%%
+	```\\&
+	```\\#
+	```&
+	```DocumentType\s?=
+	```note\s?=
+	```manufacturer\s?=
+	```address\s?=
+	```subtitle\s?=
+	```title\s?=
+	```\\([가-힣])	\1
+
+[wpay]
+description = [Python] Calculate weekly wages including holiday pay.
+code_output = wpay.py
+code = ```# description = Calculate weekly wages including holiday pay.
+	```
+	```import sys
+	```
+	```if len(sys.argv) > 1:
+	```    working_hours = int(sys.argv[1])
+	```    if len(sys.argv) > 2:
+	```        minimum_wage = int(sys.argv[2])
+	```    else:
+	```        minimum_wage = 9160
+	```    weekly_pay = working_hours * minimum_wage
+	```    if working_hours >= 15:
+	```        holiday_pay = int(working_hours/40 * 8 * minimum_wage)
+	```    else:
+	```        holiday_pay = 0
+	```    print('{:,} + {:,} = {:,}'.format(weekly_pay, holiday_pay, weekly_pay+holiday_pay))
+	```else:
+	```    print('Enter working_hours [minimum_wage]')
+
+[simplexml]
+description = [Python] An example of XML and XSL
+code_output = simplexml.py
+code = ```import lxml.etree as ET
+	```
+	```dom = ET.parse('simplexml.xml')
+	```xslt = ET.parse('simplexml.xsl')
+	```transform = ET.XSLT(xslt)
+	```newdom = transform(dom)
+	```# print(ET.tostring(newdom, pretty_print=True))
+	```html_content = ET.tostring(newdom, pretty_print=True)
+	```with open('simplexml.html', mode='w', encoding='utf-8') as f:
+	```    f.write(html_content.decode('utf-8'))
+xml_output = simplexml.xml
+xml = ```<?xml version="1.0" encoding="UTF-8"?>
+	```<programming_languages>
+	```    <language>
+	```        <name>HTML</name>
+	```        <category>web</category>
+	```        <developer>W3C</developer>
+	```        <version status="working draft">5.1</version>
+	```        <priority rating="1">high</priority>
+	```    </language>
+	```
+	```    <language>
+	```        <name korean="파이썬">Python</name>
+	```        <category>application</category>
+	```        <developer>Python</developer>
+	```        <version status="stable">3.52</version>
+	```        <priority rating="4">middle</priority>
+	```    </language>
+	```</programming_languages>
+xsl_output = simplexml.xsl
+xsl = ```<?xml version="1.0" encoding="UTF-8"?>
+	```<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+	```    <xsl:output method="html"/>
+	```    <xsl:template match="/">
+	```
+	```        <html>
+	```            <body>
+	```                <h2 style="text-align:center">프로그래밍 언어</h2>
+	```                <table border="1" style="width: 50%%; margin: auto">
+	```                    <tr>
+	```                        <th>이름</th>
+	```                        <th>종류</th>
+	```                        <th>개발사</th>
+	```                        <th>버전</th>
+	```                        <th>중요도</th>
+	```                    </tr>
+	```                    <xsl:for-each select="programming_languages/language">
+	```                        <tr>
+	```                            <td><xsl:value-of select="name"/></td>
+	```                            <td><xsl:value-of select="category"/></td>
+	```                            <td><xsl:value-of select="developer"/></td>
+	```                            <td><xsl:value-of select="version"/></td>
+	```                            <td><xsl:value-of select="priority"/></td>
+	```                        </tr>
+	```                    </xsl:for-each>
+	```                </table>
+	```            </body>
+	```        </html>
+	```
+	```    </xsl:template>
+	```</xsl:stylesheet>
+
+[alphabet]
+description = [Python] Usage: alphabet.py ko (or kor or korean)
+code_output = alphabet.py
+code = ```
+	```# Α Ω
+	```import argparse
+	```
+	```
+	```class alphabet(object):
+	```
+	```
+	```    def __init__(self):
+	```
+	```        self.alphabets = {
+	```            'korean':['ᄀ', 'ᄒ', 'ᅡ', 'ᅵ'],
+	```            'english':['A', 'Z', 'a', 'z'],
+	```            'greek':['Α', 'Ω', 'α', 'ω'],
+	```            'russian':['А', 'Я', 'а', 'я'],
+	```            'italian':['A', 'I', 'L', 'V', 'Z', 'Z', 'a', 'i', 'l', 'v', 'z', 'z'],
+	```            'spanish':['A', 'N', 'Ñ', 'Ñ', 'O', 'Z', 'a', 'n', 'ñ', 'ñ', 'o', 'z'],
+	```        }
+	```
+	```        self.languages = []
+	```        for i in self.alphabets.keys():
+	```            self.languages.append(i)
+	```        self.languages = sorted(self.languages)
+	```
+	```        self.parse_args()
+	```        if len(self.args.languages) == 0:
+	```            for i in self.languages:
+	```                print(i.title())
+	```            exit()
+	```
+	```        for language in self.args.languages:
+	```            self.language = language.lower()
+	```            if self.verify_langauge():
+	```                self.show_alphabet()
+	```
+	```
+	```    def verify_langauge(self):
+	```
+	```        if self.language in self.languages:
+	```            return True
+	```        else:
+	```            for i in self.languages:
+	```                if self.language in i:
+	```                    self.language = i
+	```                    return True
+	```            print('{} is not a known language.'.format(self.language))
+	```            return False
+	```
+	```    def parse_args(self):
+	```
+	```        parser = argparse.ArgumentParser(
+	```            description = 'Usage: alphabet.py ko (or kor or korean)'
+	```        )
+	```        parser.add_argument(
+	```            'languages',
+	```            nargs = '*',
+	```            help = 'Specify a language or more to itemize their alphabet.'
+	```        )
+	```        self.args = parser.parse_args()
+	```
+	```
+	```    def show_alphabet(self):
+	```
+	```        index = 0
+	```        alphabet = []
+	```        print(self.language.title())
+	```        while index < len(self.alphabets[self.language]):
+	```            first = self.alphabets[self.language][index]
+	```            last = self.alphabets[self.language][index+1]
+	```            alphabet.clear()
+	```            alphabet.append(hex(ord(first)).upper().replace('0X', 'U+'))
+	```            for i in range(ord(first), ord(last)+1):
+	```                if chr(i) != '΢':
+	```                    alphabet.append(chr(i))
+	```            alphabet.append(hex(ord(last)).upper().replace('0X', 'U+'))
+	```            print('  '.join(alphabet))
+	```            index += 2
+	```
+	```if __name__ == '__main__':
+	```    alphabet()
+
+[download]
+description = [Python] Download files such as images or installers from the Web.
+code_output = download.py
+code = ```import os
+	```import sys
+	```import argparse
+	```import configparser
+	```
+	```import requests
+	```from urllib.parse import urlparse
+	```from pathlib import Path
+	```import shutil
+	```
+	```
+	```class Downloader(object):
+	```
+	```    def __init__(self, URLs=[], **kwargs):
+	```
+	```        self.options = {
+	```            'file': False,
+	```            'output': None,
+	```            'dir': None
+	```        }
+	```
+	```        self.URLs = URLs
+	```        for key in self.options.keys():
+	```            if key in kwargs:
+	```                self.options[key] = kwargs.get(key)
+	```
+	```        self.cnt = 0
+	```        if self.options['file']:
+	```            config = configparser.ConfigParser()
+	```            config.read(self.URLs[0], encoding='utf-8')
+	```            for name in config.sections():
+	```                url = config.get(name, 'url')
+	```                self.options['output'] = config.get(name, 'output', fallback=None)
+	```                self.download_file(url)
+	```        else:
+	```            for url in self.URLs:
+	```                self.download_file(url)
+	```        print('\n{} files have been downloaded'.format(self.cnt))
+	```
+	```
+	```    def name_file(self, req_url, resp_url) -> str:
+	```
+	```        basename = Path(urlparse(resp_url).path).name
+	```        name, ext = os.path.splitext(basename)
+	```        if ext == '':
+	```            basename = Path(urlparse(req_url).path).name
+	```            ext = os.path.splitext(basename)[1]
+	```
+	```        if len(name) > 50:
+	```            name = name[-50:]
+	```
+	```        if self.options['output']:
+	```            name = self.options['output']
+	```        if self.options['dir']:
+	```            if not os.path.exists(self.options['dir']):
+	```                os.mkdir(self.options['dir'])
+	```            filename = '{}/{}{}'.format(self.options['dir'], name, ext)
+	```        else:
+	```            filename = '{}{}'.format(name, ext)
+	```
+	```        counter = 0
+	```        while os.path.exists(filename):
+	```            counter += 1
+	```            if self.options['dir']:
+	```                filename = '{}/{}({}){}'.format(self.options['dir'], name, counter, ext)
+	```            else:
+	```                filename = '{}({}){}'.format(name, counter, ext)
+	```        return filename
+	```
+	```
+	```    def download_file(self, url) -> None:
+	```
+	```        resp = requests.get(url, stream=True)
+	```        if resp.status_code == 200:
+	```            filename = self.name_file(url, resp.url)
+	```            print('Downloading {}{:20}'.format(filename, ' '), end='\r')
+	```            local_file = open(filename, 'wb')
+	```            resp.raw.decode_content = True
+	```            shutil.copyfileobj(resp.raw, local_file)
+	```            self.cnt += 1
+	```        else:
+	```            print('{} is the wrong URL {:20}'.format(url, ' '), end='\r')
+	```
+	```
+	```def parse_args() -> argparse.Namespace:
+	```
+	```    parser = argparse.ArgumentParser(
+	```        description = 'Download files such as images or installers from the Web.'
+	```    )
+	```    parser.add_argument(
+	```        'URLs',
+	```        nargs = '+',
+	```        help = 'Specify an image URL.'
+	```    )
+	```    parser.add_argument(
+	```        '-f',
+	```        dest = 'file',
+	```        action = 'store_true',
+	```        default = False,
+	```        help = 'Use the given argument as the list file (.conf) that contains URLs.'
+	```    )
+	```    parser.add_argument(
+	```        '-o',
+	```        dest = 'output',
+	```        default = None,
+	```        help = 'Specify a file name for output.'
+	```    )
+	```    parser.add_argument(
+	```        '-d',
+	```        dest = 'dir',
+	```        default = None,
+	```        help = 'Specify a directory for output.'
+	```    )
+	```
+	```    return parser.parse_args()
+	```
+	```if __name__ == '__main__':
+	```    args = parse_args()
+	```    Downloader(
+	```        URLs = args.URLs,
+	```        file = args.file,
+	```        output = args.output,
+	```        dir = args.dir)
+	```
+conf_output = download.conf
+conf = ```# programming
+	```[Python]
+	```# web = https://www.python.org/downloads/
+	```web = https://www.anaconda.com/products/individual?modal=nucleus
+	```url = https://repo.anaconda.com/archive/Anaconda3-2021.11-Windows-x86_64.exe
+	```
+	```[VS Code]
+	```web = https://code.visualstudio.com/download
+	```url = https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user
+	```extensions = LaTeX Workshop
+	```     AsciiDoc
+	```     Asymptote
+	```     Graphviz (dot) language support
+	```     Jupyter
+	```     Lua
+	```     Markdown All in One
+	```     Markdown+Math
+	```     MyST-Markdown
+	```     PowerShell
+	```     Python
+	```     Rainbow CSV
+	```     reStructuredText
+	```     Settings Sync
+	```     Spell Right
+	```     Surround
+	```     Unicode code point of current character
+	```
+	```[Git]
+	```web = https://git-scm.com/downloads
+	```url = https://github.com/git-for-windows/git/releases/download/v2.33.1.windows.1/Git-2.33.1-64-bit.exe
+	```
+	```[Inno Setup]
+	```web = https://jrsoftware.org/isdl.php
+	```url = https://jrsoftware.org/download.php/is.exe?site=1
+	```
+	```[Lua]
+	```web = http://luabinaries.sourceforge.net/download.html
+	```url = https://sourceforge.net/projects/luabinaries/files/5.4.2/Tools%%%%20Executables/lua-5.4.2_Win64_bin.zip/download
+	```
+	```# utility
+	```[FreeCommander]
+	```web = https://freecommander.com/en/downloads/
+	```url = https://freecommander.com/downloads/FreeCommanderXE-32-public_setup.zip
+	```favorite_toolbar_setting = Program or folder: wt.exe
+	```    Start folder: "%%ActiveDir%%"
+	```    Parameter: -d "%%ActiveDir%%"
+	```
+	```[Listary]
+	```web = https://www.listary.com/download
+	```url = https://www.listary.com/download/Listary.exe?version=5.00.2843
+	```
+	```[Bandizip]
+	```web = https://kr.bandisoft.com/bandizip/
+	```url = https://kr.bandisoft.com/bandizip/dl.php?web
+	```
+	```[Dropbox]
+	```web = https://www.dropbox.com/install
+	```url = https://www.dropbox.com/download?os=win
+	```
+	```[Hoax Eliminator]
+	```web = https://teus.me/780
+	```url = https://blog.kakaocdn.net/dn/cyvEeg/btrh7wCmg0C/GHvGzy6XPb2TKsVI12Avwk/HoaxEliminator6.06.zip?attach=1&knm=tfile.zip
+	```password = teus.me
+	```
+	```# LaTeX and Markdown
+	```[TeX Live]
+	```web = http://mirror.kakao.com/CTAN/systems/texlive/tlnet/
+	```url = http://mirror.kakao.com/CTAN/systems/texlive/tlnet/install-tl-windows.exe
+	```bin_64 = https://www.tug.org/texlive/files/tl64.bat
+	```
+	```[Sumatra PDF]
+	```web = https://www.sumatrapdfreader.org/download-free-pdf-viewer
+	```url = https://kjkpubsf.sfo2.digitaloceanspaces.com/software/sumatrapdf/rel/SumatraPDF-3.3.3-64-install.exe
+	```# [Acrobat Reader]
+	```# web = https://www.adobe.com/kr/acrobat/pdf-reader.html
+	```
+	```[pdf2htmlEX]
+	```web = https://soft.rubypdf.com/software/pdf2htmlex-windows-version
+	```url = https://soft.rubypdf.com/download/pdf2htmlex/pdf2htmlEX-win32-0.14.6-upx-with-poppler-data.zip
+	```
+	```[ttfautohint]
+	```web = https://freetype.org/ttfautohint/index.html
+	```url = https://sourceforge.net/projects/freetype/files/ttfautohint/1.8.4/ttfautohint-1.8.4-win32.7z/download
+	```
+	```# [Pandoc]
+	```# web = https://pandoc.org/installing.html
+	```# url = https://github.com/jgm/pandoc/releases/download/2.16.1/pandoc-2.16.1-windows-x86_64.msi
+	```
+	```[Typora]
+	```web = https://typora.io/
+	```url = https://typora.io/windows/typora-setup-ia32.exe
+	```; [Tortoise Tagger]
+	```; web = http://www.nemadeka.com/tagger.htm
+	```; url = http://www.nemadeka.com/tagger/tortoise_tagger.zip
+	```
+	```# graphic
+	```[ImageMagick]
+	```web = https://imagemagick.org/script/download.php#windows
+	```url = https://download.imagemagick.org/ImageMagick/download/binaries/ImageMagick-7.1.0-13-Q16-HDRI-x64-dll.exe
+	```
+	```[GhostScript]
+	```web = https://ghostscript.com/releases/gsdnld.html
+	```; url = https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9550/gs9550w64.exe
+	```
+	```[InkScape]
+	```web = https://inkscape.org/release/1.1.1/windows/
+	```url = https://inkscape.org/gallery/item/29350/inkscape-1.1.1_2021-09-20_3bf5ae0d25-x64.msi
+	```
+	```[Graphviz]
+	```web = https://graphviz.org/download/
+	```url = https://gitlab.com/api/v4/projects/4207231/packages/generic/graphviz-releases/2.49.3/stable_windows_10_cmake_Release_x64_graphviz-install-2.49.3-win64.exe
+	```
+	```# font
+	```[D2 Coding]
+	```web = https://github.com/naver/d2codingfont
+	```url = https://github.com/naver/d2codingfont/releases/download/VER1.3.2/D2Coding-Ver1.3.2-20180524.zip
+	```
+	```[Noto Serif KR]
+	```web = https://fonts.google.com/noto/specimen/Noto+Serif+KR
+	```url = https://fonts.google.com/download?family=Noto%%%%20Serif%%%%20KR
+	```
+	```[Noto Sans KR]
+	```web = https://fonts.google.com/noto/specimen/Noto+Sans+KR
+	```url = https://fonts.google.com/download?family=Noto%%%%20Sans%%%%20KR
+	```
+	```[HCR]
+	```web = https://www.hancom.com/cs_center/csDownload.do
+	```
+	```[KoPubWorld]
+	```web = http://www.kopus.org/biz-electronic-font2/
+	```url = https://www.kopus.org/wp-content/uploads/2021/03/KOPUBWORLD_TTF_FONTS-1.zip
+	```
+	```# settings
+	```[Windows Terminal]
+	```commandline = powershell.exe -NoExit -Command chcp 65001
+	```profile = C:\Users\yihoze\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+	```    $PSDefaultParameterValues = @{ '*:Encoding' = 'utf8' }
+	```    . C:\home\bin\private\tabexp.ps1
+	```
+	```[Private]
+	```blog = https://hoze.tistory.com/
+	```GitHub = https://github.com/yihoze
+
+[daily]
+description = [Python] Open apps and their targets specified in daily.conf.
+code_output = daily.py
+code = ```import os
+	```import sys
+	```import argparse
+	```import configparser
+	```import subprocess
+	```
+	```conf = 'daily.conf'
+	```dirCalled = os.path.dirname(__file__)
+	```conf = os.path.join(dirCalled, conf)
+	```
+	```parser = argparse.ArgumentParser(
+	```    description = 'Open apps and their targets specified in daily.conf.'
+	```)
+	```parser.add_argument(
+	```    'list',
+	```    nargs = '?',
+	```    default = None,
+	```    help = 'Specify another daily to-do list.'
+	```)
+	```args = parser.parse_args()
+	```if args.list is not None:
+	```    conf = args.list
+	```
+	```if os.path.exists(conf):
+	```    config = configparser.ConfigParser()
+	```    config.read([conf], encoding='utf-8')
+	```    for section in config.sections():
+	```        app = config.get(section, 'app')
+	```        target = config.get(section, 'target', fallback='')
+	```        cmd = '"{0}" {1}'.format(app, target.replace('\n', ' '))
+	```        print(cmd)
+	```        subprocess.Popen(cmd, stdout=subprocess.PIPE)
+	```else:
+	```    print('{} is not found.'.format(conf))
+	```
+	```
+	```
+conf_output = daily.conf
+conf = ```[Chrome]
+	```app = C:/Program Files/Google/Chrome/Application/chrome.exe
+	```target = http://dic.daum.net/index.do?dic=eng
+	```        http://dic.daum.net/index.do?dic=kor
+
+[fuel]
+description = [Python] Calculate fuel cost for a specific distance.
+code_output = fuel.py
+code = ```import sys
+	```import os
+	```
+	```usage = '''Usage:   fuel.py FUEL_ECONOMY(km/L) FUEL_PRICE(₩) DISTANCE(km)
+	```Example: fuel.py 15 1800 400'''
+	```
+	```if len(sys.argv) < 4:
+	```    print(usage)
+	```    sys.exit()
+	```
+	```fuel_economy = float(sys.argv[1])
+	```fuel_price = float(sys.argv[2])
+	```distance = float(sys.argv[3])
+	```
+	```fuel_liter = distance / fuel_economy
+	```cost = fuel_liter * fuel_price
+	```
+	```print("₩{} ".format(int(cost)))
+	```
+	```
+	```
+
+[pastri]
+description = [Python] Calculate Pascal's triangle.
+code_output = pastri.py
+code = ```import sys
+	```import argparse
+	```from math import factorial
+	```from math import ceil
+	```
+	```class PascalTriangle(object):
+	```
+	```    def calculate_pascal_triangle(self, rows:int) -> list:
+	```
+	```        rows += 1
+	```        triangle = []
+	```        for n in range(rows):
+	```            triangle.append([])
+	```            triangle[n].append(1)
+	```            for m in range(1, n):
+	```                triangle[n].append(triangle[n - 1][m - 1] + triangle[n - 1][m])
+	```            if(rows != 0):
+	```                triangle[n].append(1)
+	```        return triangle
+	```
+	```
+	```    def print_pascal_triangle(self, triangle:list) -> None:
+	```
+	```        rows = len(triangle)
+	```        tmp = ceil(rows/2)
+	```        # For even intervals, get the number of digits in the biggest number
+	```        digits = len( str( ceil( factorial(rows) / (factorial(tmp)*factorial(rows-tmp)) ) ) ) + 1
+	```        if digits%%2:
+	```            digits += 1
+	```        indents = ceil(digits/2)
+	```
+	```        for n in range(rows):
+	```            print(" " *((rows - n)*indents), end = "")
+	```            for m in range(0, n + 1):
+	```                num = str(triangle[n][m]).center(digits, " ")
+	```                print('{:}'.format(num), end="")
+	```            print()
+	```
+	```
+	```    def print_pascal_triangle_row(self, triangle:list, row:int) -> None:
+	```
+	```        numbers = [str(i) for i in triangle[row]]
+	```        print(', '.join(numbers))
+	```
+	```
+	```def  parse_args() -> argparse.Namespace:
+	```
+	```    parser = argparse.ArgumentParser(
+	```        description = "Calculate Pascal's triangle."
+	```    )
+	```    parser.add_argument(
+	```        'rows',
+	```        nargs = 1,
+	```        help = 'Enter the number of rows.'
+	```    )
+	```    parser.add_argument(
+	```        '-r',
+	```        dest = 'row_only',
+	```        action = 'store_true',
+	```        default = False,
+	```        help = 'print the numbers in the row specified.'
+	```    )
+	```    return parser.parse_args()
+	```
+	```if __name__ == '__main__':
+	```    args = parse_args()
+	```    rows = int(args.rows[0])
+	```    PT = PascalTriangle()
+	```    if args.row_only:
+	```        PT.print_pascal_triangle_row(PT.calculate_pascal_triangle(rows), rows)
+	```    else:
+	```        PT.print_pascal_triangle(PT.calculate_pascal_triangle(rows))
+	```
+
+[trigone]
+description = [Python] Calculate trigonometric functions.
+code_output = trigone.py
+code = ```# 1 radian when radius = arc
+	```# 2π radian = 360° | 1π radian = 180°
+	```# 1 radian = 360°/2π | 1 radian = 180°/π
+	```# (2π radian)/360 = 1° | (1π radian)/180 = 1°
+	```
+	```import sys
+	```import argparse
+	```import math
+	```from decimal import Decimal
+	```
+	```example = '''examples:
+	```tangent
+	```    trigonometry.py degree [degree ...]
+	```    trigonometry.py -q first_degree last_degree [step]
+	```sine
+	```    trigonometry.py -s [-q] degree
+	```cosine
+	```    trigonometry.py -c [-q] degree
+	```arcsine
+	```    trigonometry.py -S radian [radian ...]
+	```arccosine
+	```    trigonometry.py -C radian [radian ...]
+	```arctangent
+	```    trigonometry.py -t radian [radian ...]
+	```    trigonometry.py -T perpendicular_lengh base_length
+	```'''
+	```
+	```parser = argparse.ArgumentParser(
+	```    epilog=example,
+	```    formatter_class = argparse.RawDescriptionHelpFormatter,
+	```    description = "Calculate trigonometric functions."
+	```)
+	```parser.add_argument(
+	```    'values',
+	```    nargs='+',
+	```    type=float
+	```)
+	```parser.add_argument(
+	```    '-s',
+	```    '--sine',
+	```    dest='sine',
+	```    action='store_true',
+	```    default=False,
+	```    help='Calculate sine.'
+	```)
+	```parser.add_argument(
+	```    '-S',
+	```    '--arcsine',
+	```    dest='arcsine',
+	```    action='store_true',
+	```    default=False,
+	```    help='Calculate arcsine.'
+	```)
+	```parser.add_argument(
+	```    '-c',
+	```    '--cosine',
+	```    dest='cosine',
+	```    action='store_true',
+	```    default=False,
+	```    help='Calculate cosine.'
+	```)
+	```parser.add_argument(
+	```    '-C',
+	```    '--arccosine',
+	```    dest='arccosine',
+	```    action='store_true',
+	```    default=False,
+	```    help='Calculate arccosine.'
+	```)
+	```parser.add_argument(
+	```    '-t',
+	```    '--arctangent',
+	```    dest='arctangent',
+	```    action='store_true',
+	```    default=False,
+	```    help='Calculate arctangent.'
+	```)
+	```parser.add_argument(
+	```    '-T',
+	```    '--arctangent-hypotenuse',
+	```    dest='hypotenuse',
+	```    action='store_true',
+	```    default=False,
+	```    help='Calculate arctangent.'
+	```)
+	```parser.add_argument(
+	```    '-q',
+	```    '--sequential',
+	```    dest='sequential',
+	```    action='store_true',
+	```    default=False,
+	```    help='Calculate consecutively.'
+	```)
+	```
+	```args = parser.parse_args()
+	```
+	```
+	```def domain() -> float:
+	```
+	```    step = 1
+	```    if len(args.values) == 1:
+	```        first = args.values[0]
+	```        last = first
+	```    elif len(args.values) == 2:
+	```        first = args.values[0]
+	```        last = args.values[1]
+	```    elif len(args.values) >= 3:
+	```        first = args.values[0]
+	```        last = args.values[1]
+	```        step = args.values[2]
+	```
+	```    return first, last, step
+	```
+	```
+	```def sine() -> None:
+	```
+	```    if args.sequential:
+	```        first, last, step = domain()
+	```        while first <= last:
+	```            sine_cal(first)
+	```            first += step
+	```    else:
+	```        for v in args.values:
+	```            sine_cal(v)
+	```
+	```
+	```def sine_cal(degree) -> None:
+	```
+	```    radian = math.radians(degree)
+	```    print('sin({}° = {:.4f} rad) = {:.4f}'.format(degree, radian, math.sin(radian)))
+	```
+	```
+	```def cosine() -> None:
+	```
+	```    if args.sequential:
+	```        first, last, step = domain()
+	```        while first <= last:
+	```            cosine_cal(first)
+	```            first += step
+	```    else:
+	```        for v in args.values:
+	```            cosine_cal(v)
+	```
+	```
+	```def cosine_cal(degree) -> None:
+	```
+	```    radian = math.radians(degree)
+	```    print('cos({}° = {:.4f} rad) = {:.4f}'.format(degree, radian, math.cos(radian)))
+	```
+	```
+	```def tangent() -> None:
+	```
+	```    if args.sequential:
+	```        first, last, step = domain()
+	```        while first <= last:
+	```            tangent_cal(first)
+	```            first += step
+	```    else:
+	```        for v in args.values:
+	```            tangent_cal(v)
+	```
+	```
+	```def tangent_cal(degree) -> None:
+	```
+	```    radian = math.radians(degree)
+	```    if radian%%(math.pi/2) == 0 and radian%%(math.pi) != 0:
+	```        print('tan({:.2f}° = {:.4f} rad) is undefined'.format(degree, radian))
+	```    else:
+	```        print('tan({:.2f}° = {:.4f} rad) = {:.4f}'.format(degree, radian, math.tan(radian)))
+	```
+	```
+	```def arcsine() -> None:
+	```
+	```    for v in args.values:
+	```        if args.values[0] < -1 or args.values[0] > 1:
+	```            print('Enter between -1.0 and 1.0.')
+	```        else:
+	```            radian = math.asin(v)
+	```            degree = math.degrees(radian)
+	```            print('arcsin({}) = {:.1f}° ({:.4f} rad)'.format(v, degree, radian))
+	```
+	```
+	```def arccosine() -> None:
+	```
+	```    for v in args.values:
+	```        if args.values[0] < -1 or args.values[0] > 1:
+	```            print('Enter between -1.0 and 1.0.')
+	```        else:
+	```            radian = math.acos(v)
+	```            degree = math.degrees(radian)
+	```            print('arccos({}) = {:.1f}° ({:.4f} rad)'.format(v, degree, radian))
+	```
+	```
+	```def arctangent() -> None:
+	```
+	```    for v in args.values:
+	```        radian = math.atan(v)
+	```        degree = math.degrees(radian)
+	```        print('arctan({}) = {:.1f}° ({:.4f} rad)'.format(v, degree, radian))
+	```
+	```
+	```def arctangent_hypotenuse() -> None:
+	```
+	```    if len(args.values) != 2:
+	```        print('Enter perpendicular and base')
+	```        return
+	```
+	```    perpendicular = args.values[0] # numerator
+	```    base = args.values[1]          # denominator
+	```    hypotenuse = math.sqrt(math.pow(base, 2) + math.pow(perpendicular, 2))
+	```    tangent = perpendicular/base
+	```    radian = math.atan(tangent)
+	```    degree = math.degrees(radian)
+	```
+	```    print('arctan({}) = {:.1f}° ({:.4f} rad) with hypotenuse of {:.1f}'.format(tangent, degree, radian, hypotenuse))
+	```
+	```
+	```if args.sine:
+	```    sine()
+	```elif args.cosine:
+	```    cosine()
+	```elif args.arcsine:
+	```    arcsine()
+	```elif args.arccosine:
+	```    arccosine()
+	```elif args.arctangent:
+	```    arctangent()
+	```elif args.hypotenuse:
+	```    arctangent_hypotenuse()
+	```else:
+	```    tangent()
+	```
+

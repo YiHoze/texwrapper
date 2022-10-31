@@ -1,0 +1,17 @@
+<	&#x3C;
+>	&#x3E;
+%!	&#x24;!
+&#x5c;	&#x26;#x5c;
+\\macro\*	\\verb
+\\macro\[(.+?)\]\{(.+?)\}	\\IndexEntry{\1}\\macro{\2}
+\\macro\{(.+?)\}	\\	&#x5c;	\macro{	}
+\\verb\{(.+?)\}	\\	&#x5c;	\verb{	}
+\\begin\{verbatim\}	^$	&#x200b;	\\end\{verbatim\}
+\\begin\{verbatim\}	%	&#x25;	\\end\{verbatim\}
+\\begin\{verbatim\}	\\	&#x5c;	\\end\{verbatim\}
+\\begin\{verbatim\}	&(?!#)	&#x26;	\\end\{verbatim\}
+\\begin\{code\}	^$	&#x200b;	\\end\{code\}
+\\begin\{code\}	%	&#x25;	\\end\{code\}
+\\begin\{code\}	\\	&#x5c;	\\end\{code\}
+\\begin\{code\}	&(?!#)	&#x26;	\\end\{code\}
+\\begin\{lyrics\}	^$	&#x200b;	\\end\{lyrics\}

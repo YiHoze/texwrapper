@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package version="2.0" xmlns="http://www.idpf.org/2007/opf"
+         unique-identifier="BookId">
+ <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:opf="http://www.idpf.org/2007/opf">
+   <dc:title>Cloche, 레이텍 사용자를 위한 ePub 변환기</dc:title> 
+   <dc:creator opf:role="aut">이 호재</dc:creator>
+   <dc:language>ko-KR</dc:language> 
+   <dc:rights>© 2022 이 호재</dc:rights> 
+   <dc:publisher>이 호재</dc:publisher> 
+   <dc:identifier id="BookId">urn:uuid:38c2db20-cfdf-4942-98ef-9cb50f029bc6</dc:identifier>
+ </metadata>
+ <manifest>
+  <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+  <item id="cover.xhtml" href="cover.xhtml" media-type="application/xhtml+xml"/>
+  <item id="basic.css" href="basic.css" media-type="text/css"/>
+  <item id="cloche.xhtml" href="cloche.xhtml" media-type="application/xhtml+xml"/>
+  <item id="endnote.xhtml" href="endnote.xhtml" media-type="application/xhtml+xml"/>
+  <item id="index.xhtml" href="index.xhtml" media-type="application/xhtml+xml"/>
+  <item id="Apple_Books.png" href="images/Apple_Books.png" media-type="image/png"/>
+  <item id="cloche_monochrome.jpg" href="images/cloche_monochrome.jpg" media-type="image/jpeg"/>
+</manifest>
+  <spine toc="ncx">
+  <itemref idref="cover.xhtml"/>
+  <itemref idref="cloche.xhtml"/>
+  <itemref idref="endnote.xhtml"/>
+  <itemref idref="index.xhtml"/>
+  </spine>
+</package>

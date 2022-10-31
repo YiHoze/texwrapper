@@ -1,0 +1,41 @@
+output_directory: _epub
+output_file: cloche
+tex_files: 
+    - cloche.tex
+    # - foo_1.tex
+    # - foo_2.tex
+# html_files: 
+#     - foo_1.xhtml
+#     - foo_2.xhtml
+additional:
+    - file: cover.xhtml
+      from: _html
+      to: OEBPS
+    - file: basic.css
+      from: _html
+      to: OEBPS
+    # - file: adhoc.css
+    #   from: _html
+    #   to: OEBPS
+    # - file: Cubana_Cubana.mp3
+    #   from: _html
+    #   to: OEBPS/audio
+    # - file: windmill.mp4
+    #   from: _html
+    #   to: OEBPS/video
+    # - file: NotoSerifKR-Regular.otf
+    #   from: _html
+    #   to: OEBPS/fonts
+escape: _html/escape.tsv
+indexer: _html/indexer.tsv
+converter: _html/tex2xhtml.tsv
+# converter: _html/html2xhtml.tsv
+original_image_directory: 
+  - images
+  # - images/fallback
+metadata:
+    title: "Cloche, 레이텍 사용자를 위한 ePub 변환기"
+    creator: 이 호재
+    publisher:  이 호재
+    rights: © 2022 이 호재
+    language: ko-KR
