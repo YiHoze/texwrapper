@@ -181,7 +181,7 @@ class GanaToRoman(object):
         else:
             for word in words:
                 output.append(self.transliterate(word))
-        print(' '.join(output))
+        print(''.join(output))
 
 
 def parse_args() -> argparse.Namespace:

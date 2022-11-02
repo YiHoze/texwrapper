@@ -6,7 +6,7 @@ from PIL import Image, ImageGrab
 from io import BytesIO
 
 
-def determine_output(name:str) -> str:
+def determine_output(name:str, overwrite) -> str:
 
     if name is None:
         filename = datetime.strftime(datetime.today(), '%Y-%m-%d')
@@ -15,23 +15,23 @@ def determine_output(name:str) -> str:
 
     ext = '.png'
     output = '{}{}'.format(filename, ext)
-    
-    if os.path.exists(output):
-        counter = 0
-        while True:
-            counter += 1
-            output = '{}_{}{}'.format(filename, counter, ext)
-            if not os.path.exists(output):
-                break
 
+    if not overwrite:
+        if os.path.exists(output):
+            counter = 0
+            while True:
+                counter += 1
+                output = '{}_{}{}'.format(filename, counter, ext)
+                if not os.path.exists(output):
+                    break
     return output
 
 
-def save_from_clipboard(output:str) -> None:
+def save_from_clipboard(output:str, overwrite=False) -> None:
 
     if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB):
         img = ImageGrab.grabclipboard()
-        output = determine_output(output)
+        output = determine_output(output, overwrite)
         img.save(output, 'PNG')
         print('Saved as {}'.format(output))
     else:
@@ -60,7 +60,7 @@ def copy_to_clipboard(file:str) -> None:
 
 
 parser = argparse.ArgumentParser(
-    description='Save the latest content in the clipboard.'
+    description='Save the latest image in the clipboard.'
 )
 parser.add_argument(
     'output',
@@ -68,17 +68,22 @@ parser.add_argument(
     help = 'Specify filename for output.'
 )
 parser.add_argument(
+    '-o',
+    dest = 'overwrite',
+    action = 'store_true',
+    default = False,
+    help = 'Overwrite if a file with the same name as specified exists.'
+)
+parser.add_argument(
     '-c',
     dest = 'to_clipboard',
     action = 'store_true',
     default = False,
-    help = 'Specify an image file to copy it to clipboard.'
+    help = 'Specify an image file to copy it to the clipboard.'
 )
-
 args = parser.parse_args()
 
 if args.to_clipboard:
     copy_to_clipboard(args.output)
 else:
-    save_from_clipboard(args.output)
-    
+    save_from_clipboard(args.output, args.overwrite)

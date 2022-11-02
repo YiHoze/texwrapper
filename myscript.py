@@ -81,13 +81,6 @@ class ScriptScribe(object):
             help = 'Take out every script.'
         )
         self.parser.add_argument(
-            '-N',
-            dest = 'run_bool',
-            action = 'store_false',
-            default = True,
-            help = 'Extract but do not run the specified script.'
-        )
-        self.parser.add_argument(
             '-C',
             dest = 'clear_bool',
             action = 'store_true',
@@ -115,9 +108,6 @@ class ScriptScribe(object):
 
 
     def confirm_to_overwrite(self, file) -> bool:
-
-        if not self.args.run_bool:
-            return True
 
         if file is None:
             print('Ensure the script database file is set properly.')
@@ -156,9 +146,8 @@ class ScriptScribe(object):
 
     def pick_script(self) -> None:
 
-        if self.args.run_bool:
-            if not self.check_section():
-                return
+        if not self.check_section():
+            return
 
         options = self.database.options(self.section)
         for option in options:
@@ -169,28 +158,6 @@ class ScriptScribe(object):
                 source = option.split('_')[0]
                 if not self.write_from_database(filename, source):
                     return
-
-        if self.args.run_bool:
-            ext = os.path.splitext(codefile)[1]
-            cmd = self.script_arguments
-            if ext == '.ps1':
-                cmd.insert(0,'powershell.exe ./{}'.format(codefile))
-            if ext == '.py':
-                cmd.insert(0,'python.exe {}'.format(codefile))
-            else:
-                cmd.insert(0, codefile)
-
-            if len(self.script_arguments) == 1:
-                sargs = self.database.get(self.section, 'default_arguments', fallback=None)
-                if sargs:
-                    cmd.append(sargs)
-            cmd = ' '.join(cmd)
-            print(cmd)
-            cmd = cmd.split(' ')
-            subprocess.run(cmd)
-
-            if self.args.clear_bool:
-                os.remove(codefile)
 
 
     def if_exist(self, filename) -> bool:
@@ -343,7 +310,6 @@ class ScriptScribe(object):
 
     def burst_database(self) -> None:
 
-        self.args.run_bool = False
         scripts = sorted(self.database.sections(), key=str.casefold)
 
         for i in scripts:

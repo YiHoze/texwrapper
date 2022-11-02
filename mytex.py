@@ -6,6 +6,8 @@ import configparser
 import re
 import base64
 
+from sqlalchemy import desc
+
 dirCalled = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(dirCalled))
 from op import FileOpener
@@ -206,10 +208,12 @@ class LatexTemplate(object):
 
     def confirm_to_overwrite(self, afile) -> bool:
 
-        if os.path.exists(afile):
+        if self.options['force']:
+            return True
+        elif os.path.exists(afile):
             answer = input('{} already exists. Are you sure to overwrite it? [y/N] '.format(afile))
             if answer.lower() == 'y':
-                os.remove(afile)
+                # os.remove(afile)
                 return True
             else:
                 return False
@@ -231,7 +235,7 @@ class LatexTemplate(object):
 
     def make_image_list(self) -> bool:
 
-        filename='images.lst'
+        file='images.lst'
         exclude='album.pdf'
 
         if os.path.exists(exclude):
@@ -260,11 +264,11 @@ class LatexTemplate(object):
         # images.sort(key=str.lower)
         images = self.natural_sort(images)
         images = '\n'.join(images)
-        with open(filename, mode='w', encoding='utf-8') as f:
+        with open(file, mode='w', encoding='utf-8') as f:
             f.write(images)
 
         if self.options["delete"]:
-            self.generated_files.append(filename)
+            self.generated_files.append(file)
 
         return True
 
@@ -290,9 +294,9 @@ class LatexTemplate(object):
         return content
 
 
-    def write_from_database(self, option, filename) -> bool:
+    def write_from_database(self, option, file) -> bool:
 
-        if self.confirm_to_overwrite(filename):
+        if self.confirm_to_overwrite(file):
             try:
                 content = self.database.get(self.template, option)
             except:
@@ -301,17 +305,17 @@ class LatexTemplate(object):
 
             if option == 'image':
                 content = base64.b64decode(content)
-                with open(filename, mode='wb') as f:
+                with open(file, mode='wb') as f:
                     f.write(content)
             else:
                 content = content.replace('```', '')
-                if os.path.splitext(filename)[1] == '.tex':
+                if os.path.splitext(file)[1] == '.tex':
                     content = self.fill_placeholders(content)
-                with open(filename, mode='w', encoding='utf-8') as f:
+                with open(file, mode='w', encoding='utf-8') as f:
                     f.write(content)
 
             if self.options["delete"]:
-                self.generated_files.append(filename)
+                self.generated_files.append(file)
 
             return True
         else:
@@ -324,17 +328,17 @@ class LatexTemplate(object):
 
         for option in options:
             if 'output' in option:
-                filename = self.database.get(self.template, option, fallback=False)
-                if filename:
+                file = self.database.get(self.template, option, fallback=False)
+                if file:
                     option_name = option.split('_')[0]
                     if option == 'tex_output':
-                        if self.options["burst"] and filename == 'mydoc.tex':
-                            filename = self.template + '.tex'
+                        if self.options["burst"] and file == 'mydoc.tex':
+                            file = self.template + '.tex'
                         else:
                             if self.options["output"]:
-                                filename = os.path.splitext(self.options["output"])[0] + '.tex'
-                            self.tex = filename
-                    if not self.write_from_database(option_name, filename):
+                                file = os.path.splitext(self.options["output"])[0] + '.tex'
+                            self.tex = file
+                    if not self.write_from_database(option_name, file):
                         return False
                 else:
                     print('"{}" is not specified under {}.'.format(option, self.template))
@@ -376,7 +380,7 @@ class LatexTemplate(object):
         if not self.pick_template():
             return
 
-        if not self.options["delete"]:
+        if not self.options["delete"] and not self.options["force"]:
             opener = FileOpener()
             opener.open_txt(self.tex)
 
@@ -439,13 +443,11 @@ class LatexTemplate(object):
         options = self.database.options(self.template)
         for option in options:
             if 'output' in option:
-                filename = self.database.get(self.template, option)
+                file = self.database.get(self.template, option)
                 option_name = option.split('_')[0]
                 if option_name == 'tex':
-                    description, compiler = self.get_tex_description(filename)
-                    self.database.set(self.template, 'description', description)
-                    self.database.set(self.template, 'compiler', compiler)
-                self.queue_for_database(option_name, filename)
+                    self.get_tex_description(file, self.template)
+                self.queue_for_database(option_name, file)
 
         with open(self.dbFile, mode='w', encoding='utf-8') as f:
             self.database.write(f)
@@ -464,21 +466,23 @@ class LatexTemplate(object):
                 self.database.write(f)
                 print('Successfully removed.')
 
-    def if_exits(self, filename) -> bool:
+    def if_exits(self, file) -> bool:
 
-        if os.path.exists(filename):
+        if os.path.exists(file):
             return True
         else:
-            print('"{}" does not exist in the current directory.'.format(filename))
+            print('"{}" does not exist in the current directory.'.format(file))
             return False
 
 
-    def get_tex_description(self, filename) -> tuple[str, str]:
+    def get_tex_description(self, file:str, section:str) -> None:
 
-        description = ''
-        compiler = ''
+        description = None
+        compiler = None
+        placeholders = None
+        defaults = None
 
-        with open(filename, mode='r', encoding='utf-8') as f:
+        with open(file, mode='r', encoding='utf-8') as f:
             tex_content = f.read()
 
         found = re.search('(?<=^\% description = ).*$', tex_content, flags=re.MULTILINE)
@@ -487,57 +491,66 @@ class LatexTemplate(object):
         found = re.search('(?<=^\% compiler = ).*$', tex_content, flags=re.MULTILINE)
         if found:
             compiler = found.group(0)
+        found = re.search('(?<=^\% placeholders = ).*$', tex_content, flags=re.MULTILINE)
+        if found:
+            placeholders = found.group(0)
+        found = re.search('(?<=^\% defaults = ).*$', tex_content, flags=re.MULTILINE)
+        if found:
+            defaults = found.group(0)
 
-        return description, compiler
-
+        if description is not None:
+            self.database.set(section, 'description', description)
+        if compiler is not None:
+            self.database.set(section, 'compiler', compiler)
+        if placeholders is not None:
+            self.database.set(section, 'placeholders', placeholders)
+        if defaults is not None:
+            self.database.set(section, 'defaults', defaults)
 
     def insert_new(self) -> None:
 
-        filename = os.path.basename(self.template)
-        if not self.if_exits(filename):
+        file = os.path.basename(self.template)
+        if not self.if_exits(file):
             return
 
-        name = os.path.splitext(filename)[0]
-        if name in self.database.sections():
-            print('"{}" is already included in the database.'.format(name))
+        section = os.path.splitext(file)[0]
+        if section in self.database.sections():
+            print('"{}" is already included in the database.'.format(section))
             return
 
-        self.template = name
-        self.database.add_section(name)
-
-        description, compiler = self.get_tex_description(filename)
-        self.database.set(name, 'description', description)
-        self.database.set(name, 'compiler', compiler)
-        self.database.set(name, 'tex_output', filename)
-        self.queue_for_database('tex', filename)
+        self.template = section
+        self.database.add_section(section)
+        self.get_tex_description(file, section)
+        self.database.set(section, 'tex_output', file)
+        self.queue_for_database('tex', file)
         self.check_auxiliary_files()
 
         with open(self.dbFile, mode='w', encoding='utf-8') as f:
             self.database.write(f)
-            print('{} inserted successfully.'.format(filename))
+            print('{} inserted successfully.'.format(file))
 
 
     def check_auxiliary_files(self) -> None:
 
         for i in self.auxiliary_files:
-            option_output, filename = i.split('=')
-            if not self.if_exits(filename):
+            option_output, file = i.split('=')
+            if not self.if_exits(file):
                 continue
-            self.database.set(self.template, option_output, filename)
-            self.queue_for_database(re.sub('_output', '', option_output), filename)
+            self.database.set(self.template, option_output, file)
+            self.queue_for_database(re.sub('_output', '', option_output), file)
 
 
-    def queue_for_database(self, option, filename) -> None:
+    def queue_for_database(self, option, file) -> None:
 
         if option == 'image':
-            with open(filename, mode='rb') as f:
+            with open(file, mode='rb') as f:
                 content = base64.b64encode(f.read())
                 content = content.decode('utf-8')
         else:
-            with open(filename, mode='r', encoding='utf-8') as f:
+            with open(file, mode='r', encoding='utf-8') as f:
                 content = f.read()
                 content = re.sub('%', '%%', content)
-                if os.path.splitext(filename)[1] != '.cmd':
+                if os.path.splitext(file)[1] != '.cmd':
                     content = re.sub('^', '```', content, flags=re.MULTILINE)
 
         self.database.set(self.template, option, content)

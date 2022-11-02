@@ -513,7 +513,7 @@ class WordDigger(object):
         workbook.close()
         print("{} -> {}".format(file, output))
 
-
+    # C:\>wordig -t -a "1,3-5" -o goo.tsv foo.xlsx
     def xlsx_to_tsv(self, file:str) -> None:
 
         if self.options['output'] is None:
@@ -522,6 +522,22 @@ class WordDigger(object):
             self.options['output'] = os.path.splitext(self.options['output'])[0] + '.tsv'
         output = self.determine_output(file)
 
+        columns = []
+        if self.options['aim'] is None:
+            columns = list(range(0, 100))
+        else:
+            self.options['aim'] = self.options['aim'].replace(' ', '')
+            columns_comma = self.options['aim'].split(',')
+            for i, v in enumerate(columns_comma):
+                if '-' in v:
+                    column_range = v.split('-')
+                    lower = int(column_range[0]) - 1
+                    upper = int(column_range[1])
+                    columns += list(range(lower, upper))
+                else:
+                    columns.append(int(v) - 1)
+            columns = sorted(set(columns))
+        print('Column {} will be exrated.'.format(columns))
         line = []
         content = ''
 
@@ -529,11 +545,12 @@ class WordDigger(object):
         sheet = workbook.active
         for row in sheet.iter_rows():
             line.clear()
-            for cell in row:
-                if cell.value is None:
-                    line.append(' ')
-                else:
-                    line.append(cell.value)
+            for i, cell in enumerate(row):
+                if i in columns:
+                    if cell.value is None:
+                        line.append(' ')
+                    else:
+                        line.append(cell.value)
             tmp = ''.join(line)
             if tmp.strip() != '':
                 content += self.escape_tex('\t'.join(line))
@@ -804,18 +821,6 @@ def parse_args() -> argparse.Namespace:
         default = None,
         help = 'Specify a directory or filename for output.'
     )
-    # parser.add_argument(
-    #     '-o',
-    #     dest = 'output_suffix',
-    #     default = None,
-    #     help = 'Specify a suffix or extension for output filename.'
-    # )
-    # parser.add_argument(
-    #     '-O',
-    #     dest = 'output_directory',
-    #     default = None,
-    #     help = 'Specify a directory for output filename.'
-    # )
     parser.add_argument(
         '-v',
         '--no-overwrite',
@@ -918,8 +923,6 @@ if __name__ == '__main__':
         extract = args.extract,
         gather = args.gather,
         output = args.output,
-        # output_suffix = args.output_suffix,
-        # output_directory = args.output_directory,
         overwrite = args.overwrite,
         recursive = args.recursive,
         page_count = args.page_count,
