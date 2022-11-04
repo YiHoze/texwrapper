@@ -187,7 +187,7 @@ class GanaToRoman(object):
 def parse_args() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(
-        description = 'Romanize Hiragana and Katakana words, or vice versa.'        
+        description = 'Romanize Hiragana and Katakana words, or vice versa.'
     )
 
     parser.add_argument(

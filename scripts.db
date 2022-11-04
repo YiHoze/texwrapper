@@ -2939,7 +2939,7 @@ code = ```# description = Calculate weekly wages including holiday pay.
 	```    print('Enter working_hours [minimum_wage]')
 
 [simplexml]
-description = [Python] An example of XML and XSL
+description = [Python]
 code_output = simplexml.py
 code = ```import lxml.etree as ET
 	```
@@ -2954,53 +2954,53 @@ code = ```import lxml.etree as ET
 xml_output = simplexml.xml
 xml = ```<?xml version="1.0" encoding="UTF-8"?>
 	```<programming_languages>
-	```    <language>
-	```        <name>HTML</name>
-	```        <category>web</category>
-	```        <developer>W3C</developer>
-	```        <version status="working draft">5.1</version>
-	```        <priority rating="1">high</priority>
-	```    </language>
+	```  <language>
+	```    <name>HTML</name>
+	```    <category>web</category>
+	```    <developer>W3C</developer>
+	```    <version status="working draft">5.1</version>
+	```    <priority rating="1">high</priority>
+	```  </language>
 	```
-	```    <language>
-	```        <name korean="파이썬">Python</name>
-	```        <category>application</category>
-	```        <developer>Python</developer>
-	```        <version status="stable">3.52</version>
-	```        <priority rating="4">middle</priority>
-	```    </language>
+	```  <language>
+	```    <name korean="파이썬">Python</name>
+	```    <category>application</category>
+	```    <developer>Python</developer>
+	```    <version status="stable">3.52</version>
+	```    <priority rating="4">middle</priority>
+	```  </language>
 	```</programming_languages>
 xsl_output = simplexml.xsl
 xsl = ```<?xml version="1.0" encoding="UTF-8"?>
 	```<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	```    <xsl:output method="html"/>
-	```    <xsl:template match="/">
+	```<xsl:output method="html"/>
+	```<xsl:template match="/">
 	```
-	```        <html>
-	```            <body>
-	```                <h2 style="text-align:center">프로그래밍 언어</h2>
-	```                <table border="1" style="width: 50%%; margin: auto">
-	```                    <tr>
-	```                        <th>이름</th>
-	```                        <th>종류</th>
-	```                        <th>개발사</th>
-	```                        <th>버전</th>
-	```                        <th>중요도</th>
-	```                    </tr>
-	```                    <xsl:for-each select="programming_languages/language">
-	```                        <tr>
-	```                            <td><xsl:value-of select="name"/></td>
-	```                            <td><xsl:value-of select="category"/></td>
-	```                            <td><xsl:value-of select="developer"/></td>
-	```                            <td><xsl:value-of select="version"/></td>
-	```                            <td><xsl:value-of select="priority"/></td>
-	```                        </tr>
-	```                    </xsl:for-each>
-	```                </table>
-	```            </body>
-	```        </html>
+	```<html>
+	```  <body>
+	```    <h2 style="text-align:center">프로그래밍 언어</h2>
+	```    <table border="1" style="width: 50%%; margin: auto">
+	```      <tr>
+	```        <th>이름</th>
+	```        <th>종류</th>
+	```        <th>개발사</th>
+	```        <th>버전</th>
+	```        <th>중요도</th>
+	```      </tr>
+	```      <xsl:for-each select="programming_languages/language">
+	```          <tr>
+	```            <td><xsl:value-of select="name"/></td>
+	```            <td><xsl:value-of select="category"/></td>
+	```            <td><xsl:value-of select="developer"/></td>
+	```            <td><xsl:value-of select="version"/></td>
+	```            <td><xsl:value-of select="priority"/></td>
+	```          </tr>
+	```      </xsl:for-each>
+	```    </table>
+	```  </body>
+	```</html>
 	```
-	```    </xsl:template>
+	```</xsl:template>
 	```</xsl:stylesheet>
 
 [alphabet]

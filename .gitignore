@@ -1,9 +1,13 @@
 .vscode/
 __pycache__/
 _bak/
+_iss/
 _minted-*/
 _replaced/
+build/
+dist/
 jsx/
+out/
 pandoc/
 pdf2htmlEX/
 private/
@@ -17,6 +21,7 @@ pythontex*/
 *.lof
 *.log
 *.pytxcode
+*.ps1
+*.spec
 *.toc
 *.vrb
-*.ps1

@@ -1,20 +1,17 @@
 # C:\>wordig.py -u 가①⑴ⓐ⒜ㄱ㉠㉮㈀㈎𐊀
 import os
-import sys
+# import sys
 import argparse
 import glob
-import subprocess
 import csv
 import re
-import codecs
 import unicodedata
 import fitz # pip install pymupdf
-import xlsxwriter
-import openpyxl
+from openpyxl import Workbook, load_workbook
 
-dirCalled = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(dirCalled))
-from op import FileOpener
+# dirCalled = os.path.dirname(__file__)
+# sys.path.append(os.path.abspath(dirCalled))
+# from op import FileOpener
 
 
 class WordDigger(object):
@@ -58,7 +55,7 @@ class WordDigger(object):
         self.found_count = {}
 
         self.reconfigure(kwargs)
-        self.opener = FileOpener()
+        # self.opener = FileOpener()
         self.determine_task()
 
 
@@ -186,8 +183,8 @@ class WordDigger(object):
             output = self.determine_output(file, output='_extracted')
             with open(output, mode='w', encoding='utf-8') as f:
                 f.write(content)
-            if self.options['open_result']:
-                self.opener.open_txt(output)
+            # if self.options['open_result']:
+            #     self.opener.open_txt(output)
 
 
     def replace_expand_scope(self, content, pattern) -> list:
@@ -356,8 +353,8 @@ class WordDigger(object):
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
 
-        if self.options['open_result']:
-            self.opener.open_txt(output)
+        # if self.options['open_result']:
+        #     self.opener.open_txt(output)
 
 
     def determine_output(self, file:str, output=None) -> str:        
@@ -473,8 +470,8 @@ class WordDigger(object):
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
 
-        if self.options['open_result']:
-            self.opener.open_txt(output)
+        # if self.options['open_result']:
+        #     self.opener.open_txt(output)
 
 
     def convert_encoding(self, file:str) -> None:
@@ -486,8 +483,8 @@ class WordDigger(object):
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
 
-        if self.options['open_result']:
-            self.opener.open_txt(output)
+        # if self.options['open_result']:
+        #     self.opener.open_txt(output)
 
 
     def tsv_to_xlsx(self, file:str) -> None:
@@ -504,60 +501,89 @@ class WordDigger(object):
             for row in reader:
                 content.append(row)
 
-        workbook = xlsxwriter.Workbook(output)
-        sheet = workbook.add_worksheet()
+        wb = Workbook()
+        ws = wb.active
         for row, line in enumerate(content):
             for column, text in enumerate(line):
-                cell = '{}{}'.format(chr(column+65), str(row+1))
-                sheet.write(cell, text) 
-        workbook.close()
+                ws.cell(row=row+1, column=column+1, value=text)
+        wb.save(output)
         print("{} -> {}".format(file, output))
+
+
+    def columns_to_remove(self, columns_to_extract:int, max_col:int) -> list:
+
+        entire_columns = list(range(1,max_col+1))
+        include_columns = []
+        exclude_columns = []
+        exclude_column_ranges = []
+
+        # 1, 3-5 -> 1, 3, 4, 5
+        incol = columns_to_extract.replace(',', '')
+        incol = columns_to_extract.split(',')
+        for v in incol:
+            if '-' in v:
+                column_range = v.split('-')
+                lower = int(column_range[0])
+                upper = int(column_range[1]) + 1
+                include_columns += list(range(lower, upper))
+            else:
+                include_columns.append(int(v))
+        include_columns = sorted(set(include_columns))
+
+        # 2, 6, 7, ... -> [2, 2], [5, n]
+        for v in entire_columns:
+            if not v in include_columns:
+                exclude_columns.append(v)
+
+        lower = exclude_columns[0]
+        upper = exclude_columns[0]
+        i = 1
+        while i < len(exclude_columns): 
+            if exclude_columns[i] > upper + 1:
+                exclude_column_ranges += [[lower, upper]]
+                lower = exclude_columns[i]
+                upper = exclude_columns[i]
+            else:
+                upper = exclude_columns[i]
+            i += 1
+        exclude_column_ranges += [[lower, upper]]
+        exclude_column_ranges = exclude_column_ranges[::-1]
+
+        return exclude_column_ranges
+
 
     # C:\>wordig -t -a "1,3-5" -o goo.tsv foo.xlsx
     def xlsx_to_tsv(self, file:str) -> None:
 
         if self.options['output'] is None:
             self.options['output'] = '.tsv'
-        else:
-            self.options['output'] = os.path.splitext(self.options['output'])[0] + '.tsv'
         output = self.determine_output(file)
 
-        columns = []
-        if self.options['aim'] is None:
-            columns = list(range(0, 100))
+        wb = load_workbook(file)
+        ws = wb.active
+        if self.options['aim'] is not None:
+            column_ranges = self.columns_to_remove(self.options['aim'], ws.max_column)
+            for i in column_ranges:
+                ws.delete_cols(i[0], i[1]-i[0]+1)
+
+        if os.path.splitext(output)[1].lower() == '.xlsx':
+            wb.save(filename=output)
+            print("{} -> {}".format(file, output))
+            return
         else:
-            self.options['aim'] = self.options['aim'].replace(' ', '')
-            columns_comma = self.options['aim'].split(',')
-            for i, v in enumerate(columns_comma):
-                if '-' in v:
-                    column_range = v.split('-')
-                    lower = int(column_range[0]) - 1
-                    upper = int(column_range[1])
-                    columns += list(range(lower, upper))
-                else:
-                    columns.append(int(v) - 1)
-            columns = sorted(set(columns))
-        print('Column {} will be exrated.'.format(columns))
-        line = []
-        content = ''
+            line = []
+            content = ''
+            for row in ws.iter_rows():
+                line.clear()
+                for cell in row:
+                    line.append(cell.value)
+                tmp = ''.join(line)
+                if tmp.strip() != '':
+                    content += self.escape_tex('\t'.join(line))
 
-        workbook = openpyxl.load_workbook(file)
-        sheet = workbook.active
-        for row in sheet.iter_rows():
-            line.clear()
-            for i, cell in enumerate(row):
-                if i in columns:
-                    if cell.value is None:
-                        line.append(' ')
-                    else:
-                        line.append(cell.value)
-            tmp = ''.join(line)
-            if tmp.strip() != '':
-                content += self.escape_tex('\t'.join(line))
-
-        with open(output, mode='w', encoding='utf-8') as f:
-            f.write(content)
-        print("{} -> {}".format(file, output))
+            with open(output, mode='w', encoding='utf-8') as f:
+                f.write(content)
+            print("{} -> {}".format(file, output))
 
 
     def escape_tex(self, string: str) -> str:
@@ -897,16 +923,16 @@ def parse_args() -> argparse.Namespace:
         dest = 'tsv',
         action = 'store_true',
         default = False,
-        help = 'Specify a XLSX file or more from which to convert to TSV.'
+        help = 'Specify a XLSX file or more from which to convert to TSV or XLSX.'
     )
-    parser.add_argument(
-        '-l',
-        '--open',
-        dest = 'open_result',
-        action = 'store_true',
-        default = False,
-        help = 'Open the result file.'
-    )
+    # parser.add_argument(
+    #     '-l',
+    #     '--open',
+    #     dest = 'open_result',
+    #     action = 'store_true',
+    #     default = False,
+    #     help = 'Open the result file.'
+    # )
     return parser.parse_args()
 
 
@@ -933,4 +959,5 @@ if __name__ == '__main__':
         encoding = args.encoding,
         xlsx = args.xlsx,
         tsv = args.tsv,
-        open_result = args.open_result)
+        # open_result = args.open_result
+    )
