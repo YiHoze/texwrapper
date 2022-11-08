@@ -1,17 +1,10 @@
 import os
-import sys
 import argparse
 import glob
 from datetime import datetime, date
 import shutil
-import math
 import re
 import exifread
-
-
-dirCalled = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(dirCalled))
-from op import FileOpener
 
 
 def parse_args() ->argparse.Namespace:
