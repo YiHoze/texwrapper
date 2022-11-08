@@ -1,6 +1,5 @@
 # C:\>wordig.py -u 가①⑴ⓐ⒜ㄱ㉠㉮㈀㈎𐊀
 import os
-# import sys
 import argparse
 import glob
 import csv
@@ -8,10 +7,6 @@ import re
 import unicodedata
 import fitz # pip install pymupdf
 from openpyxl import Workbook, load_workbook
-
-# dirCalled = os.path.dirname(__file__)
-# sys.path.append(os.path.abspath(dirCalled))
-# from op import FileOpener
 
 
 class WordDigger(object):
@@ -42,8 +37,8 @@ class WordDigger(object):
             'unicode_decimal': False,
             'encoding': None,
             'xlsx': False,
-            'tsv': False,
-            'open_result': False}
+            'tsv': False
+        }
 
         self.files = 0
         self.lines = 0
@@ -55,7 +50,6 @@ class WordDigger(object):
         self.found_count = {}
 
         self.reconfigure(kwargs)
-        # self.opener = FileOpener()
         self.determine_task()
 
 
@@ -64,6 +58,11 @@ class WordDigger(object):
         for key in self.options.keys():
             if key in options:
                 self.options[key] = options.get(key)
+
+        if self.options['flag'] == '1':
+            self.options['flag'] == 'ONCE'
+        if self.options['flag'] == '2':
+            self.options['flag'] == 'EXPAND'
 
 
     def run_recursive(self, func:str) -> None:
@@ -183,8 +182,6 @@ class WordDigger(object):
             output = self.determine_output(file, output='_extracted')
             with open(output, mode='w', encoding='utf-8') as f:
                 f.write(content)
-            # if self.options['open_result']:
-            #     self.opener.open_txt(output)
 
 
     def replace_expand_scope(self, content, pattern) -> list:
@@ -353,9 +350,6 @@ class WordDigger(object):
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
 
-        # if self.options['open_result']:
-        #     self.opener.open_txt(output)
-
 
     def determine_output(self, file:str, output=None) -> str:        
 
@@ -470,9 +464,6 @@ class WordDigger(object):
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
 
-        # if self.options['open_result']:
-        #     self.opener.open_txt(output)
-
 
     def convert_encoding(self, file:str) -> None:
 
@@ -482,9 +473,6 @@ class WordDigger(object):
         output = self.determine_output(file, output='UTF-8/')
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
-
-        # if self.options['open_result']:
-        #     self.opener.open_txt(output)
 
 
     def tsv_to_xlsx(self, file:str) -> None:
@@ -499,7 +487,7 @@ class WordDigger(object):
         with open(file, mode='r', encoding='utf-8') as f:
             reader = csv.reader(f, delimiter='\t')
             for row in reader:
-                content.append(row)
+                content.append(self.remove_tex(row))
 
         wb = Workbook()
         ws = wb.active
@@ -576,10 +564,12 @@ class WordDigger(object):
             for row in ws.iter_rows():
                 line.clear()
                 for cell in row:
-                    line.append(cell.value)
-                tmp = ''.join(line)
-                if tmp.strip() != '':
-                    content += self.escape_tex('\t'.join(line))
+                    if isinstance(cell.value, str):
+                        line.append(cell.value)
+                if len(line) > 0 :
+                    tmp = ''.join(line)
+                    if tmp.strip() != '':
+                        content += self.escape_tex('\t'.join(line))
 
             with open(output, mode='w', encoding='utf-8') as f:
                 f.write(content)
@@ -593,6 +583,16 @@ class WordDigger(object):
         string = re.sub('\n', '\\\\linebreak{}', string)
         string += '\n'
         return string
+
+
+    def remove_tex(self, columns: list) -> list:
+
+        for i, string in enumerate(columns):
+            string = re.sub('\\\\textbackslash', '', string)
+            string = re.sub('\\\\([&%$#_])', '\\1', string)
+            string = re.sub('\\\\linebreak\\{\\}', '\\n', string)
+            columns[i] = string
+        return columns
 
 
     def determine_task(self) -> None:
@@ -746,12 +746,12 @@ class UnicodeDigger(object):
         for i in codepoints:
             if hex:
                 try:
-                    print(chr(int(i, 16)))
+                    print(chr(int(i, 16)), end=' ')
                 except:
                     print('Enter hexadecimal numbers.')
             else:
                 try:
-                    print(chr(int(i)))
+                    print(chr(int(i)), end=' ')
                 except:
                     print('Enter decimal numbers.')
 
@@ -824,6 +824,13 @@ def parse_args() -> argparse.Namespace:
         action = 'store_true',
         default = False,
         help = 'Dot matches all characters including newline.'
+    )
+    parser.add_argument(
+        '-F',
+        '--flag',
+        dest = 'flag',
+        default = 'ONCE',
+        help = 'Specify "EXPAND" or "2" to perform in-scope substitutions.'
     )
     parser.add_argument(
         '-e',
@@ -925,14 +932,7 @@ def parse_args() -> argparse.Namespace:
         default = False,
         help = 'Specify a XLSX file or more from which to convert to TSV or XLSX.'
     )
-    # parser.add_argument(
-    #     '-l',
-    #     '--open',
-    #     dest = 'open_result',
-    #     action = 'store_true',
-    #     default = False,
-    #     help = 'Open the result file.'
-    # )
+
     return parser.parse_args()
 
 
@@ -946,6 +946,7 @@ if __name__ == '__main__':
         pattern = args.pattern,
         case_sensitive = args.case_sensitive,
         dotall = args.dotall,
+        flag = args.flag,
         extract = args.extract,
         gather = args.gather,
         output = args.output,
@@ -958,6 +959,5 @@ if __name__ == '__main__':
         unicode_decimal = args.unicode_decimal,
         encoding = args.encoding,
         xlsx = args.xlsx,
-        tsv = args.tsv,
-        # open_result = args.open_result
+        tsv = args.tsv
     )
