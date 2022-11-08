@@ -69,12 +69,10 @@ sup {
 /* image */
 
 figure {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     text-align: center;
 }
-
-
 
 figcaption {
     font-size: small;
@@ -83,7 +81,7 @@ figcaption {
 }
 
 img { 
-    max-height: 450px;
+    height: 40vh;
 }
 
 /* table */

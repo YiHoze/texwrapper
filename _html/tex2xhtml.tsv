@@ -143,6 +143,8 @@
 (?<=[a-zA-Z가-힣1-9"”'.?)])\n\n(?=[a-zA-Z가-힣1-9"“'&])	</p>\n\n<p>
 (?<=[a-zA-Z가-힣1-9"”'.?)])\n\n(?=<)	</p>\n\n
 (?<=>)\n\n(?=[a-zA-Z가-힣1-9"“'&])	\n\n<p>
+~~~ when starting with character attributes
+(?<=>)\n\n(?=<strong>)	\n\n<p>
 ~~~ when ending with character attributes
 (?<=</a>)\n\n	</p>\n\n
 (?<=</b>)\n\n	</p>\n\n

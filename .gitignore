@@ -13,6 +13,7 @@ pdf2htmlEX/
 private/
 pythontex*/
 *.aux
+*.cmd
 *.csv
 *.gz
 *.ilg
