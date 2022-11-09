@@ -3742,3 +3742,50 @@ code = ```# 1 radian when radius = arc
 	```    tangent()
 	```
 
+[equinox]
+description = [Python] Get equinox and solstice dates.
+code_output = equinox.py
+code = ```import argparse
+	```from datetime import date
+	```from pymeeus.Sun import Sun
+	```import math
+	```import arrow
+	```
+	```def celestial_longitude(year, season, title):
+	```
+	```    epoch = Sun.get_equinox_solstice(year, target=season)
+	```    epochUTC = epoch.get_full_date(utc=True)
+	```    frac, integer = math.modf(epochUTC[5])
+	```    # timepoint = arrow.get(*epochutc[:5])
+	```    GMT = arrow.get(*epochUTC[:5], int(integer), round(frac*1e6))
+	```    Korea = GMT.shift(hours=9)
+	```    GMT = GMT.format('YYYY-MM-DD HH:mm:ss')
+	```    Korea = Korea.format('YYYY-MM-DD HH:mm:ss')
+	```    print('\t{}\tGMT: {}  Korea: {}'.format(title, GMT, Korea))
+	```
+	```season={
+	```    'spring': 'Spring equinox',
+	```    'summer': 'Summer solstice',
+	```    'autumn': 'Autumn equinox',
+	```    'winter': 'Winter solstice'
+	```}
+	```
+	```parser = argparse.ArgumentParser(
+	```    description = 'Get equinox and solstice dates.'
+	```)
+	```parser.add_argument(
+	```    'years',
+	```    nargs='*',
+	```    help='Enter a year.'
+	```)
+	```args = parser.parse_args()
+	```
+	```if len(args.years) == 0:
+	```    args.years.append(date.today().year)
+	```
+	```for year in args.years:
+	```    print(year, end='')
+	```    for i in season.items():
+	```        celestial_longitude(int(year), i[0], i[1])
+	```
+
