@@ -3789,3 +3789,41 @@ code = ```import argparse
 	```        celestial_longitude(int(year), i[0], i[1])
 	```
 
+[detlang]
+description = [Python]
+code_output = detlang.py
+code = ```# pip install --upgrade google-cloud-translate
+	```
+	```import sys
+	```from google.cloud import translate
+	```
+	```def detect_language(text):
+	```    """Detecting the language of a text string."""
+	```
+	```    project_id="detlang"
+	```    client = translate.TranslationServiceClient()
+	```    location = "global"
+	```    parent = f"projects/{project_id}/locations/{location}"
+	```
+	```    # Detail on supported types can be found here:
+	```    # https://cloud.google.com/translate/docs/supported-formats
+	```    response = client.detect_language(
+	```        content=text,
+	```        parent=parent,
+	```        mime_type="text/plain"  # mime types: text/plain, text/html
+	```    )
+	```
+	```    # Display list of detected languages sorted by detection confidence.
+	```    # The most probable language is first.
+	```    for language in response.languages:
+	```        # The language detected
+	```        print("Language code: {}".format(language.language_code))
+	```        # Confidence of detection result for this language
+	```        print("Confidence: {}".format(language.confidence))
+	```
+	```if len(sys.argv) < 2:
+	```    print("Enter a text.")
+	```else:
+	```    detect_language(sys.argv[1])
+	```
+

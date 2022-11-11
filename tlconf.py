@@ -126,7 +126,7 @@ def store_to_local() -> None:
     except:
         print('Make sure to have docenv.conf set properly.')
         return
-    query = 'These files are going to be copied into <{}>\n{}\nEnter [Y] to proceed, [n] to abandon, or another directory: '.format(texmf_local, latex_style.replace(', ', '\n'))
+    query = "These files are going to be copied into '{}'\n{}\nEnter [Y] to proceed, [n] to abandon, or another directory: ".format(texmf_local, latex_style.replace(', ', '\n'))
     answer = confirm(query)
     if answer.lower() == 'n':
         return
@@ -151,7 +151,7 @@ def set_texmfhome() -> None:
     except:
         print('Make sure to have docenv.conf set properly.')
         return
-    query = 'Are you sure to set the TEXMFHOME environment variable to  <{}>?\nEnter [Y] to proceed, [n] to abandon, or another path: '.format(texmfhome)
+    query = "Are you sure to set the TEXMFHOME environment variable to  '{}'?\nEnter [Y] to proceed, [n] to abandon, or another path: ".format(texmfhome)
     answer = confirm(query)
     if answer.lower() == 'n':
         return
@@ -171,7 +171,7 @@ def set_texedit() -> None:
     except:
         print('Make sure to have docenv.conf set properly.')
         return
-    query = 'Are you sure to set the TEXEDIT environment variable to  <{}>?\nEnter [Y] to proceed, [n] to abandon, or another text editor with its option: '.format(texedit)
+    query = "Are you sure to set the TEXEDIT environment variable to  '{}'?\nEnter [Y] to proceed, [n] to abandon, or another text editor with its option: ".format(texedit)
     answer = confirm(query)
     if answer.lower() == 'n':
         return
@@ -192,16 +192,17 @@ def set_sumatrapdf() -> None:
     except:
         print('Make sure to have docenv.conf set properly.')
         return
-    query = 'Are you sure to use <{}> to enable the inverse search feature of Sumatra PDF?\nEnter [Y] to proceed, [n] to abandon, or another text editor with its option: '.format(editor)
+    query = "Are you sure to use '{}' to enable the inverse search feature of Sumatra PDF?\nEnter [Y] to proceed, [n] to abandon, or another text editor with its option: ".format(editor)
     answer = confirm(query)
     if answer.lower() == 'n':
         return
     if not (answer.lower() == 'y' or answer == ''):
         editor = answer
-    cmd = []
-    cmd.append(sumatra)
-    cmd.append('-inverse-search')
-    cmd.append(editor)
+    # cmd = []
+    # cmd.append(sumatra)
+    # cmd.append('-inverse-search')
+    # cmd.append(editor)
+    cmd = [sumatra, '-inverse-search', editor]
     subprocess.Popen(cmd)
 
 
@@ -214,7 +215,7 @@ def create_local_conf() -> None:
     except:
         print('Make sure to have docenv.conf set properly')
         return
-    query = "<{}> will be created to include {}\nEnter [Y] to proceed, [n] to abandon. ".format(local_conf, content)
+    query = "'{}' will be created to include {}\nEnter [Y] to proceed, [n] to abandon. ".format(local_conf, content)
     answer = confirm(query)
     if answer.lower() == 'n':
         return
@@ -252,7 +253,7 @@ def get_repository(kind) -> str or False:
     option = 'repository_{}'.format(kind)
     url = config.get('TeX Live', option, fallback=False)
     if url:
-        query = 'Are you sure to set <{}> as the {} repository?\nEnter [Y] to proceed, [n] to abandon, or another repository: '.format(url, kind)
+        query = "Are you sure to set '{}' as the {} repository?\nEnter [Y] to proceed, [n] to abandon, or another repository: ".format(url, kind)
         answer = confirm(query)
         if (answer.lower() == 'y' or answer == ''):
             return url
