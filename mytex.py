@@ -278,18 +278,18 @@ class LatexTemplate(object):
         try:
             placeholders = int(self.database.get(self.template, 'placeholders'))
             defaults = self.database.get(self.template, 'defaults')
-            defaults = defaults.split(', ')
+            defaults = defaults.split(',')
         except:
             return content
         if self.options["substitutes"] is not None:
-            for index, value in enumerate(self.options["substitutes"].split(', ')):
+            for index, value in enumerate(self.options["substitutes"].split(',')):
                 if index < placeholders:
                     defaults[index] = value
                 else:
                     break
         cnt = 1
         for i in defaults:
-            content = content.replace('\\' + str(cnt), i)
+            content = content.replace('\\' + str(cnt), i.strip())
             cnt += 1
         return content
 
@@ -396,6 +396,7 @@ class LatexTemplate(object):
             if description is None:
                 description = ''
             else:
+                description = description.replace('\\n', '\n')
                 description = description.split('\n')[0]
             print('{:16} {}'.format(i, description))
 
@@ -429,9 +430,10 @@ class LatexTemplate(object):
             return True
 
         usage = self.database.get(self.template, 'description', fallback=None)
-        if usage == None:
-            print('"{}" has no decription'.format(self.template))
+        if usage == None or usage == '':
+            print(f"'{self.template}' has no decription")
         else:
+            usage = usage.replace('\\n', '\n')
             print('\n{}\n'.format(usage))
 
 
@@ -485,16 +487,17 @@ class LatexTemplate(object):
         with open(file, mode='r', encoding='utf-8') as f:
             tex_content = f.read()
 
-        found = re.search('(?<=^\% description = ).*$', tex_content, flags=re.MULTILINE)
+        found = re.search('(?<=^\% description = ).*$', tex_content)
         if found:
             description = found.group(0)
-        found = re.search('(?<=^\% compiler = ).*$', tex_content, flags=re.MULTILINE)
+            found = found.replace('\\n', '\n')
+        found = re.search('(?<=^\% compiler = ).*$', tex_content)
         if found:
             compiler = found.group(0)
-        found = re.search('(?<=^\% placeholders = ).*$', tex_content, flags=re.MULTILINE)
+        found = re.search('(?<=^\% placeholders = ).*$', tex_content)
         if found:
             placeholders = found.group(0)
-        found = re.search('(?<=^\% defaults = ).*$', tex_content, flags=re.MULTILINE)
+        found = re.search('(?<=^\% defaults = ).*$', tex_content)
         if found:
             defaults = found.group(0)
 
