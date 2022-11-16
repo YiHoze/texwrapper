@@ -2,7 +2,6 @@ import os
 import sys
 import argparse
 import yaml
-import glob
 import shutil
 import re
 import uuid
@@ -15,7 +14,7 @@ dirCalled = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(dirCalled))
 from wordig import WordDigger
 from josa import JosaChecker
-# from iu import ImageUtility
+
 
 def parse_args() -> argparse.Namespace:
 
