@@ -1,17 +1,14 @@
 import os
 import sys
 import argparse
-import yaml
+import yaml #pip install pyyaml
 import shutil
 import re
 import uuid
 from datetime import datetime, date
 import csv
 import zipfile
-
-
-dirCalled = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(dirCalled))
+# companions of cloche.py
 from wordig import WordDigger
 from josa import JosaChecker
 

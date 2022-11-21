@@ -1259,9 +1259,6 @@ code =
 	```import configparser
 	```import argparse
 	```import glob
-	```
-	```dirCalled = os.path.dirname(__file__)
-	```sys.path.append(os.path.abspath(dirCalled))
 	```from ltx import LatexCompiler
 	```
 	```class ipynb_to_pdf(object):
@@ -1839,11 +1836,7 @@ code = ```
 	```from itertools import permutations
 	```from itertools import combinations
 	```from nltk.corpus import wordnet
-	```# from nltk.corpus import words
 	```
-	```# dirCalled = os.path.dirname(__file__)
-	```# sys.path.append(os.path.abspath(dirCalled))
-	```# from mytex import LatexTemplate
 	```
 	```class Lotto(object):
 	```
@@ -3357,52 +3350,6 @@ conf = ```# programming
 	```[Private]
 	```blog = https://hoze.tistory.com/
 	```GitHub = https://github.com/yihoze
-
-[daily]
-description = [Python] Open apps and their targets specified in daily.conf.
-code_output = daily.py
-code = ```import os
-	```import sys
-	```import argparse
-	```import configparser
-	```import subprocess
-	```
-	```conf = 'daily.conf'
-	```dirCalled = os.path.dirname(__file__)
-	```conf = os.path.join(dirCalled, conf)
-	```
-	```parser = argparse.ArgumentParser(
-	```    description = 'Open apps and their targets specified in daily.conf.'
-	```)
-	```parser.add_argument(
-	```    'list',
-	```    nargs = '?',
-	```    default = None,
-	```    help = 'Specify another daily to-do list.'
-	```)
-	```args = parser.parse_args()
-	```if args.list is not None:
-	```    conf = args.list
-	```
-	```if os.path.exists(conf):
-	```    config = configparser.ConfigParser()
-	```    config.read([conf], encoding='utf-8')
-	```    for section in config.sections():
-	```        app = config.get(section, 'app')
-	```        target = config.get(section, 'target', fallback='')
-	```        cmd = '"{0}" {1}'.format(app, target.replace('\n', ' '))
-	```        print(cmd)
-	```        subprocess.Popen(cmd, stdout=subprocess.PIPE)
-	```else:
-	```    print('{} is not found.'.format(conf))
-	```
-	```
-	```
-conf_output = daily.conf
-conf = ```[Chrome]
-	```app = C:/Program Files/Google/Chrome/Application/chrome.exe
-	```target = http://dic.daum.net/index.do?dic=eng
-	```        http://dic.daum.net/index.do?dic=kor
 
 [fuel]
 description = [Python] Calculate fuel cost for a specific distance.

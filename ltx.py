@@ -4,11 +4,8 @@ import glob
 import argparse
 import configparser
 import re
-# import subprocess
 import shutil
-
-dirCalled = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(dirCalled))
+# companion of ltx.py
 from op import FileOpener
 
 # LC = LatexCompiler('foo', ['-v', ...])
@@ -44,6 +41,7 @@ class LatexCompiler(object):
         self.tex = tex
         self.parse_args(argv)
 
+        dirCalled = os.path.dirname(__file__)
         ini = os.path.join(dirCalled, 'docenv.conf')
         if os.path.exists(ini):
             config = configparser.ConfigParser()

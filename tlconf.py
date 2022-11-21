@@ -3,8 +3,8 @@ import os
 import sys
 import configparser
 import argparse
-import glob
 import subprocess
+
 
 def check_TeXLive():
 

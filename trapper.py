@@ -1,8 +1,8 @@
 import os
 import argparse
 from datetime import datetime
-import win32clipboard
-from PIL import Image, ImageGrab
+import win32clipboard #pywin32
+from PIL import Image, ImageGrab #pillow
 from io import BytesIO
 
 

@@ -2,7 +2,7 @@
 import argparse
 import re
 import eng_to_ipa
-# from numpy import character 
+
 
 class KoreanToRoman(object):
 

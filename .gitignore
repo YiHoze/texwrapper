@@ -3,13 +3,9 @@ __pycache__/
 _bak/
 _iss/
 _minted-*/
-_replaced/
 build/
 dist/
-jsx/
-out/
-pandoc/
-pdf2htmlEX/
+misc/
 private/
 pythontex*/
 *.aux

@@ -1,10 +1,10 @@
 import os
-import sys
 import glob
 import argparse
 import configparser
 import subprocess
 import pyperclip
+
 
 class FileOpener(object):
 

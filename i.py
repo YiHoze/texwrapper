@@ -4,9 +4,7 @@ import glob
 import argparse
 import configparser
 import re
-
-dirCalled = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(dirCalled))
+# companions of i.py
 from ltx import LatexCompiler
 from op import FileOpener
 

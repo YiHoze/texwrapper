@@ -3,9 +3,7 @@ import sys
 import re
 import argparse
 import subprocess
-
-dirCalled = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(dirCalled))
+# companions of fontinfo.py
 from op import FileOpener
 from mytex import LatexTemplate
 

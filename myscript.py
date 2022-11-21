@@ -1,19 +1,15 @@
 import os
 import sys
-import glob
 import argparse
 import configparser
-import subprocess
 import re
-
-dirCalled = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(dirCalled))
 
 
 class ScriptScribe(object):
 
     def __init__(self):
 
+        dirCalled = os.path.dirname(__file__)
         self.dbFile = 'scripts.db'
         self.dbFile = os.path.join(dirCalled, self.dbFile)
         if os.path.exists(self.dbFile):

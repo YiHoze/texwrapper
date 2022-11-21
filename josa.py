@@ -1,9 +1,7 @@
 import os
 import sys
 import argparse
-
-dirCalled = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(dirCalled))
+# companion of josa.py
 import hanja2hangul
 
 def parse_args() -> argparse.Namespace:

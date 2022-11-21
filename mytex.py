@@ -5,13 +5,10 @@ import argparse
 import configparser
 import re
 import base64
-
-from sqlalchemy import desc
-
-dirCalled = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(dirCalled))
+# companions of mytex.py
 from op import FileOpener
 from ltx import LatexCompiler
+
 
 def parse_args() -> argparse.Namespace:
 
@@ -142,6 +139,7 @@ class LatexTemplate(object):
 
     def __init__(self, template=[], **kwargs):
 
+        dirCalled = os.path.dirname(__file__)
         self.dbFile = os.path.join(dirCalled, 'latex.db')
         if os.path.exists(self.dbFile):
             self.database = configparser.ConfigParser()
@@ -213,7 +211,6 @@ class LatexTemplate(object):
         elif os.path.exists(afile):
             answer = input('{} already exists. Are you sure to overwrite it? [y/N] '.format(afile))
             if answer.lower() == 'y':
-                # os.remove(afile)
                 return True
             else:
                 return False
