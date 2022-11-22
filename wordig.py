@@ -6,7 +6,7 @@ import csv
 import re
 import unicodedata
 import fitz # pip install pymupdf
-from openpyxl import Workbook, load_workbook
+import openpyxl
 
 
 class WordDigger(object):
@@ -490,7 +490,7 @@ class WordDigger(object):
             for row in reader:
                 content.append(self.remove_tex(row))
 
-        wb = Workbook()
+        wb = openpyxl.Workbook()
         ws = wb.active
         for row, line in enumerate(content):
             for column, text in enumerate(line):
@@ -548,7 +548,7 @@ class WordDigger(object):
             self.options['output'] = '.tsv'
         output = self.determine_output(file)
 
-        wb = load_workbook(file)
+        wb = openpyxl.load_workbook(file)
         ws = wb.active
         if self.options['aim'] is not None:
             column_ranges = self.columns_to_remove(self.options['aim'], ws.max_column)
