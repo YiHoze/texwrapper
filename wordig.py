@@ -169,12 +169,13 @@ class WordDigger(object):
             content = f.read()
 
         found = []
-        for i in range(len(ptrn)):
-            p = re.compile(ptrn[i])
-            if self.options['gather']:
-                self.found += p.findall(content)
-            else:
-                found += p.findall(content)
+        for i in ptrn:
+            found_lines = re.findall(i, content, flags=re.MULTILINE)
+            if found_lines:
+                if self.options['gather']:
+                    self.found += found_lines
+                else:
+                    found += found_lines
 
         if self.options['extract']:
             found = list(set(found))
