@@ -112,7 +112,7 @@ class WordDigger(object):
     def find_txt(self, file:str, pattern:str) -> int:
 
         count = 0
-        print(file)
+        self.add_found(file)
 
         try:
             with open(file, mode='r', encoding='utf-8') as f:
@@ -127,17 +127,18 @@ class WordDigger(object):
             else:
                 matched = re.search(pattern, line, flags=re.IGNORECASE)
             if matched:
-                print('{:6}:\t{}'.format(num, line.replace('\n', ' ')))
+                self.add_found("{:6}:\t{}".format(num, line.replace('\n', ' ')))
                 count += 1
         if count > 0:
-            print('\t"{}" in {}: {}'.format(pattern, file, count))
+            self.add_found(f"' {pattern} ' in {file}: {count}")
+
         return count
 
 
     def find_pdf(self, file:str, pattern:str) -> int:
 
         count = 0
-        print(file)
+        self.add_found(file)
 
         doc = fitz.open(file)
         for page_no in range(0, doc.page_count):
@@ -151,10 +152,29 @@ class WordDigger(object):
                 else:
                     matched = re.search(pattern, line, flags=re.IGNORECASE)
                 if matched:
-                    print('\tPage {}: {}'.format(page_no+1, line))
+                    self.add_found("\tPage {}: {}".format(page_no+1, line))
+                    count += 1
+
         if count > 0:
-            print('\t<{}> in {}: {}'.format(pattern, file, count))
+            self.add_found(f"\t' {pattern} ' in {file}: {count}")
         return count
+
+
+    def add_found(self, found_line:str) -> None:
+
+            if self.options['output'] is None:
+                print(found_line)
+            else:
+                self.found.append(found_line)
+
+
+    def write_found(self) -> None:
+
+        content = '\n'.join(self.found)
+        output = self.determine_output('', output=self.options['output'])
+        with open(output, mode='w', encoding='utf-8') as f:
+            f.write(content)
+        print(f"The findings have been written in {output}.")
 
 
     def extract(self, file:str) -> None:
@@ -642,6 +662,8 @@ class WordDigger(object):
                         self.write_gathered()
                 else:
                     self.run_recursive(self.find)
+                    if self.options['output']:
+                        self.write_found()
         elif self.options['page_count']:
             self.run_recursive(self.count_pdf_pages)
             print( 'Total pages: {:,}'.format(self.pages) )

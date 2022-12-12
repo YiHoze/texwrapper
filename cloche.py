@@ -655,6 +655,7 @@ def zip_epub(filename:str, outdir:str) -> None:
     if os.path.exists(epub_name):
         os.remove(epub_name)
     os.rename(zip_name, epub_name)
+    print(f"{epub_name} has been successfully created.")
 
 #############################################################################################
 # main ######################################################################################

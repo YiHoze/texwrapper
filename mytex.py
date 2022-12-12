@@ -24,9 +24,9 @@ mytex.py memoir -o foo
 mytex.py -s "20, 10" lotto
     makes and compiles lotto.tex, of which two placeholders are replaced with "20" and "10".
 mytex.py lotto -n
-    makes lotto.tex but doesn't compile though this template has some compilation options.
-mytex.py glyph -f
-    makes and compiles myfont.tex though this template has no comilation options.
+    makes lotto.tex but doesn't compile though this template has some compile options.
+mytex.py fonttable -f
+    makes and compiles myfont.tex though this template has no compile options.
 >mytex.py -i foo.tex style_output=foo.sty image_output=foo.png
     The specified files are inserted into the database.
     '''
@@ -59,21 +59,21 @@ mytex.py glyph -f
         dest = 'defy',
         action = 'store_true',
         default = False,
-        help = 'Do not compile even if some compilation options are prescribed.'
+        help = 'Do not compile even if some compile options are prescribed.'
     )
     parser.add_argument(
         '-f',
         dest = 'force',
         action = 'store_true',
         default = False,
-        help = 'Compile without opening the tex file even if no compilation option is prescribed .'
+        help = 'Compile without opening the tex file even if no compile option is prescribed .'
     )
     parser.add_argument(
         '-d',
         dest = 'delete',
         action = 'store_true',
         default = False,
-        help = 'Delete the tex and its subsidiary files after compilation.'
+        help = 'Delete the tex and its subsidiary files after compile.'
     )
     parser.add_argument(
         '-l',

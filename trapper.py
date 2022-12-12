@@ -4,7 +4,7 @@ from datetime import datetime
 import win32clipboard #pywin32
 from PIL import Image, ImageGrab #pillow
 from io import BytesIO
-
+from iu import ImageUtility
 
 def determine_output(name:str, overwrite) -> str:
 
@@ -33,11 +33,16 @@ def save_from_clipboard(output:str, overwrite=False) -> None:
         img = ImageGrab.grabclipboard()
         output = determine_output(output, overwrite)
         img.save(output, 'PNG')
+        IU = ImageUtility(density=75)
+        IU.resize_bitmap(output)
         print('Saved as {}'.format(output))
     else:
-        win32clipboard.OpenClipboard()
-        print(win32clipboard.GetClipboardData())
-        win32clipboard.CloseClipboard()
+        try:
+            win32clipboard.OpenClipboard()
+            print(win32clipboard.GetClipboardData())
+            win32clipboard.CloseClipboard()
+        except:
+            print('No content in the clipboard')
 
 
 def copy_to_clipboard(file:str) -> None:
