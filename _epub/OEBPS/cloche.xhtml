@@ -72,12 +72,12 @@ ePub에서 이 문제들이 사라진다.</p>
 <p>클로시의 주요 처리 과정은—디폴트 설정을 기준으로—다음과 같다.</p>
 
 <ol>
-<li>&#x200B;<a id="index_number_20"></a><code>create_epub_directory()</code> 함수가 &#x200B;<a id="index_number_21"></a><code>_epub/</code> 디렉토리를 만든다.
+<li>&#x200B;<a id="index_number_20"></a><code>create_epub_directory()</code> 함수가 &#x200B;<a id="index_number_21"></a><code>_epub/</code> 폴더를 만든다.
 그다음에 &#x200B;<a id="index_number_22"></a><code>create_basic()</code> 함수가 &#x200B;<a id="index_number_23"></a><code>_epub/mimetype</code> 파일과 &#x200B;<a id="index_number_24"></a><code>_epub/META-INF/container.xml</code> 파일을 만든다.</li>
 
-<li>&#x200B;<a id="index_number_25"></a><code>copy_additional()</code> 함수가 &#x200B;<a id="index_number_26"></a><code>additional</code> 설정 옵션에 지정된, &#x200B;<a id="index_number_27"></a><code>cover.xhtml</code>이나 &#x200B;<a id="index_number_28"></a><code>basic.css</code> 같은 파일들을 &#x200B;<a id="index_number_29"></a><code>_epub/OEBPS/</code> 디렉토리로 복사한다.</li>
+<li>&#x200B;<a id="index_number_25"></a><code>copy_additional()</code> 함수가 &#x200B;<a id="index_number_26"></a><code>additional</code> 설정 옵션에 지정된, &#x200B;<a id="index_number_27"></a><code>cover.xhtml</code>이나 &#x200B;<a id="index_number_28"></a><code>basic.css</code> 같은 파일들을 &#x200B;<a id="index_number_29"></a><code>_epub/OEBPS/</code> 폴더로 복사한다.</li>
 
-<li>&#x200B;<a id="index_number_30"></a><code>copy_tex()</code> 함수가 &#x200B;<a id="index_number_31"></a><code>tex_files</code> 설정 옵션에 명시된 파일들을 —확장자를 .xhtml로 바꾸어— &#x200B;<a id="index_number_32"></a><code>_epub/OEBPS/</code> 디렉토리로 복사한다.
+<li>&#x200B;<a id="index_number_30"></a><code>copy_tex()</code> 함수가 &#x200B;<a id="index_number_31"></a><code>tex_files</code> 설정 옵션에 명시된 파일들을 —확장자를 .xhtml로 바꾸어— &#x200B;<a id="index_number_32"></a><code>_epub/OEBPS/</code> 폴더로 복사한다.
 이때 &#x200B;<a id="index_number_33"></a><code>escape</code> 설정 옵션에 지정된 .tsv 파일이 있다면, &#x200B;<a id="index_number_34"></a>wordig 모듈이 그 파일의 지시에 따라 특정 문자열들을 다른 것들로 바꾼다.
 <a href="cloche.xhtml#heading_18">소스 코드</a>를 보라.</li>
 
@@ -93,7 +93,7 @@ ePub에서 이 문제들이 사라진다.</p>
 <li>&#x200B;<a id="index_number_39"></a><code>converter</code> 설정 옵션에 지정된 하나 이상의 .tsv 파일들을 참조하여 &#x200B;<a id="index_number_40"></a>wordig 모듈이 모든 레이텍 매크로들을 HTML 태그들로 치환한다.
 <a href="cloche.xhtml#heading_10">마크업 변환기</a>를 보라.</li>
 
-<li>&#x200B;<a id="index_number_41"></a><code>copy_images()</code> 함수가 &#x200B;<a id="index_number_42"></a><code>original_image_directory</code> 설정 옵션에 지정된 디렉토리에서 실제 문서에 삽입되는 이미지 파일들을 <code>_epub/OEBPS/images/</code> 디렉토리로 복사한다.
+<li>&#x200B;<a id="index_number_41"></a><code>copy_images()</code> 함수가 &#x200B;<a id="index_number_42"></a><code>original_image_directory</code> 설정 옵션에 지정된 폴더에서 실제 문서에 삽입되는 이미지 파일들을 <code>_epub/OEBPS/images/</code> 폴더로 복사한다.
 <a href="cloche.xhtml#heading_16">이미지</a>를 보라.</li>
 
 <li>&#x200B;<a id="index_number_43"></a><code>create_ncx()</code> 함수가 &#x200B;<a id="index_number_44"></a><code>toc.ncx</code> 파일을 만든다.
@@ -102,12 +102,12 @@ ePub에서 이 문제들이 사라진다.</p>
 <li>&#x200B;<a id="index_number_45"></a><code>create_opf()</code> 함수가 &#x200B;<a id="index_number_46"></a><code>content.opf</code> 파일을 만든다.
 <a href="cloche.xhtml#heading_6">ePub 구조</a>를 보라.</li>
 
-<li>&#x200B;<a id="index_number_47"></a><code>zip_epub()</code> 함수가 <code>_epub/</code> 디렉토리를 압축하여 .epub 파일을 만든다.
+<li>&#x200B;<a id="index_number_47"></a><code>zip_epub()</code> 함수가 <code>_epub/</code> 폴더를 압축하여 .epub 파일을 만든다.
 </li></ol>
 
 <h2 id="heading_4">스크립트 옵션</h2>
 
-<p>Cloche는 ePub을 새로 만들 때마다 <code>_epub/</code> 디렉토리를 비운다.</p>
+<p>Cloche는 ePub을 새로 만들 때마다 <code>_epub/</code> 폴더를 비운다.</p>
 
 <pre>C:&#x5c;&#x3E;cloche.py -k [config.yml]
 </pre>
@@ -142,7 +142,7 @@ HzGuide 클래스와 그 설명서를 <a href="https://github.com/YiHoze/HzGuide
 
 <h1 id="heading_6">ePub 구조</h1>
 
-<p>하나의 epub 파일에는 다음과 같은 구조의 디렉토리가 압축되어 있다.</p>
+<p>하나의 epub 파일에는 다음과 같은 구조의 폴더가 압축되어 있다.</p>
 
 <pre>&#x5c;_epub&#x5c;
     +—OEBPS&#x5c;
@@ -231,7 +231,7 @@ metadata:
 
 <dl class="macros">
 <dt>output_directory</dt>
-<dd>&#x200B;<a id="index_number_61"></a> 출력 디렉토리를 지정하라. 이 옵션이 지정되지 않으면 &#x200B;<a id="index_number_62"></a><code>_epub</code>으로 설정된다.
+<dd>&#x200B;<a id="index_number_61"></a> 출력 폴더를 지정하라. 이 옵션이 지정되지 않으면 &#x200B;<a id="index_number_62"></a><code>_epub</code>으로 설정된다.
 </dd>
 <dt>output_file</dt>
 <dd>&#x200B;<a id="index_number_63"></a> 출력 파일을 지정하라. 이 옵션이 지정되지 않으면 오늘 날짜가 파일 이름으로 사용된다.
@@ -252,7 +252,7 @@ metadata:
 <dd>&#x200B;<a id="index_number_68"></a> <a href="cloche.xhtml#heading_10">마크업 변환기</a>를 보라.
 </dd>
 <dt>original_image_directory</dt>
-<dd>&#x200B;<a id="index_number_69"></a> 이미지 파일들이 포함된 디렉토리를 지정하라. <a href="cloche.xhtml#heading_16">이미지</a>를 보라.
+<dd>&#x200B;<a id="index_number_69"></a> 이미지 파일들이 포함된 폴더를 지정하라. <a href="cloche.xhtml#heading_16">이미지</a>를 보라.
 </dd>
 <dt>metadata</dt>
 <dd>&#x200B;<a id="index_number_70"></a> 문서 제목과 저자 이름, 그리고 나머지 메타데이터를 명기하라.
@@ -283,7 +283,7 @@ metadata:
 &#x200B;<a id="index_number_74"></a><code>tex_files</code> 옵션이 설정되어 있다면 &#x200B;<a id="index_number_75"></a><code>html_files</code> 옵션이 무시된다.
 이것은 처리하기 번잡하기 때문이라기보다 그 두 형식을 동시에 사용해야 하는 경우를 상상하기 어렵기 때문이다.</p>
 
-<p>소스 파일들이 <code>_epub/OEBPS/</code> 디렉토리로 복사될 때 확장자가 <code>.xhtml</code>로 바뀐다.</p>
+<p>소스 파일들이 <code>_epub/OEBPS/</code> 폴더로 복사될 때 확장자가 <code>.xhtml</code>로 바뀐다.</p>
 
 <h2 id="heading_9">부수 파일</h2>
 
@@ -296,7 +296,7 @@ metadata:
       to: OEBPS
 </pre>
 
-<p>이 설정에 의해 <code>_html/cover.xhtml</code> 파일과 <code>_html/basic.css</code> 파일이 <code>_epub/OEBPS/</code> 디렉토리로 복사된다.</p>
+<p>이 설정에 의해 <code>_html/cover.xhtml</code> 파일과 <code>_html/basic.css</code> 파일이 <code>_epub/OEBPS/</code> 폴더로 복사된다.</p>
 
 <p>폰트나 오디오 파일을 같은 방법으로 추가할 수 있다.</p>
 
@@ -390,7 +390,7 @@ metadata:
 </pre>
 
 <p>그러나 탐색 제어 파일&#x200B;<a id="index_number_83"></a><sup>toc.ncx</sup>에서 기대와 다르게 절 제목들이 장 제목의 수준을 갖게 될 것이다.
-이 문제를 피하기 위해 &#x200B;<a id="index_number_84"></a><code>copy_tex()</code> 함수가 레이텍 파일들을 목적 디렉토리로 복사할 때, &#x200B;<a id="index_number_85"></a><code>merge_tex()</code> 함수가 &#x200B;<a id="index_number_86"></a><code>&#x5c;input</code> 명령이 내용에 포함되어 있는지 확인하고, 있으면 해당 줄을 대상 파일의 내용으로 치환한다.
+이 문제를 피하기 위해 &#x200B;<a id="index_number_84"></a><code>copy_tex()</code> 함수가 레이텍 파일들을 목적 폴더로 복사할 때, &#x200B;<a id="index_number_85"></a><code>merge_tex()</code> 함수가 &#x200B;<a id="index_number_86"></a><code>&#x5c;input</code> 명령이 내용에 포함되어 있는지 확인하고, 있으면 해당 줄을 대상 파일의 내용으로 치환한다.
 <code>&#x5c;input</code> 명령은 일 회만 처리된다.
 즉 치환하는 내용에 포함된 <code>&#x5c;input</code> 명령들은 무시된다.</p>
 
@@ -507,11 +507,11 @@ metadata:
 </pre></li>
 
 <li>위 예에서 파일 경로를 포함하는 것은 허용되지 않는다.
-따라서 &#x200B;<a id="index_number_115"></a><code>&#x5c;graphicspath</code>를 사용하여 이미지 디렉토리의 경로를 지정하여야 한다.
+따라서 &#x200B;<a id="index_number_115"></a><code>&#x5c;graphicspath</code>를 사용하여 이미지 폴더의 경로를 지정하여야 한다.
 <pre>&#x5c;graphicspath{{images/}{images/fallback/}}
 </pre></li>
 
-<li>설정 파일에 이미지 디렉토리의 경로를 지정하여야 한다.
+<li>설정 파일에 이미지 폴더의 경로를 지정하여야 한다.
 <pre>original_image_directory:
   - images
   - images/fallback

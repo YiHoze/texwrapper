@@ -108,12 +108,12 @@ C:\>cloche.py [config.yml]
 클로시의 주요 처리 과정은---디폴트 설정을 기준으로---다음과 같다. 
 
 \begin{enumerate}
-\item \macro{create_epub_directory()} 함수가 \macro[epub]{_epub/} 디렉토리를 만든다. 
+\item \macro{create_epub_directory()} 함수가 \macro[epub]{_epub/} 폴더를 만든다. 
 그다음에 \macro{create_basic()} 함수가 \macro[mimetype]{_epub/mimetype} 파일과 \macro[container.xml]{_epub/META-INF/container.xml} 파일을 만든다.
 
-\item \macro{copy_additional()} 함수가 \macro{additional} 설정 옵션에 지정된, \macro{cover.xhtml}이나 \macro{basic.css} 같은 파일들을 \macro[OEBPS]{_epub/OEBPS/} 디렉토리로 복사한다.
+\item \macro{copy_additional()} 함수가 \macro{additional} 설정 옵션에 지정된, \macro{cover.xhtml}이나 \macro{basic.css} 같은 파일들을 \macro[OEBPS]{_epub/OEBPS/} 폴더로 복사한다.
 
-\item \macro{copy_tex()} 함수가 \macro{tex_files} 설정 옵션에 명시된 파일들을 ---확장자를 .xhtml로 바꾸어--- \macro[OEBPS]{_epub/OEBPS/} 디렉토리로 복사한다.
+\item \macro{copy_tex()} 함수가 \macro{tex_files} 설정 옵션에 명시된 파일들을 ---확장자를 .xhtml로 바꾸어--- \macro[OEBPS]{_epub/OEBPS/} 폴더로 복사한다.
 이때 \macro{escape} 설정 옵션에 지정된 .tsv 파일이 있다면, \term{wordig 모듈}이 그 파일의 지시에 따라 특정 문자열들을 다른 것들로 바꾼다.
 \titleref{sec:source_code}\를 보라.
 
@@ -129,7 +129,7 @@ C:\>cloche.py [config.yml]
 \item \macro{converter} 설정 옵션에 지정된 하나 이상의 .tsv 파일들을 참조하여 \term{wordig 모듈}이 모든 레이텍 매크로들을 HTML 태그들로 치환한다.
 \titleref{chp:markup_converter}\을 보라.
 
-\item \macro{copy_images()} 함수가 \macro{original_image_directory} 설정 옵션에 지정된 디렉토리에서 실제 문서에 삽입되는 이미지 파일들을 \verb{_epub/OEBPS/images/} 디렉토리로 복사한다. 
+\item \macro{copy_images()} 함수가 \macro{original_image_directory} 설정 옵션에 지정된 폴더에서 실제 문서에 삽입되는 이미지 파일들을 \verb{_epub/OEBPS/images/} 폴더로 복사한다. 
 \titleref{sec:image}\를 보라.
 
 \item \macro{create_ncx()} 함수가 \macro{toc.ncx} 파일을 만든다.
@@ -138,12 +138,12 @@ C:\>cloche.py [config.yml]
 \item \macro{create_opf()} 함수가 \macro{content.opf} 파일을 만든다.
 \titleref{chp:epub_structure}\를 보라.
 
-\item \macro{zip_epub()} 함수가 \verb{_epub/} 디렉토리를 압축하여 .epub 파일을 만든다.
+\item \macro{zip_epub()} 함수가 \verb{_epub/} 폴더를 압축하여 .epub 파일을 만든다.
 \end{enumerate}
 
 \section{스크립트 옵션}
 
-Cloche는 ePub을 새로 만들 때마다 \verb{_epub/} 디렉토리를 비운다.
+Cloche는 ePub을 새로 만들 때마다 \verb{_epub/} 폴더를 비운다.
 
 \begin{code}
 C:\>cloche.py -k [config.yml]
@@ -169,7 +169,7 @@ HzGuide 클래스와 그 설명서를 \url{https://github.com/YiHoze/HzGuide}에
 
 \chapter{ePub 구조}\label{chp:epub_structure}
 
-하나의 epub 파일에는 다음과 같은 구조의 디렉토리가 압축되어 있다.
+하나의 epub 파일에는 다음과 같은 구조의 폴더가 압축되어 있다.
 
 \begin{code}
 \_epub\
@@ -263,14 +263,14 @@ metadata:
 \end{code}
 
 \begin{macros}
-\item[output_directory] 출력 디렉토리를 지정하라. 이 옵션이 지정되지 않으면 \macro[epub]{_epub}으로 설정된다.
+\item[output_directory] 출력 폴더를 지정하라. 이 옵션이 지정되지 않으면 \macro[epub]{_epub}으로 설정된다.
 \item[output_file] 출력 파일을 지정하라. 이 옵션이 지정되지 않으면 오늘 날짜가 파일 이름으로 사용된다.
 \item[tex_files] 레이텍 파일들을 지정하라.
 \item[html_files] HTML 파일들을 지정하라. 
 \item[additional] 추가할 파일들을 지정하라.
 \item[escape] \titleref{sec:source_code}\를 보라.
 \item[converter] \titleref{chp:markup_converter}\를 보라.
-\item[original_image_directory] 이미지 파일들이 포함된 디렉토리를 지정하라. \titleref{sec:image}\를 보라.
+\item[original_image_directory] 이미지 파일들이 포함된 폴더를 지정하라. \titleref{sec:image}\를 보라.
 \item[metadata] 문서 제목과 저자 이름, 그리고 나머지 메타데이터를 명기하라.
 \end{macros}
 
@@ -300,7 +300,7 @@ html_files:
 \macro{tex_files} 옵션이 설정되어 있다면 \macro{html_files} 옵션이 무시된다.
 이것은 처리하기 번잡하기 때문이라기보다 그 두 형식을 동시에 사용해야 하는 경우를 상상하기 어렵기 때문이다.
 
-소스 파일들이 \verb{_epub/OEBPS/} 디렉토리로 복사될 때 확장자가 \verb{.xhtml}로 바뀐다.
+소스 파일들이 \verb{_epub/OEBPS/} 폴더로 복사될 때 확장자가 \verb{.xhtml}로 바뀐다.
 
 \section{부수 파일}
 
@@ -314,7 +314,7 @@ additional:
       to: OEBPS
 \end{code}
 
-이 설정에 의해 \verb{_html/cover.xhtml} 파일과 \verb{_html/basic.css} 파일이 \verb{_epub/OEBPS/} 디렉토리로 복사된다.
+이 설정에 의해 \verb{_html/cover.xhtml} 파일과 \verb{_html/basic.css} 파일이 \verb{_epub/OEBPS/} 폴더로 복사된다.
 
 폰트나 오디오 파일을 같은 방법으로 추가할 수 있다.
 
@@ -413,7 +413,7 @@ tex_files:
 \end{code}
 
 그러나 탐색 제어 파일\annotate{toc.ncx}에서 기대와 다르게 절 제목들이 장 제목의 수준을 갖게 될 것이다.
-이 문제를 피하기 위해 \macro{copy_tex()} 함수가 레이텍 파일들을 목적 디렉토리로 복사할 때, \macro{merge_tex()} 함수가 \macro{\input} 명령이 내용에 포함되어 있는지 확인하고, 있으면 해당 줄을 대상 파일의 내용으로 치환한다.
+이 문제를 피하기 위해 \macro{copy_tex()} 함수가 레이텍 파일들을 목적 폴더로 복사할 때, \macro{merge_tex()} 함수가 \macro{\input} 명령이 내용에 포함되어 있는지 확인하고, 있으면 해당 줄을 대상 파일의 내용으로 치환한다.
 \verb{\input} 명령은 일 회만 처리된다. 
 즉 치환하는 내용에 포함된 \verb{\input} 명령들은 무시된다.
 
@@ -543,12 +543,12 @@ HzGuide 클래스에서 정의된 \macro{\term}은 다음과 같이 기능한다
 \end{code}
 
 \item 위 예에서 파일 경로를 포함하는 것은 허용되지 않는다. 
-따라서 \macro{\graphicspath}를 사용하여 이미지 디렉토리의 경로를 지정하여야 한다.
+따라서 \macro{\graphicspath}를 사용하여 이미지 폴더의 경로를 지정하여야 한다.
 \begin{code}
 \graphicspath{{images/}{images/fallback/}}
 \end{code}
 
-\item 설정 파일에 이미지 디렉토리의 경로를 지정하여야 한다.
+\item 설정 파일에 이미지 폴더의 경로를 지정하여야 한다.
 \begin{code}
 original_image_directory: 
   - images
