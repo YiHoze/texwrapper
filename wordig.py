@@ -587,6 +587,8 @@ class WordDigger(object):
                 for cell in row:
                     if isinstance(cell.value, str):
                         line.append(cell.value)
+                    elif (isinstance(cell.value, int) or isinstance(cell.value, float)):
+                        line.append(str(cell.value))
                 if len(line) > 0 :
                     tmp = ''.join(line)
                     if tmp.strip() != '':
