@@ -424,6 +424,7 @@ def merge_tex(tex:str, escape_file:str) -> str:
     if len(found) > 0:
         for subfile in found:
             with open(subfile, mode='r', encoding='utf-8') as f:
+                subcontent = '<table class="tsv">\n'
                 lines = csv.reader(f, delimiter='\t')
                 for l, line in enumerate(lines):
                     subcontent += '<tr>'
@@ -436,8 +437,7 @@ def merge_tex(tex:str, escape_file:str) -> str:
                             else:
                                 subcontent += '<td class="tsv{}">{}</td>'.format(i+1, v)
                     subcontent += '</tr>\n'
-            subcontent = '<table class="tsv">\n' + subcontent
-            subcontent += '</table>'
+                subcontent += '</table>\n'
             line = '\\ReadTSV{{{}}}'.format(subfile)
             content = content.replace(line, subcontent)
 
