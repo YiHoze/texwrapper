@@ -18,6 +18,8 @@ iu.py
     Supported image formats are enumerated.
 iu.py foo.eps
     foo.pdf is created from foo.eps.
+iu.py foo.ai
+    foo.pdf and pdf.eps are crated from foo.ai
 iu -t png -R *.eps
     Every EPS file, including those in all subdirectories, is converted to PNG.
 iu.py -t png *.jpg
@@ -134,7 +136,7 @@ class ImageUtility(object):
             'exract': False
         }
 
-        self.vectors = ('.eps', '.pdf', '.svg')
+        self.vectors = ('.ai', '.eps', '.pdf', '.svg')
         self.bitmaps = ('.bmp', '.cr2', '.gif', '.jfif', '.jpg', '.jpeg', '.pbm', '.png', '.ppm', '.tga', '.tiff', '.webp')
 
         self.cnt = 0
@@ -257,7 +259,7 @@ class ImageUtility(object):
             self.run_cmd(cmd)
 
 
-    def name_target(self, img) -> str:
+    def name_target(self, img, trgext) -> str:
 
         filename, ext = os.path.splitext(img)
         ext = ext.lower()
@@ -267,10 +269,13 @@ class ImageUtility(object):
             frames = self.count_gif_frames(img)
             digits = self.count_digits(frames)
 
+        if trgext is None:
+            trgext = self.options['target_format']
+
         if digits > 1:
-            trg = '{}_%0{}d{}'.format(filename, digits, self.options['target_format'])
+            trg = '{}_%0{}d{}'.format(filename, digits, trgext)
         else:
-            trg = filename + self.options['target_format']
+            trg = filename + trgext
 
         return trg
 
@@ -371,6 +376,7 @@ class ImageUtility(object):
 
         self.cnt += 1
 
+
     def from_or_to_svg(self, img, **options) -> None:
 
         if len(options) > 0:
@@ -380,15 +386,31 @@ class ImageUtility(object):
         cmd = '"{}" --export-type={} "{}"'.format(self.Inkscape, trg, img)
         self.run_cmd(cmd)
 
+
     def eps_to_pdf(self, img) -> None:
 
         cmd = 'epstopdf.exe "{}"'.format(img)
         self.run_cmd(cmd)
 
+
     def pdf_to_eps(self, img) -> None:
 
         cmd = 'pdftops -eps "{}"'.format(img)
         self.run_cmd(cmd)
+
+
+    def ai_to_pdf(self, img) -> None:
+
+        trg = self.name_target(img, trgext='.pdf') # for ai_to_eps()
+        cmd = f"gswin64c -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile={trg} {img}"
+        self.run_cmd(cmd)
+
+
+    def ai_to_eps(self, img) -> None:
+
+        self.ai_to_pdf(img)
+        trg = self.name_target(img, trgext='.pdf')
+        self.pdf_to_eps(trg)
 
 
     def crop_pdf(self, img) -> None:
@@ -445,6 +467,10 @@ class ImageUtility(object):
                     self.run_recursive(self.eps_to_pdf)
                 elif recipe['source format'] == '.pdf' and recipe['target format'] == '.eps':
                     self.run_recursive(self.pdf_to_eps)
+                elif recipe['source format'] == '.ai' and recipe['target format'] == '.pdf':
+                    self.run_recursive(self.ai_to_pdf)
+                elif recipe['source format'] == '.ai' and recipe['target format'] == '.eps':
+                    self.run_recursive(self.ai_to_eps)
 
 
     def count(self) -> None:
