@@ -261,7 +261,7 @@ class LatexCompiler(object):
         if self.options['batch'] or self.options['fully']:
             self.compile_mode = '--interaction=batchmode '
         else:
-            self.compile_mode = '--synctex=1 '
+            self.compile_mode = '--synctex=-1 '
         if self.options['shell']:
             if 'xelatex' in  self.compiler.lower():
                 self.compile_mode +=  '--shell-escape -8bit'

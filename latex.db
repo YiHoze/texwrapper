@@ -1903,18 +1903,20 @@ tex = \documentclass[a4paper]{article}
 [japanese]
 description = This template shows how to typeset Japanese.
 tex_output = japanese.tex
-tex = \documentclass[a4paper]{article}
-	\usepackage{xeCJK}
-	\setCJKmainfont{Noto Serif JP}[Language=Japanese,Script=Kana]
-	\setCJKsansfont{Noto Sans JP}[Language=Japanese,Script=Kana]
-	\punctstyle{fullwidth}
-	
-	\begin{document}
-	ハネウェルAnalyticsは、本機器の運用寿命の期間、通常の使用及びサービスの下で、製品に材料および製造上の欠陥がないことを保証します。
-	この保証は最初の購入者に新しい、未使用の製品の販売にまで及びます。
-	ハネウェルAnalyticsの保証義務は制限されています。ハネウェルAnalyticsのオプションで、購入代金の払い戻し、 保証期間内にハネウェルAnalytics認定サービスセンターに返送された欠陥製品の修理または交換です。
-	いかなる場合においても、以下のハネウェルAnalyticsの責任は、実際に製品のバイヤーが支払った購入価格を超えません。
-	\end{document}
+tex = ```\documentclass{ltjbook}
+	```%%\documentclass[a4paper]{book} 
+	```%%\usepackage{luatexja}
+	```%%\usepackage{luatexja-fontspec}
+	```%%\setmainjfont{Noto Serif JP}
+	```\begin{document}
+	```\tableofcontents
+	```\chapter{本機器}
+	```\section{運用寿命}
+	```ハネウェルAnalyticsは、本機器の運用寿命の期間、通常の使用及びサービスの下で、製品に材料および製造上の欠陥がないことを保証します。
+	```この保証は最初の購入者に新しい、未使用の製品の販売にまで及びます。
+	```ハネウェルAnalyticsの保証義務は制限されています。ハネウェルAnalyticsのオプションで、購入代金の払い戻し、 保証期間内にハネウェルAnalytics認定サービスセンターに返送された欠陥製品の修理または交換です。
+	```いかなる場合においても、以下のハネウェルAnalyticsの責任は、実際に製品のバイヤーが支払った購入価格を超えません。
+	```\end{document}
 
 [chinese]
 description = This template shows how to typeset Chinese.
