@@ -127,7 +127,7 @@ class WordDigger(object):
             else:
                 matched = re.search(pattern, line, flags=re.IGNORECASE)
             if matched:
-                self.add_found("{:6}:\t{}".format(num, line.replace('\n', ' ')))
+                self.add_found("{:6}:\t{}".format(num+1, line.replace('\n', ' ')))
                 count += 1
         if count > 0:
             self.add_found(f"' {pattern} ' in {file}: {count}")
