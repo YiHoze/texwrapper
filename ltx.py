@@ -277,7 +277,7 @@ class LatexCompiler(object):
             'ger': '-c hz -l de',
             'ita': '-c hz -l it',
             'jap': '-c hz -l jp',
-            'kor': '-c hz -l ko',
+            'kor': '-c hz_ko -l ko',
             'nor': '-c hz -l no'
         }
         xindy_modules = {
@@ -376,6 +376,7 @@ class LatexCompiler(object):
         elif self.komkindex_bool:
             cmd = 'komkindex.exe {} {}'.format(self.index_style, self.idx)
 
+        print(cmd)
         os.system(cmd)
         if self.options['bookmark_index'] or self.options['bookmark_python']:
             self.bookmark_index()
