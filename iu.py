@@ -259,7 +259,7 @@ class ImageUtility(object):
             self.run_cmd(cmd)
 
 
-    def name_target(self, img, trgext) -> str:
+    def name_target(self, img, trgext=None) -> str:
 
         filename, ext = os.path.splitext(img)
         ext = ext.lower()
