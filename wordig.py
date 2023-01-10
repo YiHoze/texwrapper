@@ -112,7 +112,7 @@ class WordDigger(object):
     def find_txt(self, file:str, pattern:str) -> int:
 
         count = 0
-        self.add_found(file)
+        found_line = ""
 
         try:
             with open(file, mode='r', encoding='utf-8') as f:
@@ -127,18 +127,18 @@ class WordDigger(object):
             else:
                 matched = re.search(pattern, line, flags=re.IGNORECASE)
             if matched:
-                self.add_found("{:6}:\t{}".format(num+1, line.replace('\n', ' ')))
+                found_line = found_line + "  line {:4}: {}\n".format(num+1, line.strip())
                 count += 1
         if count > 0:
-            self.add_found(f"' {pattern} ' in {file}: {count}")
-
+            self.add_found(f"\x1b[32m{file}: {count}\x1b[0m")
+            self.add_found(found_line)
         return count
 
 
     def find_pdf(self, file:str, pattern:str) -> int:
 
         count = 0
-        self.add_found(file)
+        found_line = ""
 
         doc = fitz.open(file)
         for page_no in range(0, doc.page_count):
@@ -152,11 +152,13 @@ class WordDigger(object):
                 else:
                     matched = re.search(pattern, line, flags=re.IGNORECASE)
                 if matched:
-                    self.add_found("\tPage {}: {}".format(page_no+1, line))
+                    # self.add_found("\tPage {}: {}".format(page_no+1, line))
+                    found_line = found_line + "  page {:3}: {}\n".format(page_no+1, line.strip())
                     count += 1
 
         if count > 0:
-            self.add_found(f"\t' {pattern} ' in {file}: {count}")
+            self.add_found(f"\x1b[32m{file}: {count}\x1b[0m")
+            self.add_found(found_line)
         return count
 
 
@@ -270,7 +272,7 @@ class WordDigger(object):
                 patterns = csv.reader(ptrn)
 
             for pattern in patterns:
-                if len(pattern) == 0 or pattern[0].startswith('~~~'):
+                if len(pattern) == 0 or pattern[0].startswith('~~~') or pattern[0].startswith('```'):
                     continue
                 elif len(pattern) == 4:
                     content = self.replace_expand_scope(content, pattern)
@@ -336,7 +338,7 @@ class WordDigger(object):
                 for pattern in patterns:
                     if len(pattern) == 0:
                         continue
-                    elif pattern[0].startswith('~~~'): # use ~~~ as comment prefix in TSV
+                    elif pattern[0].startswith('~~~') or pattern[0].startswith('```'): # use ~~~ or ``` to write comments in TSV
                         if pattern[0].endswith('DOTALL'):
                             DOTALL = True
                         else:
