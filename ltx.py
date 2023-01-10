@@ -277,7 +277,7 @@ class LatexCompiler(object):
             'ger': '-c hz -l de',
             'ita': '-c hz -l it',
             'jap': '-c hz -l jp',
-            'kor': '-c hz_ko -l ko',
+            'kor': '-c hz-ko -l ko',
             'nor': '-c hz -l no'
         }
         xindy_modules = {
