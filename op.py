@@ -17,7 +17,9 @@ class FileOpener(object):
             'app_option': '',
             'texlive': False,
             'texlive_path': False,
-            'web': False
+            'default_app': False,
+            'web': False,
+            'as_web': False,
         }
 
         self.reconfigure(kwargs)
@@ -28,14 +30,16 @@ class FileOpener(object):
             config = configparser.ConfigParser()
             config.read(ini)
             self.editor = config.get('Text Editor', 'path', fallback=False)
-            self.associations = config.get('Text Editor', 'associations', fallback=[])
+            self.txt_associations = config.get('Text Editor', 'associations', fallback=[])
             self.pdf_viewer = config.get('Sumatra PDF', 'path', fallback=False)
+            self.pdf_associations = config.get('Sumatra PDF', 'associations', fallback=[])
             self.AdobeReader = config.get('Adobe Reader', 'path', fallback=False)
             self.WebBrowser = config.get('Web Browser', 'path', fallback=False)
         else:
             self.editor =False
-            self.associations = []
+            self.txt_associations = []
             self.pdf_viewer = False
+            self.pdf_associations = []
             self.AdobeReader = False
             self.WebBrowser = False
 
@@ -53,21 +57,19 @@ class FileOpener(object):
             self.open_app(file)
         else:
             ext = os.path.splitext(file)[1].lower()
-            if ext in self.associations:
+            if ext in self.txt_associations:
                 filetype = 'txt'
-            elif ext == '.pdf':
+            elif ext in self.pdf_associations:
                 filetype = 'pdf'
-            elif ext == '.gif':
-                filetype = 'gif'
             else:
                 filetype = 'another'
 
-            if filetype == 'txt' or self.options['force']:
+            if self.options['default_app']:
+                self.open_default(file)
+            elif filetype == 'txt' or self.options['force']:
                 self.open_txt(file)
             elif filetype ==  'pdf':
                 self.open_pdf(file)
-            elif filetype ==  'gif':
-                self.open_web([os.path.abspath(file)])
             else:
                 self.open_default(file)
 
@@ -95,7 +97,7 @@ class FileOpener(object):
                     return
                 else:
                     selection = selection - 1
-                    self.open_by_type(files[selection])            
+                    self.open_by_type(files[selection])
 
 
     def open_here(self, files, **options) -> None:
@@ -118,8 +120,9 @@ class FileOpener(object):
 
     def open_default(self, file) -> None:
 
-        cmd = 'start \"\" \"{}\"'.format(file)
-        os.system(cmd)
+        # cmd = 'start \"\" \"{}\"'.format(file)
+        # os.system(cmd)
+        os.startfile(file)
 
 
     def open_app(self, file, **options) -> None:
@@ -179,7 +182,7 @@ class FileOpener(object):
 
 
     def open_web(self, urls, **options) -> None:
-        
+
         self.reconfigure(options)
 
         if self.options['app']:
@@ -187,7 +190,10 @@ class FileOpener(object):
                 self.open_app(url)
         elif self.WebBrowser:
             for url in urls:
-                cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, url)
+                if self.options['as_web']:
+                    cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, os.path.abspath(url))
+                else:
+                    cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, url)
                 subprocess.Popen(cmd)
         else:
             for url in urls:
@@ -200,7 +206,7 @@ class FileOpener(object):
 
         if self.options['texlive'] or self.options['texlive_path']:
             self.search_tex_live(files)
-        elif self.options['web']:
+        elif self.options['web'] or self.options['as_web']:
             self.open_web(files)
         else:
             self.open_here(files)
@@ -257,11 +263,25 @@ def parse_args() -> argparse.Namespace:
         help = 'Force to open as text.'
     )
     parser.add_argument(
+        '-d',
+        dest = 'default_app',
+        action = 'store_true',
+        default = False,
+        help = 'Let the associated application open.'
+    )
+    parser.add_argument(
         '-w',
         dest = 'web',
         action = 'store_true',
         default = False,
         help = 'Access the given website.'
+    )
+    parser.add_argument(
+        '-W',
+        dest = 'as_web',
+        action = 'store_true',
+        default = False,
+        help = 'Use the default web browser to open.'
     )
 
     return parser.parse_args()
@@ -276,5 +296,7 @@ if __name__ == '__main__':
         app_option = args.app_option,
         texlive = args.texlive, 
         texlive_path = args.texlive_path, 
-        web = args.web)
+        default_app = args.default_app,
+        web = args.web,
+        as_web = args.as_web)
     opener.open(args.files)
