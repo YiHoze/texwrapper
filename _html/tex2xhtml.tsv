@@ -91,12 +91,12 @@
 \]\}	]
 ~~~ HzGuide
 \\skiplines\[.+?\]
-\\image[*|^]{0,2}\{(.+).pdf\}\((.+)\)	<figure><a href="\1"><img src="images/\1.png" alt="\1"/></a><figcaption>\2</figcaption></figure>
-\\image[*|^]{0,2}\{(.+)\}\((.+)\)	<figure><a href="\1"><img src="images/\1" alt="\1"/></a><figcaption>\2</figcaption></figure>
-\\image[*|^]{0,2}\{(.+)\}\[(.+)\]\((.+)\)	<figure><a href="\1"><img src="images/\1" alt="\1"/><img src="images/\2" alt="\2"/></a><figcaption>\3</figcaption></figure>
-\\image[*|^]{0,2}\{(.+)\}\[(.+)\]	<figure><a href="\1"><img src="images/\1" alt="\1"/><img src="images/\2" alt="\2"/></a></figure>
-\\image[*|^]{0,2}\{(.+).pdf\}	<figure><img src="images/\1.png" alt="\1"/></figure>
-\\image[*|^]{0,2}\{(.+)\}	<figure><img src="images/\1" alt="\1"/></figure>
+\\image[*|\|]{0,2}\{(.+).pdf\}\((.+)\)	<figure><a href="\1"><img src="images/\1.png" alt="\1"/></a><figcaption>\2</figcaption></figure>
+\\image[*|\|]{0,2}\{(.+)\}\((.+)\)	<figure><a href="\1"><img src="images/\1" alt="\1"/></a><figcaption>\2</figcaption></figure>
+\\image[*|\|]{0,2}\{(.+)\}\[(.+)\]\((.+)\)	<figure><a href="\1"><img src="images/\1" alt="\1"/><img src="images/\2" alt="\2"/></a><figcaption>\3</figcaption></figure>
+\\image[*|\|]{0,2}\{(.+)\}\[(.+)\]	<figure><a href="\1"><img src="images/\1" alt="\1"/><img src="images/\2" alt="\2"/></a></figure>
+\\image[*|\|]{0,2}\{(.+).pdf\}	<figure><img src="images/\1.png" alt="\1"/></figure>
+\\image[*|\|]{0,2}\{(.+)\}	<figure><img src="images/\1" alt="\1"/></figure>
 \\begin\{IllustImage\}[*|^]{0,2}\{(.+).pdf\}	<figure><img src="images/\1.png" alt="\1"/></figure>\n<p>
 \\begin\{IllustImage\}[*|^]{0,2}\{(.+)\}	<figure><img src="images/\1" alt="\1"/></figure>\n<p>
 \\begin\{IllustImage\}[*|^]{0,2}\[.+?\]\{(.+)\}	<figure><img src="images/\1" alt="\1"/></figure>\n<p>

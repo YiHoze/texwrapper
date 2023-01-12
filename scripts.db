@@ -500,12 +500,11 @@ code = ```
 [datecal]
 description = [Python] Find out the date certain days before or after a given date.
 code_output = datecal.py
-code = 
-	```import argparse
+code = ```import argparse
 	```from datetime import datetime, date, timedelta
 	```import calendar
 	```import pytz
-	```from dateutil.relativedelta import relativedelta
+	```from dateutil.relativedelta import relativedelta #pip install python-dateutil
 	```
 	```calendar.setfirstweekday(calendar.SUNDAY)
 	```
