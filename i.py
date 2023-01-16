@@ -217,6 +217,7 @@ def count_tex_files() -> list:
         if ext == '.':
             fnpattern += '.tex'
         elif not '*' in fnpattern:
+            fnpattern = fnpattern.replace('.\\', '')
             fnpattern = '*{}*'.format(fnpattern) + '.tex'
 
     for i in glob.glob(fnpattern):
