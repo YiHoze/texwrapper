@@ -82,11 +82,11 @@ class FileOpener(object):
         elif len(files) > 1:
             for i, v in enumerate(files):
                 print('{}:{}'.format(i+1, v))
-            selection = input('\nSelect a file by entering its number, or enter "0" for all: ')
+            selection = input('Select a file by entering its number, or enter "0" for all: ')
             try:
                 selection = int(selection)
             except:
-                print('Wrong selection.')
+                # print('Wrong selection.')
                 return
             if selection == 0:
                 for file in files:
@@ -110,6 +110,7 @@ class FileOpener(object):
                 for file in target_files:
                     self.open_by_type(file)
             else:
+            # when part of filename is given without '*' 
                 filelist = os.listdir('.')
                 found_files = []
                 for file in filelist:
@@ -181,6 +182,16 @@ class FileOpener(object):
                 print('{} is not found in TeX Live.'.format(file))
 
 
+    def open_with_browser(self, file) -> None:
+
+        for fnpattern in file:
+            target_files = glob.glob(fnpattern)
+            for file in target_files:
+                if os.path.isfile(file):
+                    cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, os.path.abspath(file))
+                    subprocess.Popen(cmd)
+
+
     def open_web(self, urls, **options) -> None:
 
         self.reconfigure(options)
@@ -191,10 +202,10 @@ class FileOpener(object):
         elif self.WebBrowser:
             for url in urls:
                 if self.options['as_web']:
-                    cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, os.path.abspath(url))
+                    self.open_with_browser(url)
                 else:
                     cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, url)
-                subprocess.Popen(cmd)
+                    subprocess.Popen(cmd)
         else:
             for url in urls:
                 self.open_default(url)
