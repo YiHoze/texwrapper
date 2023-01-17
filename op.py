@@ -184,12 +184,11 @@ class FileOpener(object):
 
     def open_with_browser(self, file) -> None:
 
-        for fnpattern in file:
-            target_files = glob.glob(fnpattern)
-            for file in target_files:
-                if os.path.isfile(file):
-                    cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, os.path.abspath(file))
-                    subprocess.Popen(cmd)
+        target_files = glob.glob(file)
+        for file in target_files:
+            if os.path.isfile(file):
+                cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, os.path.abspath(file))
+                subprocess.Popen(cmd)
 
 
     def open_web(self, urls, **options) -> None:
