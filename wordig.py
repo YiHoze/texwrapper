@@ -70,12 +70,12 @@ class WordDigger(object):
         if self.options['recursive']:
             for target in self.targets:
                 dir = os.path.dirname(target)
-                files = os.path.basename(target)
+                filename = os.path.basename(target)
                 if dir == '':
                     dir = '.'
                 subdirs = [x[0] for x in os.walk(dir)]
                 for subdir in subdirs:
-                    fnpattern = os.path.join(subdir, files).replace('/','\\')
+                    fnpattern = os.path.join(subdir, filename).replace('/','\\')
                     for file in glob.glob(fnpattern):
                         func(file)
         else:
