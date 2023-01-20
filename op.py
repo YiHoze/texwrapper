@@ -16,7 +16,7 @@ class FileOpener(object):
             'app': None,
             'app_option': '',
             'texlive': False,
-            'texlive_path': False,
+            'recursive': False,
             'default_app': False,
             'web': False,
             'as_web': False,
@@ -104,19 +104,35 @@ class FileOpener(object):
 
         self.reconfigure(options)
 
-        for fnpattern in files:
-            target_files = glob.glob(fnpattern)
-            if len(target_files) > 0:
-                for file in target_files:
-                    self.open_by_type(file)
-            else:
-            # when part of filename is given without '*' 
-                filelist = os.listdir('.')
-                found_files = []
-                for file in filelist:
-                    if fnpattern.lower() in file.lower():
-                        found_files.append(file)
-                self.open_selected(found_files)
+        if self.options['recursive']:
+            for fnpattern in files:
+                dir = os.path.dirname(fnpattern)
+                if dir == '':
+                    dir = '.'
+                filename = os.path.basename(fnpattern)
+                subdirs = [x[0] for x in os.walk(dir)]
+                for subdir in subdirs:
+                    target_files = os.path.join(subdir, filename).replace('/','\\')
+                    for file in glob.glob(target_files):
+                        self.open_by_type(file)
+        else:
+            for fnpattern in files:
+                target_files = glob.glob(fnpattern)
+                if len(target_files) > 0:
+                    for file in target_files:
+                        self.open_by_type(file)
+                else:
+                # when part of filename is given without '*'
+                    dir = os.path.dirname(fnpattern)
+                    if dir == '':
+                        dir = '.'
+                    filename = os.path.basename(fnpattern) 
+                    filelist = os.listdir(dir)
+                    found_files = []
+                    for file in filelist:
+                        if filename.lower() in file.lower():
+                            found_files.append(file)
+                    self.open_selected(found_files)
 
 
     def open_default(self, file) -> None:
@@ -168,16 +184,14 @@ class FileOpener(object):
                 result = subprocess.check_output(['kpsewhich', file], stderr=subprocess.STDOUT)
                 found = str(result, 'utf-8')
                 found = found.rstrip()
-                if self.options['texlive_path']:
-                    found=os.path.dirname(found)
-                    found = found.replace('/', '\\')
-                    print(found)
-                    pyperclip.copy(found)
+                foundpath = os.path.dirname(found)
+                foundpath = foundpath.replace('/', '\\')
+                print(foundpath)
+                pyperclip.copy(foundpath)
+                if found.endswith('.pdf'):
+                    self.open_pdf(found)
                 else:
-                    if found.endswith('.pdf'):
-                        self.open_pdf(found)
-                    else:
-                        self.open_txt(found)
+                    self.open_txt(found)
             except subprocess.CalledProcessError:
                 print('{} is not found in TeX Live.'.format(file))
 
@@ -214,7 +228,7 @@ class FileOpener(object):
 
         self.reconfigure(options)
 
-        if self.options['texlive'] or self.options['texlive_path']:
+        if self.options['texlive']:
             self.search_tex_live(files)
         elif self.options['web'] or self.options['as_web']:
             self.open_web(files)
@@ -252,18 +266,18 @@ def parse_args() -> argparse.Namespace:
         help = 'Use Adobe Reader to view PDF.'
     )
     parser.add_argument(
+        '-r',
+        dest = 'recursive',
+        action = 'store_true',
+        default = False,
+        help = 'Search subdirectories.'
+    )
+    parser.add_argument(
         '-s',
         dest = 'texlive',
         action = 'store_true',
         default = False,
-        help = 'Search TeX Live for the specified file to find and open.'
-    )
-    parser.add_argument(
-        '-S',
-        dest = 'texlive_path',
-        action = 'store_true',
-        default = False,
-        help = 'Search TeX Live for the specified file and copy the directory path to the clipboard.'
+        help = 'Search TeX Live for the specified file to find and open and copy the directory path to the clipboard.'
     )
     parser.add_argument(
         '-f',
@@ -291,7 +305,7 @@ def parse_args() -> argparse.Namespace:
         dest = 'as_web',
         action = 'store_true',
         default = False,
-        help = 'Use the default web browser to open.'
+        help = 'Open the given file with the default web browser.'
     )
 
     return parser.parse_args()
@@ -305,7 +319,7 @@ if __name__ == '__main__':
         app = args.app, 
         app_option = args.app_option,
         texlive = args.texlive, 
-        texlive_path = args.texlive_path, 
+        recursive = args.recursive, 
         default_app = args.default_app,
         web = args.web,
         as_web = args.as_web)
