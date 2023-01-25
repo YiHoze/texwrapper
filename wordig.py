@@ -1,12 +1,13 @@
 # C:\>wordig.py -u 가①⑴ⓐ⒜ㄱ㉠㉮㈀㈎𐊀
-import os
 import argparse
-import glob
 import csv
+import fitz # pip install pymupdf
+import glob
+import itertools
+import openpyxl
+import os
 import re
 import unicodedata
-import fitz # pip install pymupdf
-import openpyxl
 
 
 class WordDigger(object):
@@ -21,6 +22,7 @@ class WordDigger(object):
             'aim_pattern': None,
             'substitute': None,
             'pattern': None,
+            'compare': False,
             'case_sensitive': True,
             'dotall': False,
             'flag': 'ONCE',
@@ -71,8 +73,7 @@ class WordDigger(object):
             for target in self.targets:
                 dir = os.path.dirname(target)
                 filename = os.path.basename(target)
-                if dir == '':
-                    dir = '.'
+                if dir == '': dir = '.'
                 subdirs = [x[0] for x in os.walk(dir)]
                 for subdir in subdirs:
                     fnpattern = os.path.join(subdir, filename).replace('/','\\')
@@ -374,7 +375,52 @@ class WordDigger(object):
             f.write(content)
 
 
-    def determine_output(self, file:str, output=None) -> str:        
+    def compare(self) -> None:
+
+        if len(self.targets) != 2:
+            print("Two files are required at least.")
+            return
+
+        if '*' in self.targets[0]:
+            if self.options['recursive']:
+                dir1 = os.path.dirname(self.targets[0])
+                dir2 = os.path.dirname(self.targets[1])
+                filePattern1 = os.path.basename(self.targets[0])
+                subdirs = [x[0] for x in os.walk(dir1)]
+                for subdir in subdirs:
+                    fnpattern = os.path.join(subdir, filePattern1)
+                    for file1 in glob.glob(fnpattern):
+                        file2 = file1.replace(dir1, dir2)
+                        if os.path.exists(file1) and os.path.exists(file2):
+                            self.compare_files(file1, file2)
+            else:
+                dir2 = os.path.dirname(self.targets[1])
+                for file1 in glob.glob(self.targets[0]):
+                    filename = os.path.basename(file1)
+                    file2 = os.path.join(dir2, filename)
+                    if os.path.exists(file1) and os.path.exists(file2):
+                        self.compare_files(file1, file2)
+        else:
+            self.compare_files(self.targets[0], self.targets[1])
+
+        content = '\n'.join(self.found)
+        if self.options['output'] is None:
+            print(content)
+        else:
+            with open(self.options['output'], mode='w', encoding='utf-8') as f:
+                f.write(content)
+
+
+    def compare_files(self, file1:str, file2:str) -> None:
+
+        self.found.append(f"{file1}\n{file2}")
+        with open(file1, "r", encoding='utf-8') as f1, open(file2, "r", encoding='utf-8') as f2:
+            for lineno, (line1, line2) in enumerate(zip(f1, f2), start=1):
+                if line1 != line2:
+                    self.found.append(("{:5}: {}\n{:5}: {}".format(lineno, line1.strip(), lineno, line2.strip())))
+
+
+    def determine_output(self, file:str, output=None) -> str:
 
         if self.options['output'] is None:
             if output is None:
@@ -639,6 +685,8 @@ class WordDigger(object):
             self.run_recursive(self.xlsx_to_tsv)
         elif self.options['encoding'] is not None:
             self.run_recursive(self.convert_encoding)
+        elif self.options['compare']:
+            self.compare()
         elif self.options['pattern'] is not None:
             if os.path.exists(self.options['pattern']):
                 self.run_recursive(self.replace)
@@ -837,6 +885,13 @@ def parse_args() -> argparse.Namespace:
         help = 'Specify a TSV or CSV file which contains regular expressions for text replacement.'
     )
     parser.add_argument(
+        '-C',
+        '--compare',
+        action = 'store_true',
+        default = False,
+        help = 'Specify two files or folders to compare them.'
+    )
+    parser.add_argument(
         '-c',
         '--case-sensitive',
         dest = 'case_sensitive',
@@ -971,6 +1026,7 @@ if __name__ == '__main__':
         aim_pattern = args.aim_pattern,
         substitute = args.substitute,
         pattern = args.pattern,
+        compare = args.compare,
         case_sensitive = args.case_sensitive,
         dotall = args.dotall,
         flag = args.flag,
