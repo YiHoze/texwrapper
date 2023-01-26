@@ -832,27 +832,31 @@ class UnicodeDigger(object):
 
 def parse_args() -> argparse.Namespace:
 
-    example = '''examples:
-    wordig.py *.txt *.pdf
-        Count characters and words.
-    wordig.py -p *.pdf
-        Count pages in PDF files.
-    wordig.py -r -a "foo" *.txt *.pdf
-        Find "foo", searching through all subdirectories.
-    wordig.py -P foo.tsv *.txt
-        Find and replace according to the regular expressions contained in foo.tsv.
-    wordig.py -U "unicode 유니코드"
-        Get the unicode code points and UTF-8 bytes for the given characters.
-    wordig.py -x *.tsv
-        Convert TSV files to XLSX.
-    wordig.py -E cp949 *.tex
-        Convert TeX files from CP949 to UTF-8 encoding.
-    '''
+    # example = '''examples:
+    # wordig.py *.txt *.pdf
+    #     Count characters and words.
+    # wordig.py -p *.pdf
+    #     Count pages in PDF files.
+    # wordig.py -r -a "foo" *.txt *.pdf
+    #     Find "foo", searching through all subdirectories.
+    # wordig.py -P foo.tsv *.txt
+    #     Find and replace according to the regular expressions contained in foo.tsv.
+    # wordig.py -U "unicode 유니코드"
+    #     Get the unicode code points and UTF-8 bytes for the given characters.
+    # wordig.py -x *.tsv
+    #     Convert TSV files to XLSX.
+    # wordig.py -E cp949 *.tex
+    #     Convert TeX files from CP949 to UTF-8 encoding.
+    # '''
+
+    # parser = argparse.ArgumentParser(
+    #     epilog = example,
+    #     formatter_class = argparse.RawDescriptionHelpFormatter,
+    #     description = 'Count words, count pages, find or replace strings, and more.'
+    # )
 
     parser = argparse.ArgumentParser(
-        epilog = example,
-        formatter_class = argparse.RawDescriptionHelpFormatter,
-        description = 'Count words, count pages, find or replace strings, and more.'
+        description = "Count words, count pages, find or replace strings, and more."
     )
 
     parser.add_argument(

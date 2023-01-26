@@ -54,37 +54,41 @@ class LatexCompiler(object):
 
     def parse_args(self, argv=None) -> None:
 
-        example = '''examples:
-    ltx.py -b -s foo.xxx
-        Any filename extension is ignored.
-        foo.tex is compiled in batch mode and shell commands are allowed during compilation.
-    ltx.py -L foo
-        lualatex is used instead of xelatex.
-    ltx.py -w -i foo
-        foo.tex is compiled twice and index entries (foo.idx) are sorted by xindex in between.
-    ltx.py -i -I french -n foo
-        foo.idx is sorted by French without compilation.
-    ltx.py -i -I foo.ist foo
-        foo.idx is sorted by komkindex with foo.ist after a compilation.
-    ltx.py -i -m foo
-        foo.ind is altered so that index entries are added as bookmarks.
-        Use "-M" to bookmark ones from python docstrings.
-    ltx.py -f -a foo
-        If foo.idx exists, foo.tex is compiled four times and foo.idx is sorted in between.
-        Otherwise, it is compiled three times.
-        Without "-a", every auxiliary file is deleted after compilation is completed.
-    ltx.py -B foo
-        Bibtex runs after a compilation.
-    ltx.py -p foo
-        Pythontex runs after a compilation.
-    ltx.py -c
-        Auxiliary files are cleared.
-    '''
+    #     example = '''examples:
+    # ltx.py -b -s foo.xxx
+    #     Any filename extension is ignored.
+    #     foo.tex is compiled in batch mode and shell commands are allowed during compilation.
+    # ltx.py -L foo
+    #     lualatex is used instead of xelatex.
+    # ltx.py -w -i foo
+    #     foo.tex is compiled twice and index entries (foo.idx) are sorted by xindex in between.
+    # ltx.py -i -I french -n foo
+    #     foo.idx is sorted by French without compilation.
+    # ltx.py -i -I foo.ist foo
+    #     foo.idx is sorted by komkindex with foo.ist after a compilation.
+    # ltx.py -i -m foo
+    #     foo.ind is altered so that index entries are added as bookmarks.
+    #     Use "-M" to bookmark ones from python docstrings.
+    # ltx.py -f -a foo
+    #     If foo.idx exists, foo.tex is compiled four times and foo.idx is sorted in between.
+    #     Otherwise, it is compiled three times.
+    #     Without "-a", every auxiliary file is deleted after compilation is completed.
+    # ltx.py -B foo
+    #     Bibtex runs after a compilation.
+    # ltx.py -p foo
+    #     Pythontex runs after a compilation.
+    # ltx.py -c
+    #     Auxiliary files are cleared.
+    # '''
 
+        # parser = argparse.ArgumentParser(
+        #     epilog = example,
+        #     formatter_class = argparse.RawDescriptionHelpFormatter,
+        #     description = 'Let LuaLaTeX or XeLaTeX generate a PDF file from a TeX file.'
+        # )
         parser = argparse.ArgumentParser(
-            epilog = example,
-            formatter_class = argparse.RawDescriptionHelpFormatter,
-            description = 'Let LuaLaTeX or XeLaTeX generate a PDF file from a TeX file.'
+            description = "Let LuaLaTeX or XeLaTeX compile TeX files to generate PDF files."
+
         )
         parser.add_argument(
             'tex',
@@ -258,14 +262,19 @@ class LatexCompiler(object):
 
 
         # Compile mode
-        if self.options['batch'] or self.options['fully']:
-            self.compile_mode = '--interaction=batchmode '
-        else:
-            self.compile_mode = '--synctex=-1 '
-        if self.options['shell']:
-            if 'xelatex' in  self.compiler.lower():
-                self.compile_mode +=  '--shell-escape -8bit'
+        if 'xelatex' in  self.compiler.lower():
+            if self.options['batch'] or self.options['fully']:
+                self.compile_mode = '-interaction=batchmode '
             else:
+                self.compile_mode = '-synctex=-1 '
+            if self.options['shell']:
+                self.compile_mode +=  '-shell-escape -8bit'
+        else:
+            if self.options['batch'] or self.options['fully']:
+                self.compile_mode = '--interaction=batchmode '
+            else:
+                self.compile_mode = '--synctex=-1 '
+            if self.options['shell']:
                 self.compile_mode +=  '--shell-escape'
 
         # language by which to sort index

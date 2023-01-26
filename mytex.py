@@ -12,28 +12,31 @@ from ltx import LatexCompiler
 
 def parse_args() -> argparse.Namespace:
 
-    example = '''examples:
-mytex.py
-    makes mydoc.tex out of the default template, article.
-mytex.py -l
-    enumerates templates
-mytex.py -D metapost 
-    gives a brief description of the metapost template.
-mytex.py memoir -o foo
-    makes "foo.tex" out of the memoir template.
-mytex.py -s "20, 10" lotto
-    makes and compiles lotto.tex, of which two placeholders are replaced with "20" and "10".
-mytex.py lotto -n
-    makes lotto.tex but doesn't compile though this template has some compile options.
-mytex.py fonttable -f
-    makes and compiles myfont.tex though this template has no compile options.
->mytex.py -i foo.tex style_output=foo.sty image_output=foo.png
-    The specified files are inserted into the database.
-    '''
+#     example = '''examples:
+# mytex.py
+#     makes mydoc.tex out of the default template, article.
+# mytex.py -l
+#     enumerates templates
+# mytex.py -D metapost 
+#     gives a brief description of the metapost template.
+# mytex.py memoir -o foo
+#     makes "foo.tex" out of the memoir template.
+# mytex.py -s "20, 10" lotto
+#     makes and compiles lotto.tex, of which two placeholders are replaced with "20" and "10".
+# mytex.py lotto -n
+#     makes lotto.tex but doesn't compile though this template has some compile options.
+# mytex.py fonttable -f
+#     makes and compiles myfont.tex though this template has no compile options.
+# >mytex.py -i foo.tex style_output=foo.sty image_output=foo.png
+#     The specified files are inserted into the database.
+#     '''
 
+#     parser = argparse.ArgumentParser(
+#         epilog = example,
+#         formatter_class = argparse.RawDescriptionHelpFormatter,
+#         description = "Create a LaTeX file from the template databse and compile it using ltx.py."
+#     )
     parser = argparse.ArgumentParser(
-        epilog = example,
-        formatter_class = argparse.RawDescriptionHelpFormatter,
         description = "Create a LaTeX file from the template databse and compile it using ltx.py."
     )
     parser.add_argument(

@@ -331,33 +331,37 @@ class ColorModel(object):
 
 def parse_args() -> argparse.Namespace:
 
-    example = '''examples:
-unit.py
-    Supported units are displayed.
-unit.py 10 mi 20
-    10 to 20 miles are converted to kilometers.
-unit.py 99 fah
-    A temperature in Fahrenheit is converted to Celsius.
-unit.py -H 5-11.25
-    A height of 5 feet 11.25 inches is converted to centimeters.
-unit.py -c 0000FF
-    This type of RGB value is converted to CMYK.
-unit.py -c 240,120,99
-    This type of RGB value is converted to CMYK.
-unit.py -c 0,0.1,0.33,0.01
-    This type of CMYK value is converted to RGB.
+#     example = '''examples:
+# unit.py
+#     Supported units are displayed.
+# unit.py 10 mi 20
+#     10 to 20 miles are converted to kilometers.
+# unit.py 99 fah
+#     A temperature in Fahrenheit is converted to Celsius.
+# unit.py -H 5-11.25
+#     A height of 5 feet 11.25 inches is converted to centimeters.
+# unit.py -c 0000FF
+#     This type of RGB value is converted to CMYK.
+# unit.py -c 240,120,99
+#     This type of RGB value is converted to CMYK.
+# unit.py -c 0,0.1,0.33,0.01
+#     This type of CMYK value is converted to RGB.
 
-To use comma as thousand separator in PowerShell,
-wrap the number with quotes or use the escape character.
+# To use comma as thousand separator in PowerShell,
+# wrap the number with quotes or use the escape character.
 
-unit.py "100,000" pa
-unit.py 100`,000 pa
+# unit.py "100,000" pa
+# unit.py 100`,000 pa
+# '''
 
-'''
+    # parser = argparse.ArgumentParser(
+    #     epilog = example,
+    #     formatter_class = argparse.RawDescriptionHelpFormatter,
+    #     description = 'Convert non-metric units to the metric system.'
+    # )
+
     parser = argparse.ArgumentParser(
-        epilog = example,
-        formatter_class = argparse.RawDescriptionHelpFormatter,
-        description = 'Convert non-metric units to the metric system.'
+        description = "Convert non-metric units to the metric system."
     )
     parser.add_argument(
         'numerals',

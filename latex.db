@@ -658,87 +658,6 @@ style =
 	```	negcolor=black
 	```}
 
-[multilingual]
-description = Use this template to see how many languaegs are supported by a font.
-	usage: mytex.py multilingual -s FONT
-	default: "Noto Serif"
-compiler = -c
-tex_output = multilingual.tex
-placeholders = 1
-defaults = Noto Serif
-tex = 
-	\documentclass{minimal}
-	\usepackage{fontspec}
-	\setlength\parskip{1.25\baselineskip}
-	\setlength\parindent{0pt}
-	\setmainfont{\1}
-	\begin{document}
-	0 1 2 3 4 5 6 7 8 9
-	
-	english:
-	© Keep this manual® for future use. These---lines--are-dashes.
-	
-	chinese 中文:
-	请妥善保存本手册，以备将来使用。
-	
-	czech ČEŠTINA:
-	Uchovejte tuto příručku pro pozdější použití.
-	
-	danish DANSK:
-	Gem vejledningen til senere brug.
-	
-	dutch NEDERLANDS:
-	Bewaar deze handleiding voor later gebruik.
-	
-	finnish SUOMI:
-	Säilytä tämä käsikirja myöhempää käyttöä varten.
-	
-	french FRANÇAIS:
-	Conservez ce manuel pour un usage ultérieur.
-	
-	german DEUTSCH:
-	Bewahren Sie diese Anleitung für spätere Nutzung auf.
-	
-	greek Ελληνικά:
-	Φυλάξτε αυτό το εγχειρίδιο για μελλοντική χρήση.
-	
-	italian ITALIANO:
-	Conservare questo manuale per utilizzi successivi.
-	
-	japanese 日本語:
-	後で使用するために、この取扱説明書を保管してください。
-	
-	korean 한국어:
-	나중에 참조할 수 있도록 이 매뉴얼을 잘 보관하십시오.
-	
-	norwegian NORSK:
-	Oppbevar denne håndboken til senere bruk.
-	
-	polish POLSKI:
-	Zachowaj tę instrukcję na przyszłość.
-	
-	portuguese PORTUGUÊS (Brazilian):
-	Guarde este manual para uso posterior.
-	
-	russian РУССКИЙ ЯЗЫК:
-	Сохраните это руководство на будущее.
-	
-	slovakian SLOVENČINA:
-	Odložte si tento návod na neskoršie použitie.
-	
-	spanish ESPAÑOL (Latin):
-	Conserve este manual para poder usarlo más adelante.
-	
-	swedish SVENSKA:
-	Behåll denna handbok för framtida användning.
-	
-	thai ไทย:
-	เก็บคู่มือนี้ไว้เพื่อใช้ในอนาคต
-	
-	turkish TÜRKÇE:
-	Bu kılavuzu daha sonra kullanmak üzere saklayın.
-	\end{document}
-
 [leaflet]
 description = Use this template to impose multiple pages in a sheet.
 	However, this template would not be needed but the pdfpages package would be adequate in most cases. For example:
@@ -1902,9 +1821,10 @@ tex = \documentclass[a4paper]{article}
 
 [japanese]
 description = This template shows how to typeset Japanese.
+compiler = -L
 tex_output = japanese.tex
 tex = ```\documentclass{ltjbook}
-	```%%\documentclass[a4paper]{book} 
+	```%%\documentclass[a4paper]{book}
 	```%%\usepackage{luatexja}
 	```%%\usepackage{luatexja-fontspec}
 	```%%\setmainjfont{Noto Serif JP}
@@ -5915,24 +5835,5 @@ tex = ```%% description =  An example of how to use \ReadTSV of the HzGuide clas
 	```}
 	```\begin{document}
 	```\ReadTSV{\1}
-	```\end{document}
-
-[fonttable]
-description = This template creates tables that show characters contained in a specific range of a font.\nmytex.py -s "FONTNAME, 0020, FFFF"
-compiler = -c
-placeholders = 3
-defaults = Noto Serif CJK KR, 0020, FFFF
-tex_output = fonttable.tex
-tex = ```%% description =  This template creates tables that show characters contained in a specific range of a font.\nmytex.py -s "FONTNAME, 0020, FFFF"
-	```%% compiler = -c
-	```%% placeholders = 3
-	```%% defaults = Noto Serif CJK KR, 0020, FFFFFF
-	```\documentclass{article}
-	```\usepackage[paper=a4paper,vmargin={20mm,20mm}]{geometry}
-	```\usepackage{unicodefonttable}
-	```\usepackage{color}
-	```
-	```\begin{document}
-	```\displayfonttable[range-start=\2, range-end=\3]{\1}
 	```\end{document}
 

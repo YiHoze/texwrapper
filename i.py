@@ -24,12 +24,15 @@ main = \\input{preamble}
 
 def parse_args() -> argparse.Namespace:
 
-    about = 'i.ini should be like:\n{}'.format(ini_template)
+    # about = 'i.ini should be like:\n{}'.format(ini_template)
 
+    # parser = argparse.ArgumentParser(
+    #     epilog = about,
+    #     formatter_class = argparse.RawDescriptionHelpFormatter,
+    #     description = 'Find and compile a tex file using ltx.py. Options unknown to this script are passed to ltx.py.'
+    # )
     parser = argparse.ArgumentParser(
-        epilog = about,
-        formatter_class = argparse.RawDescriptionHelpFormatter,
-        description = 'Find and compile a tex file using ltx.py. Options unknown to this script are passed to ltx.py.'
+        description = "Find and compile a tex file using ltx.py. Options unknown to this script are passed to ltx.py."
     )
     parser.add_argument(
         'tex',

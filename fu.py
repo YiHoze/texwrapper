@@ -27,24 +27,24 @@ flags for renaming:
 
 flags for gathering:
 0, overwrite: overwrite files of the same name.
-1, append-number: append a number if a file of the same name exists.
+1, append-number: append a number if a file of the same name exists.'''
 
-Copy for backup:
-    fu.py *.pdf 
-        The default destination directory is _bak.
-Rename files:
-    fu.py -r *.pdf
-        foo.pdf changes to foo_yyyy-mm-dd.pdf.
-    fu.py -r -f=replace-letters -a="-" -s="_" *.pdf
-        foo-goo.pdf changes to foo_goo.pdf
-Copy for gathering:
-    fu.py -g -f=append-number -d=c:\foo *.pdf
-        The default destination is the current directory.
-Getting the total size of all the files:
-    fu.py -t c:\foo d:\goo
-        The default is the current directory.
-Getting a list of files except album.pdf and others:
-    fu.py -l -e "album.pdf ..." *.pdf *.jpg'''
+# Copy for backup:
+#     fu.py *.pdf 
+#         The default destination directory is _bak.
+# Rename files:
+#     fu.py -r *.pdf
+#         foo.pdf changes to foo_yyyy-mm-dd.pdf.
+#     fu.py -r -f=replace-letters -a="-" -s="_" *.pdf
+#         foo-goo.pdf changes to foo_goo.pdf
+# Copy for gathering:
+#     fu.py -g -f=append-number -d=c:\foo *.pdf
+#         The default destination is the current directory.
+# Getting the total size of all the files:
+#     fu.py -t c:\foo d:\goo
+#         The default is the current directory.
+# Getting a list of files except album.pdf and others:
+#     fu.py -l -e "album.pdf ..." *.pdf *.jpg
 
     parser = argparse.ArgumentParser(
         epilog=details,
