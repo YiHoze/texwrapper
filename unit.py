@@ -162,21 +162,30 @@ class ConvertUnit(object):
         if lower > upper:
             print('Specify a higher value for the upper limit.')
             return
+
+        longest = 0
+        tmp = lower
+        # to get the length of the lognest between the results of the first calculation
+        while tmp <= upper:
+            length = self.calculate(tmp, padding=-1)
+            tmp += 1
+            if longest < length:
+                longest = length
         while lower <= upper:
-            self.calculate(lower)
+            length = self.calculate(lower, padding=longest)
             lower += 1
 
 
     def check_decimal(self, num) -> str:
 
         num_str = '{}'.format(num)
-        if int(num_str.split('.')[1].rstrip('.')) == 0:
+        if int(num_str.split('.')[1]) == 0:
             return '{:,}'.format(int(num))
         else:
             return '{:,.{d}f}'.format(num, d=self.options["decimal_place"])
 
 
-    def calculate(self, numeral) -> None:
+    def calculate(self, numeral, padding=0) -> None:
 
         if self.coefficient_bool:
             nonmetric_coefficient = 1 / self.coefficient
@@ -189,10 +198,16 @@ class ConvertUnit(object):
         numeral = self.check_decimal(numeral)
         metric_value = self.check_decimal(metric_value)
         nonmetric_value = self.check_decimal(nonmetric_value)
-        result = '{} {} = {} {}\t\t{} {} = {} {}'.format(
-            numeral, self.nonmetric_unit, metric_value, self.metric_unit,
-            numeral, self.metric_unit, nonmetric_value, self.nonmetric_unit)
-        print(result)
+        result1 = "{} {} = {} {}".format(numeral, self.nonmetric_unit, metric_value, self.metric_unit)
+        result2 = "{} {} = {} {}".format(numeral, self.metric_unit, nonmetric_value, self.nonmetric_unit)
+        if padding == -1:
+            return len(result1)
+        else:
+            if padding == 0:
+                result = "{: <{p}}{}".format(result1, result2, p=len(result1)+4)
+            else:
+                result = "{: <{p}}{}".format(result1, result2, p=padding+4)
+            print(result)
 
 
 class ColorModel(object):
@@ -206,7 +221,7 @@ class ColorModel(object):
 
     def error_message(self) -> None:
 
-        print('The value is formatted wrong.')
+        print('The arguments are formatted wrong.')
 
 
     def identify_color_model(self, color: str) -> None:
