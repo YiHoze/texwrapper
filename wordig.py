@@ -1000,7 +1000,7 @@ def parse_args() -> argparse.Namespace:
         '-E',
         dest = 'encoding',
         default = None,
-        help = 'Specify an encoding system from which to convert to UTF-8.'
+        help = 'Specify an encoding system, such as cp949, from which to convert to UTF-8.'
     )
     parser.add_argument(
         '-x',
