@@ -1,8 +1,5 @@
 import argparse
-from inspect import trace
 import re
-from telnetlib import GA
-
 
 class GanaToRoman(object):
 
