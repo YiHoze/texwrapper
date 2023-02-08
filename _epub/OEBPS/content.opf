@@ -8,7 +8,7 @@
    <dc:language>ko-KR</dc:language> 
    <dc:rights>© 2022 이 호재</dc:rights> 
    <dc:publisher>이 호재</dc:publisher> 
-   <dc:identifier id="BookId">urn:uuid:3f16a2fa-07e0-477e-928a-ef4d0306cd58</dc:identifier>
+   <dc:identifier id="BookId">urn:uuid:013b2fe9-7083-4e18-90de-f3c26d1a9b1b</dc:identifier>
  </metadata>
  <manifest>
   <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>

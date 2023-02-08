@@ -128,15 +128,9 @@ ePub에서 이 문제들이 사라진다.</p>
 <dt>hanja2hangul.py</dt>
 <dd>&#x200B;<a id="index_number_50"></a> 이것은 한자 발음 사전이다. <code>josa.py</code>가 사용한다.
 </dd>
-<dt>op.py</dt>
-<dd>&#x200B;<a id="index_number_51"></a> 이것은 Cloche와 직접적인 관련이 없으나 <code>wordig.py</code>가 요구하기 때문에 필요하다.
-</dd>
-<dt>docenv.conf</dt>
-<dd>&#x200B;<a id="index_number_52"></a> 이것은 <code>op.py</code>가 참조하는 설정 파일이다. 없어도 무방하다.
-</dd>
 </dl>
 
-<p>이 문서의 PDF를 만드는 데에 &#x200B;<a id="index_number_53"></a>HzGuide 클래스가 사용되었다.
+<p>이 문서의 PDF를 만드는 데에 &#x200B;<a id="index_number_51"></a>HzGuide 클래스가 사용되었다.
 HzGuide 클래스 설명서의 부록에서 위 스크립트들에 대한 간략한 설명이 제공된다.
 HzGuide 클래스와 그 설명서를 <a href="https://github.com/YiHoze/HzGuide">https://github.com/YiHoze/HzGuide</a>에서 얻을 수 있다.</p>
 
@@ -161,12 +155,12 @@ HzGuide 클래스와 그 설명서를 <a href="https://github.com/YiHoze/HzGuide
     +—mimetype
 </pre>
 
-<p>&#x200B;<a id="index_number_54"></a><code>mimetype</code> 파일에 미디어 타입이 다음과 같이 선언되어야 한다.</p>
+<p>&#x200B;<a id="index_number_52"></a><code>mimetype</code> 파일에 미디어 타입이 다음과 같이 선언되어야 한다.</p>
 
 <pre>application/epub+zip
 </pre>
 
-<p>&#x200B;<a id="index_number_55"></a><code>container.xml</code>이 다음과 같이 작성되어야 한다.</p>
+<p>&#x200B;<a id="index_number_53"></a><code>container.xml</code>이 다음과 같이 작성되어야 한다.</p>
 
 <pre>&#x3C;?xml version="1.0" encoding="UTF-8"?&#x3E;
 &#x3C;container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"&#x3E;
@@ -176,7 +170,7 @@ HzGuide 클래스와 그 설명서를 <a href="https://github.com/YiHoze/HzGuide
 &#x3C;/container&#x3E;
 </pre>
 
-<p>&#x200B;<a id="index_number_56"></a><code>content.opf</code>는 이미지를 비롯하여 ePub에 포함되는 모든 파일들의 명세서이다. 아울러 문서 제목 같은 메타데이터가 포함된다.</p>
+<p>&#x200B;<a id="index_number_54"></a><code>content.opf</code>는 이미지를 비롯하여 ePub에 포함되는 모든 파일들의 명세서이다. 아울러 문서 제목 같은 메타데이터가 포함된다.</p>
 
 <pre>&#x3C;dc:title&#x3E;Cloche&#x3C;/dc:title&#x3E;
 &#x3C;item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" /&#x3E;
@@ -185,9 +179,9 @@ HzGuide 클래스와 그 설명서를 <a href="https://github.com/YiHoze/HzGuide
 &#x3C;item id="foo.xhtml" href="foo.xhtml" media-type="application/xhtml+xml"/&#x3E;
 </pre>
 
-<p>ePub 파일에 잉여 파일들이 포함되어 있는 것은 문제를 일으키지 않지만, &#x200B;<a id="index_number_57"></a><code>content.opf</code>에 기재된 파일이 누락되어 있다면 그 ePub 파일은 손상된 것으로 간주된다.</p>
+<p>ePub 파일에 잉여 파일들이 포함되어 있는 것은 문제를 일으키지 않지만, &#x200B;<a id="index_number_55"></a><code>content.opf</code>에 기재된 파일이 누락되어 있다면 그 ePub 파일은 손상된 것으로 간주된다.</p>
 
-<p>&#x200B;<a id="index_number_58"></a><code>toc.ncx</code>가 PDF 책갈피와 같은 역할을 한다.</p>
+<p>&#x200B;<a id="index_number_56"></a><code>toc.ncx</code>가 PDF 책갈피와 같은 역할을 한다.</p>
 
 <pre>&#x3C;navPoint id="navPoint-1" playOrder="1"&#x3E;
     &#x3C;navLabel&#x3E;&#x3C;text&#x3E;CHAPTER TITLE&#x3C;/text&#x3E;&#x3C;/navLabel&#x3E;
@@ -201,8 +195,8 @@ HzGuide 클래스와 그 설명서를 <a href="https://github.com/YiHoze/HzGuide
 
 <h1 id="heading_7">설정</h1>
 
-<p>설정 파일이 &#x200B;<a id="index_number_59"></a><code>YML</code> 형식으로 작성되어야 한다.
-달리 지정하지 않으면 클로시는 &#x200B;<a id="index_number_60"></a><code>_html/epub.yml</code> 파일을 읽으려고 한다.</p>
+<p>설정 파일이 &#x200B;<a id="index_number_57"></a><code>YML</code> 형식으로 작성되어야 한다.
+달리 지정하지 않으면 클로시는 &#x200B;<a id="index_number_58"></a><code>_html/epub.yml</code> 파일을 읽으려고 한다.</p>
 
 <pre>output_directory: _epub
 output_file: cloche
@@ -231,37 +225,37 @@ metadata:
 
 <dl class="macros">
 <dt>output_directory</dt>
-<dd>&#x200B;<a id="index_number_61"></a> 출력 폴더를 지정하라. 이 옵션이 지정되지 않으면 &#x200B;<a id="index_number_62"></a><code>_epub</code>으로 설정된다.
+<dd>&#x200B;<a id="index_number_59"></a> 출력 폴더를 지정하라. 이 옵션이 지정되지 않으면 &#x200B;<a id="index_number_60"></a><code>_epub</code>으로 설정된다.
 </dd>
 <dt>output_file</dt>
-<dd>&#x200B;<a id="index_number_63"></a> 출력 파일을 지정하라. 이 옵션이 지정되지 않으면 오늘 날짜가 파일 이름으로 사용된다.
+<dd>&#x200B;<a id="index_number_61"></a> 출력 파일을 지정하라. 이 옵션이 지정되지 않으면 오늘 날짜가 파일 이름으로 사용된다.
 </dd>
 <dt>tex_files</dt>
-<dd>&#x200B;<a id="index_number_64"></a> 레이텍 파일들을 지정하라.
+<dd>&#x200B;<a id="index_number_62"></a> 레이텍 파일들을 지정하라.
 </dd>
 <dt>html_files</dt>
-<dd>&#x200B;<a id="index_number_65"></a> HTML 파일들을 지정하라.
+<dd>&#x200B;<a id="index_number_63"></a> HTML 파일들을 지정하라.
 </dd>
 <dt>additional</dt>
-<dd>&#x200B;<a id="index_number_66"></a> 추가할 파일들을 지정하라.
+<dd>&#x200B;<a id="index_number_64"></a> 추가할 파일들을 지정하라.
 </dd>
 <dt>escape</dt>
-<dd>&#x200B;<a id="index_number_67"></a> <a href="cloche.xhtml#heading_18">소스 코드</a>를 보라.
+<dd>&#x200B;<a id="index_number_65"></a> <a href="cloche.xhtml#heading_18">소스 코드</a>를 보라.
 </dd>
 <dt>converter</dt>
-<dd>&#x200B;<a id="index_number_68"></a> <a href="cloche.xhtml#heading_10">마크업 변환기</a>를 보라.
+<dd>&#x200B;<a id="index_number_66"></a> <a href="cloche.xhtml#heading_10">마크업 변환기</a>를 보라.
 </dd>
 <dt>original_image_directory</dt>
-<dd>&#x200B;<a id="index_number_69"></a> 이미지 파일들이 포함된 폴더를 지정하라. <a href="cloche.xhtml#heading_16">이미지</a>를 보라.
+<dd>&#x200B;<a id="index_number_67"></a> 이미지 파일들이 포함된 폴더를 지정하라. <a href="cloche.xhtml#heading_16">이미지</a>를 보라.
 </dd>
 <dt>metadata</dt>
-<dd>&#x200B;<a id="index_number_70"></a> 문서 제목과 저자 이름, 그리고 나머지 메타데이터를 명기하라.
+<dd>&#x200B;<a id="index_number_68"></a> 문서 제목과 저자 이름, 그리고 나머지 메타데이터를 명기하라.
 </dd>
 </dl>
 
 <h2 id="heading_8">소스 파일</h2>
 
-<p>&#x200B;<a id="index_number_71"></a><code>tex_files</code> 설정 옵션 아래에 포함할 레이텍 파일들을 지정하라.</p>
+<p>&#x200B;<a id="index_number_69"></a><code>tex_files</code> 설정 옵션 아래에 포함할 레이텍 파일들을 지정하라.</p>
 
 <pre>tex_files:
     - foo.tex
@@ -269,7 +263,7 @@ metadata:
     - hoo.tex
 </pre>
 
-<p>HTML 파일을 포함하려면 &#x200B;<a id="index_number_72"></a><code>html_files</code> 설정 옵션을 사용하라.</p>
+<p>HTML 파일을 포함하려면 &#x200B;<a id="index_number_70"></a><code>html_files</code> 설정 옵션을 사용하라.</p>
 
 <pre>html_files:
     - foo.html
@@ -277,10 +271,10 @@ metadata:
     - hoo.html
 </pre>
 
-<p>텍 라이브에 포함된 &#x200B;<a id="index_number_73"></a><code>lwarpmk</code>를 이용하여 레이텍 파일에서 HTML을 만들 수 있다는 점이 고려되었다.
+<p>텍 라이브에 포함된 &#x200B;<a id="index_number_71"></a><code>lwarpmk</code>를 이용하여 레이텍 파일에서 HTML을 만들 수 있다는 점이 고려되었다.
 그밖에도 HTML 파일들을 만드는 여러 방법들이 있을 것이다.
 그러나 레이텍 파일과 HTML 파일을 섞는 것은 허용되지 않는다.
-&#x200B;<a id="index_number_74"></a><code>tex_files</code> 옵션이 설정되어 있다면 &#x200B;<a id="index_number_75"></a><code>html_files</code> 옵션이 무시된다.
+&#x200B;<a id="index_number_72"></a><code>tex_files</code> 옵션이 설정되어 있다면 &#x200B;<a id="index_number_73"></a><code>html_files</code> 옵션이 무시된다.
 이것은 처리하기 번잡하기 때문이라기보다 그 두 형식을 동시에 사용해야 하는 경우를 상상하기 어렵기 때문이다.</p>
 
 <p>소스 파일들이 <code>_epub/OEBPS/</code> 폴더로 복사될 때 확장자가 <code>.xhtml</code>로 바뀐다.</p>
@@ -311,10 +305,10 @@ metadata:
 
 <h1 id="heading_10">마크업 변환기</h1>
 
-<p>&#x200B;<a id="index_number_76"></a>wordig 모듈이 레이텍 매크로들을 HTML 태그들로 치환한다.
-여기에는 TSV 형식으로 작성된 &#x200B;<a id="index_number_77"></a>변환 명세 파일이 필요하다.</p>
+<p>&#x200B;<a id="index_number_74"></a>wordig 모듈이 레이텍 매크로들을 HTML 태그들로 치환한다.
+여기에는 TSV 형식으로 작성된 &#x200B;<a id="index_number_75"></a>변환 명세 파일이 필요하다.</p>
 
-<p>&#x200B;<a id="index_number_78"></a><code>coverter</code> 옵션에 변환 명세 파일이 지정되어야 한다.</p>
+<p>&#x200B;<a id="index_number_76"></a><code>coverter</code> 옵션에 변환 명세 파일이 지정되어야 한다.</p>
 
 <pre>converter: _html/tex2xhtml.tsv
 </pre>
@@ -339,7 +333,7 @@ metadata:
 <li>"<code>~~~</code>"로 시작하는 줄이 주석으로 간주된다.
 </li>
 <li>정규 표현식에서 도트(.)는 개행 문자를 제외한 모든 문자에 대응된다.
-주석 줄 끝에 &#x200B;<a id="index_number_79"></a><code>DOTALL</code>이 있으면, 그 다음 주석 줄을 만날 때까지 그 아래에 있는 모든 정규 표현식들의 처리에서 도트가 개행 문자를 포함하는 모든 문자에 대응된다.
+주석 줄 끝에 &#x200B;<a id="index_number_77"></a><code>DOTALL</code>이 있으면, 그 다음 주석 줄을 만날 때까지 그 아래에 있는 모든 정규 표현식들의 처리에서 도트가 개행 문자를 포함하는 모든 문자에 대응된다.
 따라서, 위 예에서 <code>&#x5c;documentclass</code>부터 <code>&#x5c;begin{document</code>}까지 그 사이에 있는 모든 줄이 삭제된다.
 </li></ul>
 
@@ -347,7 +341,7 @@ metadata:
 한 파일의 내용이 정규 표현식들에 의해 반복적으로 바뀌기 때문에 정규 표현식들이 나열되는 순서가 중요하다는 점을 유념하라.
 </p>
 
-<p>조건부 텍스트&#x200B;<a id="index_number_80"></a><sup>conditional text</sup>에 대응하도록 복수의 변환 명세 파일들을 지정할 수 있다.</p>
+<p>조건부 텍스트&#x200B;<a id="index_number_78"></a><sup>conditional text</sup>에 대응하도록 복수의 변환 명세 파일들을 지정할 수 있다.</p>
 
 <pre>converter:
   - _html/tex2xhtml_adhoc.tsv
@@ -366,7 +360,7 @@ metadata:
 &#x5c;NewDocumentCommand&#x5c;htmlend{}
 </pre>
 
-<p>변환되어야 할 레이텍 파일들이 &#x200B;<a id="index_number_81"></a><code>&#x5c;htmlbegin</code>과 &#x200B;<a id="index_number_82"></a><code>&#x5c;htmlend</code>를 포함해야 한다.
+<p>변환되어야 할 레이텍 파일들이 &#x200B;<a id="index_number_79"></a><code>&#x5c;htmlbegin</code>과 &#x200B;<a id="index_number_80"></a><code>&#x5c;htmlend</code>를 포함해야 한다.
 그리고 그것들에 대한 치환 지시가 변환 명세 파일에 포함되어야 한다.</p>
 
 <pre>&#x5c;&#x5c;htmlbegin → &#x3C;?xml ...&#x3E;...&#x3C;/body&#x3E;
@@ -389,14 +383,14 @@ metadata:
     - foo_3.tex
 </pre>
 
-<p>그러나 탐색 제어 파일&#x200B;<a id="index_number_83"></a><sup>toc.ncx</sup>에서 기대와 다르게 절 제목들이 장 제목의 수준을 갖게 될 것이다.
-이 문제를 피하기 위해 &#x200B;<a id="index_number_84"></a><code>copy_tex()</code> 함수가 레이텍 파일들을 목적 폴더로 복사할 때, &#x200B;<a id="index_number_85"></a><code>merge_tex()</code> 함수가 &#x200B;<a id="index_number_86"></a><code>&#x5c;input</code> 명령이 내용에 포함되어 있는지 확인하고, 있으면 해당 줄을 대상 파일의 내용으로 치환한다.
+<p>그러나 탐색 제어 파일&#x200B;<a id="index_number_81"></a><sup>toc.ncx</sup>에서 기대와 다르게 절 제목들이 장 제목의 수준을 갖게 될 것이다.
+이 문제를 피하기 위해 &#x200B;<a id="index_number_82"></a><code>copy_tex()</code> 함수가 레이텍 파일들을 목적 폴더로 복사할 때, &#x200B;<a id="index_number_83"></a><code>merge_tex()</code> 함수가 &#x200B;<a id="index_number_84"></a><code>&#x5c;input</code> 명령이 내용에 포함되어 있는지 확인하고, 있으면 해당 줄을 대상 파일의 내용으로 치환한다.
 <code>&#x5c;input</code> 명령은 일 회만 처리된다.
 즉 치환하는 내용에 포함된 <code>&#x5c;input</code> 명령들은 무시된다.</p>
 
 <h2 id="heading_12">장절 제목</h2>
 
-<p>&#x200B;<a id="index_number_87"></a>장절 명령들이 &#x200B;<a id="index_number_88"></a><code>add_heading_id_tex()</code> 함수에 의해 &#x200B;<a id="index_number_89"></a><code>&#x5c;subsection</code>까지 다음과 같이 바뀐다.</p>
+<p>&#x200B;<a id="index_number_85"></a>장절 명령들이 &#x200B;<a id="index_number_86"></a><code>add_heading_id_tex()</code> 함수에 의해 &#x200B;<a id="index_number_87"></a><code>&#x5c;subsection</code>까지 다음과 같이 바뀐다.</p>
 
 <pre>&#x5c;chapter{장 제목}&#x5c;label{chp} ⇒ &#x5c;chapterline{장 제목}{1}
 &#x5c;section{절 제목}&#x5c;label{sec} ⇒ &#x5c;sectionline{절 제목}{2}
@@ -406,7 +400,7 @@ metadata:
 장절 명령 앞과 뒤에 있는 모든 공백과 문자들이 삭제된다는 점을 유념하라.
 </p>
 
-<p>다음과 같이, 대문자로 시작하는 &#x200B;<a id="index_number_90"></a><code>&#x5c;Chapter</code>나 &#x200B;<a id="index_number_91"></a><code>&#x5c;Section</code> 명령을 사용자가 정의하는 경우도 고려되었다. 그 명령들도 동일하게 처리된다.</p>
+<p>다음과 같이, 대문자로 시작하는 &#x200B;<a id="index_number_88"></a><code>&#x5c;Chapter</code>나 &#x200B;<a id="index_number_89"></a><code>&#x5c;Section</code> 명령을 사용자가 정의하는 경우도 고려되었다. 그 명령들도 동일하게 처리된다.</p>
 
 <pre>&#x5c;let&#x5c;Chapter&#x5c;chapter
 &#x5c;let&#x5c;Section&#x5c;section
@@ -414,7 +408,7 @@ metadata:
 &#x5c;RenewDocumentCommand&#x5c;section{&#x3E;{&#x5c;SplitArgument{1}{|}}m}{&#x5c;essay#1}
 </pre>
 
-<p>&#x200B;<a id="index_number_92"></a><code>&#x5c;chapterline</code>과 &#x200B;<a id="index_number_93"></a><code>&#x5c;sectionline</code>은 변환 명세 파일에 포함된 다음과 같은 지시에 따라 처리된다.
+<p>&#x200B;<a id="index_number_90"></a><code>&#x5c;chapterline</code>과 &#x200B;<a id="index_number_91"></a><code>&#x5c;sectionline</code>은 변환 명세 파일에 포함된 다음과 같은 지시에 따라 처리된다.
 위 예와 같은 경우에 목적에 따라 다른 치환을 지시해야 할 것이다.</p>
 
 <pre>&#x5c;&#x5c;sectionline&#x5c;{(.+)&#x5c;|(.+)&#x5c; }&#x5c;{(.+)&#x5c; }
@@ -425,13 +419,13 @@ metadata:
 
 <h2 id="heading_13">상호참조</h2>
 
-<p>&#x200B;<a id="index_number_94"></a><code>&#x5c;label</code> 명령이 제목 명령과 같은 줄에 있어야 한다.</p>
+<p>&#x200B;<a id="index_number_92"></a><code>&#x5c;label</code> 명령이 제목 명령과 같은 줄에 있어야 한다.</p>
 
 <pre>&#x5c;section{TITLE}&#x5c;label{sec_label}
 </pre>
 
-<p>&#x200B;<a id="index_number_95"></a><code>&#x5c;pref</code> 명령의 사용은 PDF에서 유용하지만 ePub에서 무의미하다.
-양 쪽을 충족시키기 위해 이 문서에서 &#x200B;<a id="index_number_96"></a><code>&#x5c;titleref</code> 명령이 다음과 같이 재정의되었다.</p>
+<p>&#x200B;<a id="index_number_93"></a><code>&#x5c;pref</code> 명령의 사용은 PDF에서 유용하지만 ePub에서 무의미하다.
+양 쪽을 충족시키기 위해 이 문서에서 &#x200B;<a id="index_number_94"></a><code>&#x5c;titleref</code> 명령이 다음과 같이 재정의되었다.</p>
 
 <pre>&#x5c;DeclareRobustCommand&#x5c;TitleRef{
   &#x5c;@ifstar{&#x5c;@mem@titlerefnolink}{&#x5c;@mem@titleref}
@@ -441,7 +435,7 @@ metadata:
 }
 </pre>
 
-<p>&#x200B;<a id="index_number_97"></a><code>add_heading_id_tex()</code> 함수와 &#x200B;<a id="index_number_98"></a><code>get_tex_label()</code> 함수에 의해 &#x200B;<a id="index_number_99"></a><code>&#x5c;titleref</code>가 다음과 같이 바뀐다.</p>
+<p>&#x200B;<a id="index_number_95"></a><code>add_heading_id_tex()</code> 함수와 &#x200B;<a id="index_number_96"></a><code>get_tex_label()</code> 함수에 의해 &#x200B;<a id="index_number_97"></a><code>&#x5c;titleref</code>가 다음과 같이 바뀐다.</p>
 
 <pre>&#x5c;titleref{chp}
 ⇒ &#x5c;headingref{foo.xhtml}{1}{장 제목}&#x5c;를
@@ -449,13 +443,13 @@ metadata:
 ⇒ &#x5c;headingref{foo.xhtml}{2}{절 제목}&#x5c;가
 </pre>
 
-<p>&#x200B;<a id="index_number_100"></a>josa 모듈이 &#x200B;<a id="index_number_101"></a>자동조사 매크로를 처리한다.</p>
+<p>&#x200B;<a id="index_number_98"></a>josa 모듈이 &#x200B;<a id="index_number_99"></a>자동조사 매크로를 처리한다.</p>
 
 <pre>&#x5c;headingref{foo.xhtml}{1}{장 제목}&#x5c;를
 ⇒ &#x5c;headingref{foo.xhtml}{1}{장 제목}을
 </pre>
 
-<p>&#x200B;<a id="index_number_102"></a><code>&#x5c;headingref</code>가 다음의 치환 지시에 따라 HTML 태그로 바뀐다.</p>
+<p>&#x200B;<a id="index_number_100"></a><code>&#x5c;headingref</code>가 다음의 치환 지시에 따라 HTML 태그로 바뀐다.</p>
 
 <pre>&#x5c;&#x5c;headingref&#x5c;{(.+?)&#x5c;}&#x5c;{(.+?)&#x5c;}&#x5c;{(.+?)&#x5c;}
 → &#x3C;a href="&#x5c;1#heading_&#x5c;2"&#x3E;&#x5c;3&#x3C;/a&#x3E;
@@ -465,9 +459,9 @@ metadata:
 
 <h2 id="heading_14">각주</h2>
 
-<p>&#x200B;<a id="index_number_103"></a><code>create_endnote()</code> 함수가 각주들을 모아 &#x200B;<a id="index_number_104"></a>미주 페이지&#x200B;<a id="index_number_105"></a><sup>endnote.xhtml</sup>를 만든다.</p>
+<p>&#x200B;<a id="index_number_101"></a><code>create_endnote()</code> 함수가 각주들을 모아 &#x200B;<a id="index_number_102"></a>미주 페이지&#x200B;<a id="index_number_103"></a><sup>endnote.xhtml</sup>를 만든다.</p>
 
-<p>&#x200B;<a id="index_number_106"></a><code>&#x5c;footnotemark</code>와 &#x200B;<a id="index_number_107"></a><code>&#x5c;footnotetext</code>를 사용하는 경우에 반드시 번호를 기입해야 한다.<sup><a id="endnote_number_1" href="endnote.xhtml#endnote_text_1">1</a></sup></p>
+<p>&#x200B;<a id="index_number_104"></a><code>&#x5c;footnotemark</code>와 &#x200B;<a id="index_number_105"></a><code>&#x5c;footnotetext</code>를 사용하는 경우에 반드시 번호를 기입해야 한다.<sup><a id="endnote_number_1" href="endnote.xhtml#endnote_text_1">1</a></sup></p>
 
 <pre>&#x5c;footnotemark[1] 또는 &#x5c;footnotemark[a]
 &#x5c;footnotetext[1]{...} 또는 &#x5c;footnotetext[a]{...}
@@ -475,14 +469,14 @@ metadata:
 
 <h2 id="heading_15">색인</h2>
 
-<p>색인을 위한 &#x200B;<a id="index_number_108"></a>변환 명세 파일 &#x200B;<a id="index_number_109"></a><code>indexer</code> 설정 옵션에 지정되어 있으면, &#x200B;<a id="index_number_110"></a><code>create_index()</code> 함수가 색인 항목들을 모아 &#x200B;<a id="index_number_111"></a>색인 페이지&#x200B;<a id="index_number_112"></a><sup>index.xhtml</sup>를 만든다.</p>
+<p>색인을 위한 &#x200B;<a id="index_number_106"></a>변환 명세 파일 &#x200B;<a id="index_number_107"></a><code>indexer</code> 설정 옵션에 지정되어 있으면, &#x200B;<a id="index_number_108"></a><code>create_index()</code> 함수가 색인 항목들을 모아 &#x200B;<a id="index_number_109"></a>색인 페이지&#x200B;<a id="index_number_110"></a><sup>index.xhtml</sup>를 만든다.</p>
 
 <pre>indexer: _html/indexer.tsv
 </pre>
 
-<p>&#x200B;<a id="index_number_113"></a><code>indexer</code> 설정 옵션에 복수의 파일들을 지정하는 것은 허용되지 않는다.</p>
+<p>&#x200B;<a id="index_number_111"></a><code>indexer</code> 설정 옵션에 복수의 파일들을 지정하는 것은 허용되지 않는다.</p>
 
-<p>HzGuide 클래스에서 정의된 &#x200B;<a id="index_number_114"></a><code>&#x5c;term</code>은 다음과 같이 기능한다.</p>
+<p>HzGuide 클래스에서 정의된 &#x200B;<a id="index_number_112"></a><code>&#x5c;term</code>은 다음과 같이 기능한다.</p>
 
 <pre>&#x5c;term[뒤에]{단어}[아래]
 = &#x5c;index{뒤에@단어}&#x5c;index{아래!단어}
@@ -507,7 +501,7 @@ metadata:
 </pre></li>
 
 <li>위 예에서 파일 경로를 포함하는 것은 허용되지 않는다.
-따라서 &#x200B;<a id="index_number_115"></a><code>&#x5c;graphicspath</code>를 사용하여 이미지 폴더의 경로를 지정하여야 한다.
+따라서 &#x200B;<a id="index_number_113"></a><code>&#x5c;graphicspath</code>를 사용하여 이미지 폴더의 경로를 지정하여야 한다.
 <pre>&#x5c;graphicspath{{images/}{images/fallback/}}
 </pre></li>
 
@@ -524,13 +518,13 @@ metadata:
 </pre>
 
 <p class="framed">
-이 문서에서는 &#x200B;<a id="index_number_116"></a><code>&#x5c;includegraphics</code> 대신 HzGuide 클래스에 정의된 &#x200B;<a id="index_number_117"></a><code>&#x5c;image</code> 명령이 사용되었다.
+이 문서에서는 &#x200B;<a id="index_number_114"></a><code>&#x5c;includegraphics</code> 대신 HzGuide 클래스에 정의된 &#x200B;<a id="index_number_115"></a><code>&#x5c;image</code> 명령이 사용되었다.
 </p>
 
 <h2 id="heading_17">HTML 파일로 ePub 만들기</h2>
 
-<p>&#x200B;<a id="index_number_118"></a><code>html_files</code> 설정 옵션에 HTML 파일들이 지정되어 있으면, &#x200B;<a id="index_number_119"></a><code>add_heading_id_tex()</code> 함수가 &#x200B;<a id="index_number_120"></a>아이디&#x200B;<a id="index_number_121"></a><sup>id</sup>가 없는 헤딩 태그들을 찾아 아이디를 추가한다.
-헤딩 태그에 아이디가 없으면 &#x200B;<a id="index_number_122"></a><code>toc.ncx</code>가 올바르게 만들어지지 않는다.</p>
+<p>&#x200B;<a id="index_number_116"></a><code>html_files</code> 설정 옵션에 HTML 파일들이 지정되어 있으면, &#x200B;<a id="index_number_117"></a><code>add_heading_id_tex()</code> 함수가 &#x200B;<a id="index_number_118"></a>아이디&#x200B;<a id="index_number_119"></a><sup>id</sup>가 없는 헤딩 태그들을 찾아 아이디를 추가한다.
+헤딩 태그에 아이디가 없으면 &#x200B;<a id="index_number_120"></a><code>toc.ncx</code>가 올바르게 만들어지지 않는다.</p>
 
 <p>HTML 파일들을 ePub으로 변환하려면 HTML 태그들을 XHTML 태그들로 치환하는 다음과 같은 변환 명세 파일이 필요하다.</p>
 
@@ -558,7 +552,7 @@ HTML 파일에 대한 충분한 테스트가 이루어지지 않았다.
 
 <p>이 문제를 피하는 간단한 방법이 백슬래시 뒤에 폭이 0인 공백 문자\IndexEntry{U+200B}<sup>U+200B</sup>를 추가하는 것인데, 할 만한 짓이 아니다.</p>
 
-<p>&#x200B;<a id="index_number_124"></a><code>verbatim</code> 환경은 변환 명세 파일에 의해 &#x200B;<a id="index_number_125"></a><code>&#x3C;pre&#x3E;</code> 태그로 바뀔 것이다.</p>
+<p>&#x200B;<a id="index_number_122"></a><code>verbatim</code> 환경은 변환 명세 파일에 의해 &#x200B;<a id="index_number_123"></a><code>&#x3C;pre&#x3E;</code> 태그로 바뀔 것이다.</p>
 
 <pre>&#x5c;begin{verbatim}
 &#x3C;h2&#x3E;TITLE&#x3C;/h2&#x3E;
@@ -573,7 +567,7 @@ HTML 파일에 대한 충분한 테스트가 이루어지지 않았다.
 <pre>escape: _html/escape.tsv
 </pre>
 
-<p>&#x200B;<a id="index_number_126"></a><code>escape</code> 설정 옵션에 복수의 파일들을 지정하는 것은 허용되지 않는다.</p>
+<p>&#x200B;<a id="index_number_124"></a><code>escape</code> 설정 옵션에 복수의 파일들을 지정하는 것은 허용되지 않는다.</p>
 
 <pre>&#x3C; → &#x3C;
 &#x3E; → &#x3E;
@@ -581,7 +575,7 @@ HTML 파일에 대한 충분한 테스트가 이루어지지 않았다.
 &#x5c;&#x5c;begin&#x5c;{verbatim&#x5c;} → &#x5c;&#x5c; → &#x26;#x5c; → &#x5c;&#x5c;end&#x5c;{verbatim&#x5c;}
 </pre>
 
-<p>위 예에서 셋째 줄은 &#x200B;<a id="index_number_127"></a><code>&#x5c;verb</code>에 포함된 백슬래시를 그것의 16진수 코드인 <code>&#x26;#x5c;</code>로 바꾸라는 뜻이다.
+<p>위 예에서 셋째 줄은 &#x200B;<a id="index_number_125"></a><code>&#x5c;verb</code>에 포함된 백슬래시를 그것의 16진수 코드인 <code>&#x26;#x5c;</code>로 바꾸라는 뜻이다.
 마찬가지로 넷째 줄은 <code>&#x5c;begin{verbatim</code>} 이후에 <code>&#x5c;end{verbatim</code>}을 만날 때까지 그 사이에 있는 백슬래시들을 16진수로 바꾸라는 뜻이다.
 셋째 줄의 넷째 칸과 다섯째 칸은 치환된 문자열의 앞과 뒤에 붙는 문자열인 반면, 넷째 줄의 마지막 칸은 정규 표현식이라는 점을 유념하라.</p>
 
@@ -592,7 +586,7 @@ HTML 파일에 대한 충분한 테스트가 이루어지지 않았다.
 
 <p>이것에 의해 <code>&#x5c;macro{&#x5c;foo</code>}가 <code>&#x5c;verb{&#x26;#x5c;foo</code>}로 바뀐다.</p>
 
-<p>다음의 치환 지시는 &#x200B;<a id="index_number_128"></a><code>verbatim</code> 환경에 포함된 빈 줄에 공백 문자를 추가한다.
+<p>다음의 치환 지시는 &#x200B;<a id="index_number_126"></a><code>verbatim</code> 환경에 포함된 빈 줄에 공백 문자를 추가한다.
 이것은 문단 나누기를 위한 치환에서 소스 코드를 배제하기 위한 것이다.
 <a href="cloche.xhtml#heading_19">문단 나누기</a>를 보라.</p>
 
@@ -600,12 +594,12 @@ HTML 파일에 대한 충분한 테스트가 이루어지지 않았다.
 </pre>
 
 <p class="framed">
-위에서 설명한 바와 같이 소스 코드를 처리하는 과정에서 &#x200B;<a id="index_number_129"></a><code>tmp.@@@</code>라는 이름의 임시 파일이 생성되었다가 삭제된다.
+위에서 설명한 바와 같이 소스 코드를 처리하는 과정에서 &#x200B;<a id="index_number_127"></a><code>tmp.@@@</code>라는 이름의 임시 파일이 생성되었다가 삭제된다.
 </p>
 
 <h2 id="heading_19">문단 나누기</h2>
 
-<p>하나의 문단을 &#x200B;<a id="index_number_130"></a><code>&#x3C;p&#x3E;</code>와 &#x200B;<a id="index_number_131"></a><code>&#x3C;/p&#x3E;</code> 태그로 감싸는 것이 바람직하다.
+<p>하나의 문단을 &#x200B;<a id="index_number_128"></a><code>&#x3C;p&#x3E;</code>와 &#x200B;<a id="index_number_129"></a><code>&#x3C;/p&#x3E;</code> 태그로 감싸는 것이 바람직하다.
 변환 명세 파일에 포함된 다음의 치환 지시들이 연속된 빈 줄들을 하나로 줄인다.
 그다음에 빈 줄 앞과 뒤에 <code>&#x3C;/p&#x3E;</code>와 <code>&#x3C;p&#x3E;</code>를 붙인다.</p>
 
@@ -619,9 +613,9 @@ HTML 파일에 대한 충분한 테스트가 이루어지지 않았다.
 
 <h2 id="heading_20">주석</h2>
 
-<p>장절 명령이 처리될 때 모든 레이텍 &#x200B;<a id="index_number_132"></a>주석이 제거된다.
+<p>장절 명령이 처리될 때 모든 레이텍 &#x200B;<a id="index_number_130"></a>주석이 제거된다.
 TeX 파일로부터 만들어진 XHTML 파일에는 HTML 주석이 있을 수 없다.
-그러나 HTML 파일들로부터 변환된 것들과 &#x200B;<a id="index_number_133"></a><code>additional</code> 설정 옵션에 의해 복사된 XHTML 파일들에 포함된 주석들은 마크업 변환이 완료된 다음에 제거된다.</p>
+그러나 HTML 파일들로부터 변환된 것들과 &#x200B;<a id="index_number_131"></a><code>additional</code> 설정 옵션에 의해 복사된 XHTML 파일들에 포함된 주석들은 마크업 변환이 완료된 다음에 제거된다.</p>
 
 <pre>&#x3C;!–
 ...
@@ -630,7 +624,7 @@ TeX 파일로부터 만들어진 XHTML 파일에는 HTML 주석이 있을 수 �
 
 <h1 id="heading_21">HTML 스타일</h1>
 
-<p>&#x200B;<a id="index_number_134"></a>CSS 파일들이 &#x200B;<a id="index_number_135"></a><code>additional</code> 설정 옵션에 기재되어야 한다.</p>
+<p>&#x200B;<a id="index_number_132"></a>CSS 파일들이 &#x200B;<a id="index_number_133"></a><code>additional</code> 설정 옵션에 기재되어야 한다.</p>
 
 <pre>additional:
     - file: basic.css
@@ -641,7 +635,7 @@ TeX 파일로부터 만들어진 XHTML 파일에는 HTML 주석이 있을 수 �
       to: OEBPS
 </pre>
 
-<p>그리고 CSS 파일들이 다음과 같이 &#x200B;<a id="index_number_136"></a><code>&#x5c;htmlbegin</code>에 대한 치환문에 포함되어야 한다.</p>
+<p>그리고 CSS 파일들이 다음과 같이 &#x200B;<a id="index_number_134"></a><code>&#x5c;htmlbegin</code>에 대한 치환문에 포함되어야 한다.</p>
 
 <pre>&#x5c;&#x5c;htmlbegin
 → ...&#x3C;link rel="stylesheet" type="text/css" href="basic.css"/&#x3E;
@@ -650,17 +644,17 @@ TeX 파일로부터 만들어진 XHTML 파일에는 HTML 주석이 있을 수 �
 
 <p>동일한 태그 요소 또는 클래스에 대한 스타일들이 있을 때 앞의 것들이 무시되고 맨 나중의 것이 사용된다.</p>
 
-<p>&#x200B;<a id="index_number_137"></a><code>&#x5c;textsc</code>에 대응하는 HTML 태그가 없다. 해법은 &#x200B;<a id="index_number_138"></a><code>span</code> 태그에 클래스 속성을 부여하는 것이다.</p>
+<p>&#x200B;<a id="index_number_135"></a><code>&#x5c;textsc</code>에 대응하는 HTML 태그가 없다. 해법은 &#x200B;<a id="index_number_136"></a><code>span</code> 태그에 클래스 속성을 부여하는 것이다.</p>
 
 <pre>&#x5c;&#x5c;textsc&#x5c;{(.+?)&#x5c;}	&#x3C;span class="smallcaps"&#x3E;&#x5c;1&#x3C;/span&#x3E;
 </pre>
 
-<p>따라서 css 파일에 &#x200B;<a id="index_number_139"></a><code>smallcaps</code> 클래스가 정의되어 있어야 한다.</p>
+<p>따라서 css 파일에 &#x200B;<a id="index_number_137"></a><code>smallcaps</code> 클래스가 정의되어 있어야 한다.</p>
 
 <pre>span.smallcaps { font-variant: small-caps;}
 </pre>
 
-<p>CSS 파일에서 &#x200B;<a id="index_number_140"></a><code>text-indent</code> 속성이 들여쓰기 크기를 결정한다.</p>
+<p>CSS 파일에서 &#x200B;<a id="index_number_138"></a><code>text-indent</code> 속성이 들여쓰기 크기를 결정한다.</p>
 
 <pre>p {
     text-indent: 1em;
@@ -672,7 +666,7 @@ TeX 파일로부터 만들어진 XHTML 파일에는 HTML 주석이 있을 수 �
 }
 </pre>
 
-<p>&#x200B;<a id="index_number_141"></a><code>&#x5c;noindent</code> 명령이 다음과 같이 바뀌어야 한다.</p>
+<p>&#x200B;<a id="index_number_139"></a><code>&#x5c;noindent</code> 명령이 다음과 같이 바뀌어야 한다.</p>
 
 <pre>&#x5c;&#x5c;noindent&#x5c;s? → &#x3C;p class="noindent"&#x3E;
 </pre>
