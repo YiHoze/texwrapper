@@ -184,6 +184,7 @@ class EnglishToHangul(object):
             'cloche':'klouʃ',
             'our':'auər',
             'penguin':'peŋgwin',
+            'target':'ˈtɑrgɪt',
             'to':'tu',
             'when':'wen'
         }
@@ -247,7 +248,8 @@ class EnglishToHangul(object):
         self.phonetic_syllabic = re.sub('([ptk])(?=/[lrmn])', '/\\1', self.phonetic_syllabic) 
         self.phonetic_syllabic = re.sub('(?<!^)s(?=/[tkp])', '/s', self.phonetic_syllabic) 
         self.phonetic_syllabic = re.sub('(?<=[əʊu])s$', '/s', self.phonetic_syllabic) 
-        self.phonetic_syllabic = re.sub('(?<=[iɪyeøɛœæaɑʌɔoəɚu])([bgdzfv])(?=/|$)', '/\\1', self.phonetic_syllabic) 
+        # self.phonetic_syllabic = re.sub('(?<=[iɪyeøɛœæaɑʌɔoəɚu])([bgdzfv])(?=/|$)', '/\\1', self.phonetic_syllabic) 
+        self.phonetic_syllabic = re.sub('(?<=[iɪyeøɛœæaɑʌɔoəɚu])([bgdzfv])(?=$)', '/\\1', self.phonetic_syllabic) 
         # 마찰음과 파찰음
         self.phonetic_syllabic = re.sub('ʒ$', '/ʒi', self.phonetic_syllabic)
         self.phonetic_syllabic = re.sub('ʤ$', '/ʤi', self.phonetic_syllabic)
