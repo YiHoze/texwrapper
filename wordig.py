@@ -174,6 +174,8 @@ class WordDigger(object):
     def write_found(self) -> None:
 
         content = '\n'.join(self.found)
+        content = content.replace('\x1b[32m', '')
+        content = content.replace('\x1b[0m', '')
         output = self.determine_output('', output=self.options['output'])
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
