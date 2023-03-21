@@ -63,11 +63,11 @@ def StrainXML() -> None:
     writeList('missing_xmls.txt', missingXml)
     writeList('misspelled_xmls.txt', misspelledXml)
 
-    output = '''Referred XMLs: {}
+    output = '''\nReferred XMLs: {}
 Existing XMLs: {}
 Unreferred XMLs: {}
 Missing XMLs: {}
-Misspelled XMLs: {}'''.format(len(referredXml), len(existingXml), len(unreferredXml), len(missingXml), len(misspelledXml))
+Misspelled XMLs: {}\n'''.format(len(referredXml), len(existingXml), len(unreferredXml), len(missingXml), len(misspelledXml))
     print(output)
 
 
@@ -110,11 +110,11 @@ def StrainImage(removeUnused=False) -> None:
     writeList('missing_images.txt', missingImage)
     writeList('misspelled_images.txt', misspelledImage)
 
-    output = '''Referred images: {}
+    output = '''\nReferred images: {}
 Existing images: {}
 Unreferred images: {}
 Missing images: {}
-Misspelled images: {}'''.format(len(referredImage), len(existingImage),     len(unreferredImage), len(missingImage), len(misspelledImage))
+Misspelled images: {}\n'''.format(len(referredImage), len(existingImage),     len(unreferredImage), len(missingImage), len(misspelledImage))
     print(output)
 
     if removeUnused:
@@ -208,7 +208,7 @@ def deleteReportFiles() -> None:
     
     reports = ['existing_images.txt', 'missing_images.txt', 'misspelled_images.txt', 'referred_images.txt', 'unreferred_images.txt',
         'existing_xmls.txt', 'missing_xmls.txt', 'misspelled_xmls.txt', 'referred_xmls.txt', 'unreferred_xmls.txt',
-        'XML_xref.txt', 'xrefs.txt', 'mismatched_xrefs.txt']
+        'XML_xrefs.txt', 'xrefs.txt', 'mismatched_xrefs.txt']
     
     for i in reports:
         if os.path.exists(i):
