@@ -422,12 +422,14 @@ class LatexCompiler(object):
 
     def clear_aux(self) -> None:
 
-        extensions = ("aux", "bbl", "blg", "idx", "ilg", "ind", "loe", "lof", "log", "lop", "loq", "lot", "minted*", "mw", "nav", "out", "pre", "pyg.lst", "pyg.sty", "pytxcode", "synctex*", "snm", "toc", "tmp", "upa", "upb", "vrb")
+        extensions = ("aux", "bbl", "blg", "idx", "ilg", "ind", "loe", "lof", "log", "lop", "loq", "lot", "mw", "nav", "out", "pre", "pyg.lst", "pyg.sty", "pytxcode", "synctex", "snm", "toc", "tmp", "upa", "upb", "vrb")
         for ext in extensions:
             fnpattern = '*.' + ext
             for afile in glob.glob(fnpattern):
                 os.remove(afile)
         for dir in glob.glob('pythontex-files-*'):
+            shutil.rmtree(dir)
+        for dir in glob.glob('_minted-*'):
             shutil.rmtree(dir)
 
 
