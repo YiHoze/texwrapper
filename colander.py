@@ -5,6 +5,8 @@ import glob
 import argparse
 import subprocess
 import re
+import random
+import string
 from wordig import WordDigger
 
 
@@ -144,6 +146,7 @@ def getFile(topicid:str) -> str:
         pattern = f'"{topicid}"'
         if re.search(pattern, content):
             return f
+    return False
 
 
 def checkFileTopicTitle(fileTopicTitle:list):
@@ -202,7 +205,29 @@ def checkCrossReferences() -> None:
     content = '\n'.join(result)
     with open('mismatched_xrefs.txt', mode='w', encoding='utf-8') as fs:
         fs.write(content)
-        
+
+
+def generateTopicID(length=11) -> None:
+
+    # characters = string.ascii_letters + string.digits
+    characters = string.ascii_lowercase + string.digits
+    topicID = 'id' + ''.join(random.choice(characters) for i in range(length))  
+    while getFile(topicID):
+        topicID = 'id' + ''.join(random.choice(characters) for i in range(length))    
+    print(topicID)
+
+
+def generateTitleID(prefix='title', parts=3, length=3) -> None:
+
+    characters = string.ascii_lowercase + string.digits
+    titleID = 'title'
+    for i in range(parts):
+        titleID = titleID + '_' + ''.join(random.choice(characters) for j in range(length))
+    while getFile(titleID):
+        for i in range(parts):
+            titleID = titleID + '_' + ''.join(random.choice(characters) for j in range(length))
+    print(titleID)
+
 
 def deleteReportFiles() -> None:
     
@@ -248,6 +273,18 @@ parser.add_argument(
     default = False,
     help = 'Remove unreferred image files.')
 parser.add_argument(
+    '-t',
+    dest = 'topicID',
+    action = 'store_true',
+    default = False,
+    help = 'Generate a topic ID.')
+parser.add_argument(
+    '-T',
+    dest = 'titleID',
+    action = 'store_true',
+    default = False,
+    help = 'Generate a title ID.')
+parser.add_argument(
     '-d',
     dest = 'deleteReports',
     action = 'store_true',
@@ -264,6 +301,10 @@ elif args.strainImage:
         StrainImage(removeUnused=True)
     else:
         StrainImage()
+elif args.topicID:
+    generateTopicID()
+elif args.titleID:
+    generateTitleID()
 elif args.deleteReports:
     deleteReportFiles()
 else:
