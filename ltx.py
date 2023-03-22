@@ -21,7 +21,7 @@ class LatexCompiler(object):
         self.options = {
             'xetex': False,
             'luatex': False,
-            'alternative': False,
+            # 'alternative': False,
             'batch': False,
             'shell': False,
             'twice': False,
@@ -47,7 +47,7 @@ class LatexCompiler(object):
             config = configparser.ConfigParser()
             config.read(ini)
             self.compiler = config.get('LaTeX', 'compiler', fallback='xelatex.exe')
-            self.alternative_path = config.get('LaTeX', 'alternative_path', fallback=None)
+            # self.alternative_path = config.get('LaTeX', 'alternative_path', fallback=None)
         else:
             self.compiler = "xelatex.exe"
 
@@ -110,13 +110,13 @@ class LatexCompiler(object):
             default = False,
             help = 'Use XeLaTeX.'
         )
-        parser.add_argument(
-            '-A',
-            dest = 'alternative',
-            action = 'store_true',
-            default = False,
-            help = 'Use compilers in the directory set to the alternative_path option in docenv.conf'
-        )
+        # parser.add_argument(
+        #     '-A',
+        #     dest = 'alternative',
+        #     action = 'store_true',
+        #     default = False,
+        #     help = 'Use compilers in the directory set to the alternative_path option in docenv.conf'
+        # )
         parser.add_argument(
             '-b',
             dest = 'batch',
@@ -221,7 +221,7 @@ class LatexCompiler(object):
         self.pass_args(
             luatex = args.luatex,
             xetex = args.xetex,
-            alternative = args.alternative,
+            # alternative = args.alternative,
             batch = args.batch,
             shell = args.shell,
             twice = args.twice,
@@ -256,9 +256,9 @@ class LatexCompiler(object):
             self.compiler = 'lualatex.exe'
         if self.options['xetex']:
             self.compiler = 'xelatex.exe'
-        if self.options['alternative'] and self.alternative_path is not None:
-            self.compiler = os.path.join(self.alternative_path, self.compiler).replace('/','\\')
-            print(self.compiler)
+        # if self.options['alternative'] and self.alternative_path is not None:
+        #     self.compiler = os.path.join(self.alternative_path, self.compiler).replace('/','\\')
+        #     print(self.compiler)
 
 
         # Compile mode
