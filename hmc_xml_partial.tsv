@@ -1,0 +1,15 @@
+\n\s+
+(\w)\n	\1 
+([”"'])\n	\1 
+\sstatus="changed"
+\sstatus="new"
+<FILENAME>(.+?)</FILENAME>	\n\1:
+^.+?\.xml:$\n\n
+^.+?\.xml:\Z
+```DOTALL
+<p status="deleted">.+?</p>
+<\?oxy_comment_start.+?\?>
+<\?oxy_comment_end.*?\?>
+<\?oxy_delete.+?\?>
+<\?oxy_insert_start.+?\?>
+<\?oxy_insert_end.*?\?>

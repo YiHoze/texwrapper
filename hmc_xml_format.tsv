@@ -1,0 +1,36 @@
+^\s+
+<\!-- Begin Document Specific Declarations -->
+<\?Fm Validation Off\?>
+<\!-- End Document Specific Declarations -->
+(\w)\n	\1 
+>\n(\w)	> \1
+\n\(	(
+\n\)	)
+\n/>	/>
+\n/>$	/>
+\nalign=	 align=
+\nheight=	 height=
+\nhref=	 href=
+\nid=	 id=
+\notherprops=	 otherprops=
+\noutputclass=	 outputclass=
+\nplacement=	 placement=
+\nrowsep=	 rowsep=
+\nscale=	 scale=
+\ntype=	 type=
+\nxmlns:	 xmlns:
+</p><p>	</p>\n<p>
+><fig	>\n<fig
+><sectiondiv	>\n\n<sectiondiv
+><title	>\n<title
+><ul	>\n<ul
+\sstatus="changed"
+\sstatus="new"
+rev=".+?"	rev="1.0"
+```DOTALL
+<p status="deleted">.+?</p>
+<\?oxy_comment_start.+?\?>
+<\?oxy_comment_end.*?\?>
+<\?oxy_delete.+?\?>
+<\?oxy_insert_start.+?\?>
+<\?oxy_insert_end.*?\?>

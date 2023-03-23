@@ -10,14 +10,18 @@ import string
 from wordig import WordDigger
 
 
-def formatXml(targetFiles:list) -> None:
+def formatXml(targetFiles:list, partial=False) -> None:
 
     dirCalled = os.path.dirname(__file__)
-    regexFile = os.path.join(dirCalled, 'hmc_xml_format.tsv')
-    WordDigger(targetFiles, pattern=regexFile)
-    for fn in targetFiles:
-        for i in glob.glob(fn):
-            subprocess.run(['xmlformat.exe', '--overwrite', i])
+    if partial:
+        regexFile = os.path.join(dirCalled, 'hmc_xml_partial.tsv')
+        WordDigger(targetFiles, pattern=regexFile)
+    else:
+        regexFile = os.path.join(dirCalled, 'hmc_xml_format.tsv')
+        WordDigger(targetFiles, pattern=regexFile)
+        for fn in targetFiles:
+            for i in glob.glob(fn):
+                subprocess.run(['xmlformat.exe', '--overwrite', i])
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -85,6 +89,8 @@ def StrainImage(removeUnused=False) -> None:
     # image 폴더에 있는 이미지들의 목록 만들기
     existingImage = []
     for f in glob.glob('image/*.jpg'):
+        existingImage.append(os.path.basename(f))
+    for f in glob.glob('image/*.eps'):
         existingImage.append(os.path.basename(f))
     existingImage = (sorted(existingImage, key=str.lower))
     writeList('existing_images.txt', existingImage)
@@ -229,6 +235,39 @@ def generateTitleID(prefix='title', parts=3, length=3) -> None:
     print(titleID)
 
 
+def extractChanged(targetFiles:list) -> None:
+    
+    changedFiles = []
+    if '.txt' in targetFiles[0]:
+        with open(targetFiles[0], mode='r', encoding='utf-8') as fs:
+            content = fs.read()
+            changedFiles = content.split('\n')
+    else:
+       for fn in  targetFiles:
+           for i in glob.glob(fn):
+               changedFiles.append(i)
+
+    statusPatterns = ['<p status="changed">.+?</p>', '<p status="new">.+?</p>']
+    extractedLines = []
+
+    for fn in changedFiles:
+        extractedLines.append(f'<FILENAME>{fn}</FILENAME>')
+        with open(fn, mode='r', encoding='utf-8') as fs:
+            content = fs.read()
+            
+        for p in statusPatterns:
+            foundLines = re.findall(p, content, flags=re.DOTALL)
+            if foundLines:
+                extractedLines += foundLines
+    
+    content = '\n'.join(extractedLines)
+    with open('changed_xmls.txt', mode='w', encoding='utf-8') as fs:
+        fs.write(content)
+
+    
+    formatXml(['changed_xmls.txt'], partial=True)
+
+
 def deleteReportFiles() -> None:
     
     reports = ['existing_images.txt', 'missing_images.txt', 'misspelled_images.txt', 'referred_images.txt', 'unreferred_images.txt',
@@ -265,7 +304,7 @@ parser.add_argument(
     dest = 'strainImage',
     action = 'store_true',
     default = False,
-    help = 'Strain iamge files.')
+    help = 'Strain image files.')
 parser.add_argument(
     '-r',
     dest = 'removeUnusedImages',
@@ -284,6 +323,13 @@ parser.add_argument(
     action = 'store_true',
     default = False,
     help = 'Generate a title ID.')
+parser.add_argument(
+    '-e',
+    dest = 'extractChanged' ,
+    action = 'store_true',
+    default = False,
+    help = 'Extract changed or added lines.'
+    )
 parser.add_argument(
     '-d',
     dest = 'deleteReports',
@@ -305,7 +351,9 @@ elif args.topicID:
     generateTopicID()
 elif args.titleID:
     generateTitleID()
+elif args.extractChanged:
+    extractChanged(args.targetFiles)
 elif args.deleteReports:
-    deleteReportFiles()
+    deleteReportFiles()    
 else:
     formatXml(args.targetFiles)
