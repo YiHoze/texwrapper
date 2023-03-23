@@ -352,10 +352,12 @@ class ImageUtility(object):
             cmd = '"{}" -colorspace sRGB -units PixelsPerCentimeter -density {} "{}" "{}"'.format(self.Magick, self.options['density'], img, trg)
         self.run_cmd(cmd)
 
+        density = int(self.options['density'] / 2.54)
+
         if self.options['target_format'] == '.png':
-            cmd = '"{}" "{}" -transparent #FFFFFF -units PixelsPerCentimeter -density 100 "{}"'.format(self.Magick, trg, trg)
+            cmd = '"{}" "{}" -transparent #FFFFFF -units PixelsPerCentimeter -density {} "{}"'.format(self.Magick, trg, density, trg)
         else:
-            cmd = '"{}" "{}" -units PixelsPerCentimeter -density 100 "{}"'.format(self.Magick, trg, trg)
+            cmd = '"{}" "{}" -units PixelsPerCentimeter -density {} "{}"'.format(self.Magick, trg, density, trg)
         self.run_cmd(cmd, 0)
 
 
