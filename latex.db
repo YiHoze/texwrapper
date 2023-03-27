@@ -128,7 +128,7 @@ description = This template generates an album which contains the image files (j
 	This requires the hzguide class, which is available from https://github.com/YiHoze/HzGuide.
 	usage: mytex.py album -s IMAGE_SCALE
 	defaults: 1
-image_list = images.lst
+image_list = image_list.txt
 compiler = -c
 tex_output = album.tex
 placeholders = 1
@@ -140,7 +140,7 @@ tex =
 	```\HeadingSetup{article}
 	```
 	```\begin{document}
-	```\MakeAlbum[\1]{images.lst}
+	```\MakeAlbum[\1]{image_list.txt}
 	```%% use \MakeAlbum* to hide image names.
 	```\end{document}
 

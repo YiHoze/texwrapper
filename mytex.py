@@ -235,7 +235,7 @@ class LatexTemplate(object):
 
     def make_image_list(self) -> bool:
 
-        file='images.lst'
+        file='image_list.txt'
         exclude='album.pdf'
 
         if os.path.exists(exclude):
