@@ -1,13 +1,10 @@
-\n\s+
-(\w)\n	\1 
-([”"'])\n	\1 
+<\!-- Begin Document Specific Declarations -->
+<\?Fm Validation Off\?>
+<\!-- End Document Specific Declarations -->
 \sstatus="changed"
 \sstatus="new"
-<FILENAME>(.+?)</FILENAME>	\n\1:
-^.+?\.xml:$\n\n
-^.+?\.xml:\Z
+rev=".+?"	rev="1.0"
 ```DOTALL
-<p status="deleted">.+?</p>
 <\?oxy_comment_start.+?\?>
 <\?oxy_comment_end.*?\?>
 <\?oxy_delete.+?\?>

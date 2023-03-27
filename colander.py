@@ -7,21 +7,32 @@ import subprocess
 import re
 import random
 import string
+import shutil
 from wordig import WordDigger
 
 
-def formatXml(targetFiles:list, partial=False) -> None:
+dirCalled = os.path.dirname(__file__)
 
-    dirCalled = os.path.dirname(__file__)
-    if partial:
-        regexFile = os.path.join(dirCalled, 'hmc_xml_partial.tsv')
-        WordDigger(targetFiles, pattern=regexFile)
-    else:
-        regexFile = os.path.join(dirCalled, 'hmc_xml_format.tsv')
-        WordDigger(targetFiles, pattern=regexFile)
-        for fn in targetFiles:
-            for i in glob.glob(fn):
-                subprocess.run(['xmlformat.exe', '--overwrite', i])
+
+def resetXml(fileList:list, commentsOnly=False) -> None:
+
+    regexFile = os.path.join(dirCalled, 'hmc_remove_comments.tsv')
+    WordDigger(fileList, pattern=regexFile)
+    if not commentsOnly:
+        regexFile = os.path.join(dirCalled, 'hmc_remove_attributes.tsv')
+        WordDigger(fileList, pattern=regexFile)
+        removeDeletedLines(fileList=fileList)
+
+def formatXml(fileList:list) -> None:
+    
+    for fn in fileList:
+        with open(fn, mode='r', encoding='utf-8') as fs:
+            content = fs.read()
+        content = re.sub('\n', ' ', content)
+        content = re.sub('\s+', ' ', content)
+        with open(fn, mode='w', encoding='utf-8') as fs:
+            fs.write(content)
+        subprocess.run(['xmlformat.exe', '--overwrite', fn])
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -235,37 +246,149 @@ def generateTitleID(prefix='title', parts=3, length=3) -> None:
     print(titleID)
 
 
-def extractChanged(targetFiles:list) -> None:
+def makeFileList(targetFiles:list) -> list:
+
+    fileList = []
+    for fn in targetFiles:
+        if os.path.splitext(fn)[1].lower() == '.txt':
+            with open(fn, mode='r', encoding='utf-8') as fs:
+                content = fs.read()
+                fileList = content.split('\n')
+        else:
+            for i in glob.glob(fn):
+                fileList.append(i)
+    return fileList
+
+
+def copyFrom(fileList:list, sourceFolder:str) -> None:
+
+    for fn in fileList:
+        shutil.copy(os.path.join(sourceFolder, fn), '.')
+
+
+def findStatusAttribute(fileName:str) -> dict:
     
-    changedFiles = []
-    if '.txt' in targetFiles[0]:
-        with open(targetFiles[0], mode='r', encoding='utf-8') as fs:
-            content = fs.read()
-            changedFiles = content.split('\n')
-    else:
-       for fn in  targetFiles:
-           for i in glob.glob(fn):
-               changedFiles.append(i)
+    foundLines = {}
+    with open(fileName, mode='r', encoding='utf-8') as fs:
+        content = fs.readlines()
+    for num, line in enumerate(content):
+        matched = re.search('status="changed|new"', line)
+        if matched:
+            foundLines[num] = line.strip()
 
-    statusPatterns = ['<p status="changed">.+?</p>', '<p status="new">.+?</p>']
-    extractedLines = []
+    return foundLines
 
-    for fn in changedFiles:
-        extractedLines.append(f'<FILENAME>{fn}</FILENAME>')
+
+def getTagsHavingStatus(fileList:list, deletedOnly=False) -> list:
+    
+    tags_having_status_attribute = []
+
+    for fn in fileList:
         with open(fn, mode='r', encoding='utf-8') as fs:
             content = fs.read()
-            
-        for p in statusPatterns:
-            foundLines = re.findall(p, content, flags=re.DOTALL)
-            if foundLines:
-                extractedLines += foundLines
-    
-    content = '\n'.join(extractedLines)
-    with open('changed_xmls.txt', mode='w', encoding='utf-8') as fs:
-        fs.write(content)
+        content = re.sub('\n', '', content)
+        content = re.sub('\s+', ' ', content)
+        if deletedOnly:
+            statusPattern = r'<[^>]+\bstatus="deleted"[^>]*>'
+        else:
+            statusPattern = r'<[^>]+\bstatus="\w+"[^>]*>'
+        foundLines = re.findall(statusPattern, content)
+        if foundLines:
+            for i in foundLines:
+                tag = i[:i.find(' ')]
+                if i[-2:] == '/>':
+                    tag += '/>'
+                else:
+                    tag += '>'
+                tags_having_status_attribute.append(tag)
+        
+    return list(set(tags_having_status_attribute))   
 
+
+def removeDeletedLines(fileList:list) -> None:
     
-    formatXml(['changed_xmls.txt'], partial=True)
+    deletedTags = getTagsHavingStatus(fileList=fileList, deletedOnly=True)
+    deletedPattern = r'HEAD[^>]*\bstatus="deleted".*?>.*?TAIL'
+
+    for fn in fileList:
+        with open(fn, mode='r', encoding='utf-8') as fs:
+            content = fs.read()
+        content = re.sub('\n', '', content)
+        content = re.sub('\s+', ' ', content)
+        for i in deletedTags:
+            if i[-2:] == '/>':
+                head = i[:-2]
+                p = deletedPattern.replace('HEAD', head)
+                p = p.replace('TAIL', ' />')
+            else:
+                head = i[:-1]
+                tail = i.replace('<', '</')
+                p = deletedPattern.replace('HEAD', head)
+                p = p.replace('TAIL', tail)
+            content = re.sub(p, '', content)
+        
+        with open(fn, mode='w', encoding='utf-8') as fs:
+            fs.write(content)
+
+
+def deleteFigImage(fileList:list) -> None:
+    
+    patterns = [
+        r'<fig.*?>.+?</fig>',
+        r'<image.+?>'
+    ]
+
+    for fn in fileList:
+        with open(fn, mode='r', encoding='utf-8') as fs:
+            content = fs.read()
+        content = re.sub('\n', '', content)
+        content = re.sub('\s+', ' ', content)
+        for p in patterns:
+            content = re.sub(p, '', content)
+        with open(fn, mode='w', encoding='utf-8') as fs:
+            fs.write(content)    
+
+
+def extractChanged(fileList:list) -> None:
+    
+    tags_having_status_attribute = getTagsHavingStatus(fileList=fileList)
+
+    extractedLines = []
+    tmpLines = []
+    statusPattern = r'HEAD[^>]*\bstatus="\w+?".*?>.*?TAIL'
+
+    for fn in fileList:
+        tmpLines.clear()
+        with open(fn, mode='r', encoding='utf-8') as fs:
+            content = fs.read()
+        content = re.sub('\n', '', content)
+        content = re.sub('\s+', ' ', content)
+        for i in tags_having_status_attribute:
+            if i[-2:] == '/>':
+                head = i[:-2]
+                p = statusPattern.replace('HEAD', head)
+                p = p.replace('TAIL', ' />')
+            else:
+                head = i[:-1]
+                tail = i.replace('<', '</')
+                p = statusPattern.replace('HEAD', head)
+                p = p.replace('TAIL', tail)
+            foundLines = re.findall(p, content)
+            if foundLines:
+                tmpLines += foundLines
+        if len(tmpLines) > 0:
+            extractedLines.append(f'<!-- {fn} -->')
+            extractedLines += tmpLines
+            
+
+    content = '\n'.join(extractedLines)
+    with open('extracted_status_lines.txt', mode='w', encoding='utf-8') as fs:
+        fs.write(content)
+    resetXml(['extracted_status_lines.txt'], commentsOnly=True)
+    
+    shutil.copy('extracted_status_lines.txt', 'extracted_for_translation.txt')
+    resetXml(['extracted_for_translation.txt'])
+    deleteFigImage(['extracted_for_translation.txt'])
 
 
 def deleteReportFiles() -> None:
@@ -280,7 +403,7 @@ def deleteReportFiles() -> None:
 
 
 # main ########################################################
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description = 'With no given option, XML files are reset.')
 parser.add_argument(
     'targetFiles',
     nargs = '*',
@@ -331,6 +454,26 @@ parser.add_argument(
     help = 'Extract changed or added lines.'
     )
 parser.add_argument(
+    '-f',
+    dest = 'format',
+    action = 'store_true',
+    default = False,
+    help = 'Format xml files.'
+    )
+parser.add_argument(
+    '-R',
+    dest = 'reset',
+    action = 'store_true',
+    default = False,
+    help = 'Reset xml files by unnecessary comments and attributes.'
+    )
+parser.add_argument(
+    '-c',
+    dest = 'copy_from',
+    default = None,
+    help = 'Specify a folder path from which to copy files contained in a given file.'
+    )
+parser.add_argument(
     '-d',
     dest = 'deleteReports',
     action = 'store_true',
@@ -352,8 +495,13 @@ elif args.topicID:
 elif args.titleID:
     generateTitleID()
 elif args.extractChanged:
-    extractChanged(args.targetFiles)
+    extractChanged(makeFileList(args.targetFiles))
+elif args.copy_from is not None:
+    copyFrom(makeFileList(args.targetFiles), sourceFolder=args.copy_from)
 elif args.deleteReports:
     deleteReportFiles()    
-else:
-    formatXml(args.targetFiles)
+elif args.reset or args.format:
+    if args.reset:
+        resetXml(makeFileList(args.targetFiles))
+    if args.format:
+        formatXml(makeFileList(args.targetFiles))
