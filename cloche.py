@@ -60,7 +60,7 @@ def index_entry(filename:str, no:int, entry:str) -> str:
 
 def create_index(xhtml_files:list, indexer:str, outdir:str) -> None:
 
-    WordDigger(xhtml_files, pattern=indexer, flag='EXPAND')
+    WordDigger(xhtml_files, pattern=indexer, flag='EXPAND', overwrite=True)
 
     index_num = 0
     index = {}
@@ -386,7 +386,7 @@ def merge_tex(tex:str, escape_file:str) -> str:
     if escape_file is not None:
         tmp = 'tmp.@@@'
         shutil.copy(tex, tmp)
-        WordDigger([tmp], pattern=escape_file, flag='EXPAND')
+        WordDigger([tmp], pattern=escape_file, flag='EXPAND', overwrite=True)
         try:
             with open(tmp, mode='r', encoding='utf-8') as f:
                 content = f.read()
@@ -407,7 +407,7 @@ def merge_tex(tex:str, escape_file:str) -> str:
         for subfile in found:
             if escape_file is not None:
                 shutil.copy(subfile, tmp)
-                WordDigger([tmp], pattern=escape_file, flag='EXPAND')
+                WordDigger([tmp], pattern=escape_file, flag='EXPAND', overwrite=True)
                 with open(tmp, mode='r', encoding='utf-8') as f:
                     subcontent = f.read()
                 os.remove(tmp)
@@ -750,7 +750,7 @@ if 'converter' in conf.keys():
     for converter in converters:
         # coverter = os.path.abspath(converter)
         if os.path.exists(converter):
-            WordDigger(xhtml_files, pattern=converter)
+            WordDigger(xhtml_files, pattern=converter, overwrite=True)
         else:
             print("{} isn't found".format(converter))
 else:
@@ -758,9 +758,9 @@ else:
     sys.exit()
 
 # remove html comments
-WordDigger(extra_xhtml_files, aim="<!--.+-->", substitute="", dotall=True)
+WordDigger(extra_xhtml_files, aim="<!--.+-->", substitute="", dotall=True, overwrite=True)
 if 'html_files' in conf.keys():
-    WordDigger(xhtml_files, aim="<!--.+-->", substitute="", dotall=True)
+    WordDigger(xhtml_files, aim="<!--.+-->", substitute="", dotall=True, overwrite=True)
 
 # Copy image files
 if 'original_image_directory' in conf.keys():

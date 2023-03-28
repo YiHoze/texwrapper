@@ -14,14 +14,14 @@ from wordig import WordDigger
 dirCalled = os.path.dirname(__file__)
 
 
-def resetXml(fileList:list, commentsOnly=False) -> None:
-
+def resetXml(targetFiles:list, commentsOnly=False) -> None:
+    
     regexFile = os.path.join(dirCalled, 'hmc_remove_comments.tsv')
-    WordDigger(fileList, pattern=regexFile)
+    WordDigger(targetFiles, pattern=regexFile, overwrite=True)
     if not commentsOnly:
         regexFile = os.path.join(dirCalled, 'hmc_remove_attributes.tsv')
-        WordDigger(fileList, pattern=regexFile)
-        removeDeletedLines(fileList=fileList)
+        WordDigger(targetFiles, pattern=regexFile, overwrite=True)
+        removeDeletedLines(fileList=makeFileList(targetFiles))
 
 def formatXml(fileList:list) -> None:
     
@@ -32,7 +32,7 @@ def formatXml(fileList:list) -> None:
         content = re.sub('\s+', ' ', content)
         with open(fn, mode='w', encoding='utf-8') as fs:
             fs.write(content)
-        subprocess.run(['xmlformat.exe', '--overwrite', fn])
+        os.system(f'xmlformat.exe --overwrite {fn}')
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -45,9 +45,9 @@ def StrainXML() -> None:
     
     # ditamap 파일에서 참조되는 xml 파일들의 목록 만들기
     referredXmlFile = 'referred_xmls.txt'
-    WordDigger(['*.ditamap'], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile)
+    WordDigger(['*.ditamap'], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile, overwrite=True)
     # xml 아닌 것 삭제하기
-    WordDigger([referredXmlFile], aim='^.+?\.css$\n', substitute='')
+    WordDigger([referredXmlFile], aim='^.+?\.css$\n', substitute='', overwrite=True)
     
     with open(referredXmlFile, mode='r', encoding='utf-8') as fs:
         content = fs.read()
@@ -91,11 +91,11 @@ Misspelled XMLs: {}\n'''.format(len(referredXml), len(existingXml), len(unreferr
     print(output)
 
 
-def StrainImage(removeUnused=False) -> None:
-    
+def rummageImages() -> None:
+
     # xml 파일에서 참조되는 이미지들의 목록 만들기
     referredImageFile = 'referred_images.txt'
-    WordDigger(['*.xml'], aim='(?<=href="image/).+?(?=")', gather=True, output=referredImageFile)
+    WordDigger(['*.xml'], aim='(?<=href="image/).+?(?=")', gather=True, overwrite=True, output=referredImageFile)
     with open(referredImageFile, mode='r', encoding='utf-8') as fs:
         content = fs.read()
     referredImage = content.split('\n')
@@ -136,13 +136,21 @@ def StrainImage(removeUnused=False) -> None:
 Existing images: {}
 Unreferred images: {}
 Missing images: {}
-Misspelled images: {}\n'''.format(len(referredImage), len(existingImage),     len(unreferredImage), len(missingImage), len(misspelledImage))
+Misspelled images: {}\n'''.format(len(referredImage), len(existingImage), len(unreferredImage), len(missingImage), len(misspelledImage))
     print(output)
+
+    return unreferredImage
+
+
+def StrainImage(removeUnused=False) -> None:
+    
+    unreferredImage = rummageImages()
 
     if removeUnused:
         for i in unreferredImage:
             i = os.path.join('image', i)
             os.remove(i)
+        rummageImages()
 
 
 def getFileTopicTitle(uri:str) -> list:
@@ -208,8 +216,8 @@ def checkCrossReferences() -> None:
     WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='XML_xrefs.txt')
 
     xrefLinesFile = 'xrefs.txt'
-    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, gather=True, output=xrefLinesFile)
-    WordDigger([xrefLinesFile], aim='(?<=href=").+?(?=")', gather=True, output=xrefLinesFile)
+    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, gather=True, output=xrefLinesFile, overwrite=True)
+    WordDigger([xrefLinesFile], aim='(?<=href=").+?(?=")', gather=True, output=xrefLinesFile, overwrite=True)
  
     with open(xrefLinesFile, mode='r', encoding='utf-8') as fs:
         content = fs.read()
@@ -457,7 +465,7 @@ parser.add_argument(
     help = 'Extract changed or added lines.'
     )
 parser.add_argument(
-    '-f',
+    '-F',
     dest = 'format',
     action = 'store_true',
     default = False,
@@ -505,6 +513,6 @@ elif args.deleteReports:
     deleteReportFiles()    
 elif args.reset or args.format:
     if args.reset:
-        resetXml(makeFileList(args.targetFiles))
+        resetXml(args.targetFiles)
     if args.format:
         formatXml(makeFileList(args.targetFiles))

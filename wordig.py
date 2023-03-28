@@ -29,7 +29,7 @@ class WordDigger(object):
             'extract': False,
             'gather': False,
             'output': None,
-            'overwrite': True,
+            'overwrite': False,
             'recursive': False,
             'page_count': False,
             'unicode': False,
@@ -429,6 +429,10 @@ class WordDigger(object):
                 output = file
         else:
             output = self.options['output']
+
+        if self.options['overwrite']:
+            return output
+        
         iFilename, iExt = os.path.splitext(os.path.basename(file))
 
         oDir = os.path.dirname(output)
@@ -454,13 +458,13 @@ class WordDigger(object):
 
         oFile = '{}{}{}{}'.format(oPrefix, oFilename, oSuffix, oExt)
         output = os.path.join(oDir, oFile).replace('/','\\')
-        if not self.options['overwrite']:
-            if os.path.exists(output):
-                counter = 0
-                while os.path.exists(output):
-                    counter += 1
-                    oFile = '{}{}{}_{}{}'.format(oPrefix, oFilename, oSuffix, counter, oExt)
-                    output = os.path.join(oDir, oFile).replace('/','\\')
+
+        if os.path.exists(output):
+            counter = 0
+            while os.path.exists(output):
+                counter += 1
+                oFile = '{}{}{}_{}{}'.format(oPrefix, oFilename, oSuffix, counter, oExt)
+                output = os.path.join(oDir, oFile).replace('/','\\')
         return output
 
 
@@ -944,11 +948,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         '-v',
-        '--no-overwrite',
+        '--overwrite',
         dest = 'overwrite',
-        action = 'store_false',
-        default = True,
-        help = 'Do not overwrite the source file when replacing.'
+        action = 'store_true',
+        default = False,
+        help = 'Overwrite the source file when replacing.'
     )
     parser.add_argument(
         '-r',
