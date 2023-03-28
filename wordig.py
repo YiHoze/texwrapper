@@ -426,12 +426,12 @@ class WordDigger(object):
 
         if self.options['output'] is None:
             if output is None:
-                output = file
+                if self.options['overwrite']:
+                    return file
+                else:
+                    output = file
         else:
             output = self.options['output']
-
-        if self.options['overwrite']:
-            return output
         
         iFilename, iExt = os.path.splitext(os.path.basename(file))
 
@@ -459,12 +459,14 @@ class WordDigger(object):
         oFile = '{}{}{}{}'.format(oPrefix, oFilename, oSuffix, oExt)
         output = os.path.join(oDir, oFile).replace('/','\\')
 
-        if os.path.exists(output):
-            counter = 0
-            while os.path.exists(output):
-                counter += 1
-                oFile = '{}{}{}_{}{}'.format(oPrefix, oFilename, oSuffix, counter, oExt)
-                output = os.path.join(oDir, oFile).replace('/','\\')
+        if not self.options['overwrite']:
+            if os.path.exists(output):
+                counter = 0
+                while os.path.exists(output):
+                    counter += 1
+                    oFile = '{}{}{}_{}{}'.format(oPrefix, oFilename, oSuffix, counter, oExt)
+                    output = os.path.join(oDir, oFile).replace('/','\\')
+
         return output
 
 
