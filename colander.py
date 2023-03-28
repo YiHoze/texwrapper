@@ -46,6 +46,9 @@ def StrainXML() -> None:
     # ditamap 파일에서 참조되는 xml 파일들의 목록 만들기
     referredXmlFile = 'referred_xmls.txt'
     WordDigger(['*.ditamap'], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile)
+    # xml 아닌 것 삭제하기
+    WordDigger([referredXmlFile], aim='^.+?\.css$\n', substitute='')
+    
     with open(referredXmlFile, mode='r', encoding='utf-8') as fs:
         content = fs.read()
     referredXml = content.split('\n')
@@ -286,7 +289,7 @@ def getTagsHavingStatus(fileList:list, deletedOnly=False) -> list:
     for fn in fileList:
         with open(fn, mode='r', encoding='utf-8') as fs:
             content = fs.read()
-        content = re.sub('\n', '', content)
+        content = re.sub('\n', ' ', content)
         content = re.sub('\s+', ' ', content)
         if deletedOnly:
             statusPattern = r'<[^>]+\bstatus="deleted"[^>]*>'
@@ -313,7 +316,7 @@ def removeDeletedLines(fileList:list) -> None:
     for fn in fileList:
         with open(fn, mode='r', encoding='utf-8') as fs:
             content = fs.read()
-        content = re.sub('\n', '', content)
+        content = re.sub('\n', ' ', content)
         content = re.sub('\s+', ' ', content)
         for i in deletedTags:
             if i[-2:] == '/>':
