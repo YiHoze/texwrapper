@@ -179,7 +179,6 @@ class WordDigger(object):
         output = self.determine_output('', output=self.options['output'])
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
-        print(f"The findings have been written in {output}.")
 
 
     def extract(self, file:str) -> None:
@@ -372,7 +371,7 @@ class WordDigger(object):
         if content is None:
             return
 
-        output = self.determine_output(file)
+        output = self.determine_output(file, output='_replaced')
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
 
