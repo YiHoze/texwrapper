@@ -262,7 +262,7 @@ def generateTitleID(prefix='title', parts=3, length=3) -> None:
     print(titleID)
 
 
-def makeFileList(targetFiles:list) -> list:
+def makeFileList(targetFiles:list, useGlob=True) -> list:
 
     fileList = []
 
@@ -273,9 +273,13 @@ def makeFileList(targetFiles:list) -> list:
                     content = fs.read()
                 fileList += content.split('\n')
     else:
-        for fn in targetFiles:
-            for i in glob.glob(fn):
-                fileList.append(i)
+        if useGlob:
+            for fn in targetFiles:
+                for i in glob.glob(fn):
+                    fileList.append(i)
+        else:
+            for fn in targetFiles:
+                fileList.append(fn)
 
     return fileList
 
@@ -542,7 +546,7 @@ elif args.titleID:
 elif args.extractChanged:
     extractChanged(makeFileList(args.targetFiles))
 elif args.copy_from is not None:
-    copyFrom(makeFileList(args.targetFiles), sourceFolder=args.copy_from)
+    copyFrom(makeFileList(args.targetFiles, useGlob=False), sourceFolder=args.copy_from)
 elif args.insert_css:
     insertCSS(makeFileList(args.targetFiles))
 elif args.remove_css:
