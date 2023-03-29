@@ -447,19 +447,7 @@ class WordDigger(object):
 
         oFile = '{}{}{}{}'.format(oPrefix, oFilename, oSuffix, oExt)
         output = os.path.join(oDir, oFile).replace('/','\\')
-        return output
-        
 
-    def determine_output(self, file:str, output=None) -> str:
-
-        if self.options['output'] is None:
-            if self.options['overwrite']:
-                return file
-            elif output is not None:
-                output = self.determine_output_indefinite(file=file, output=output)
-        else:
-            output = self.options['output']
-        
         if not self.options['overwrite']:
             if os.path.exists(output):
                 counter = 0
@@ -469,6 +457,20 @@ class WordDigger(object):
                     output = os.path.join(oDir, oFile).replace('/','\\')
 
         return output
+        
+
+    def determine_output(self, file:str, output=None) -> str:
+
+        if self.options['output'] is None:
+            if self.options['overwrite']:
+                return file
+            else:
+                return self.determine_output_indefinite(file=file, output=output)
+        else:
+            if self.options['overwrite']:
+                return self.options['output']
+            else:
+                return self.determine_output_indefinite(file=file, output=self.options['output'])
 
 
     def check_if_pdf(self, file:str) -> str:
