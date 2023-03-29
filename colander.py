@@ -14,14 +14,14 @@ from wordig import WordDigger
 dirCalled = os.path.dirname(__file__)
 
 
-def resetXml(targetFiles:list, commentsOnly=False) -> None:
+def resetXml(fileList:list, commentsOnly=False) -> None:
     
     regexFile = os.path.join(dirCalled, 'hmc_remove_comments.tsv')
-    WordDigger(targetFiles, pattern=regexFile, overwrite=True)
+    WordDigger(fileList, pattern=regexFile, overwrite=True)
     if not commentsOnly:
         regexFile = os.path.join(dirCalled, 'hmc_remove_attributes.tsv')
-        WordDigger(targetFiles, pattern=regexFile, overwrite=True)
-        removeDeletedLines(fileList=makeFileList(targetFiles))
+        WordDigger(fileList, pattern=regexFile, overwrite=True)
+        removeDeletedLines(fileList=fileList)
 
 
 def formatXml(fileList:list) -> None:
@@ -262,20 +262,21 @@ def generateTitleID(prefix='title', parts=3, length=3) -> None:
     print(titleID)
 
 
-def makeFileList(targetFiles:list, useGlob=True) -> list:
+def makeFileList(targetFiles:list) -> list:
 
     fileList = []
-    for fn in targetFiles:
-        if os.path.splitext(fn)[1].lower() == '.txt':
-            with open(fn, mode='r', encoding='utf-8') as fs:
-                content = fs.read()
-                fileList = content.split('\n')
-        else:
-            if useGlob:
-                for i in glob.glob(fn):
-                    fileList.append(i)
-            else:
-                fileList.append(fn)
+
+    if args.aslist:
+        for fn in targetFiles:
+            if os.path.exists(fn):
+                with open(fn, mode='r', encoding='utf-8') as fs:
+                    content = fs.read()
+                fileList += content.split('\n')
+    else:
+        for fn in targetFiles:
+            for i in glob.glob(fn):
+                fileList.append(i)
+
     return fileList
 
 
@@ -411,14 +412,14 @@ def extractChanged(fileList:list) -> None:
     deleteFigImage(['extracted_for_translation.txt'])
 
 
-def insertCSS(targetFiles:list) -> None:
+def insertCSS(fileList:list) -> None:
     
-    WordDigger(targetFiles, aim='(<\\?xml.+\\?>)', substitute='\\1\\n<?xml-stylesheet type="text/css" href="../preview.css"?>', overwrite=True)
+    WordDigger(fileList, aim='(<\\?xml.+\\?>)', substitute='\\1\\n<?xml-stylesheet type="text/css" href="../preview.css"?>', overwrite=True)
 
 
-def removeCSS(targetFiles:list) -> None:
+def removeCSS(fileList:list) -> None:
     
-    WordDigger(targetFiles, aim='<\\?xml-stylesheet.+\\?>\\n', substitute='', overwrite=True)
+    WordDigger(fileList, aim='<\\?xml-stylesheet.+\\?>\\n', substitute='', overwrite=True)
 
 
 def deleteReportFiles() -> None:
@@ -439,6 +440,13 @@ parser.add_argument(
     nargs = '*',
     default = ['*.xml'],
     help = 'Specify one or more xml files to format them. If nothing is specified, every file is processed.')
+parser.add_argument(
+    '-l',
+    dest = 'aslist',
+    action = 'store_true',
+    default = False,
+    help = 'Given files are regarded as lists of files.'
+    )
 parser.add_argument(
     '-x',
     dest = 'strainXml',
@@ -534,15 +542,15 @@ elif args.titleID:
 elif args.extractChanged:
     extractChanged(makeFileList(args.targetFiles))
 elif args.copy_from is not None:
-    copyFrom(makeFileList(args.targetFiles, useGlob=False), sourceFolder=args.copy_from)
+    copyFrom(makeFileList(args.targetFiles), sourceFolder=args.copy_from)
 elif args.insert_css:
-    insertCSS(args.targetFiles)
+    insertCSS(makeFileList(args.targetFiles))
 elif args.remove_css:
-    removeCSS(args.targetFiles)
+    removeCSS(makeFileList(args.targetFiles))
 elif args.deleteReports:
     deleteReportFiles()    
 elif args.reset or args.format:
     if args.reset:
-        resetXml(args.targetFiles)
+        resetXml(makeFileList(args.targetFiles))
     if args.format:
         formatXml(makeFileList(args.targetFiles))
