@@ -423,12 +423,12 @@ class WordDigger(object):
 
     def determine_output(self, file:str, output=None) -> str:
 
+        if self.options['overwrite']:
+            return file
+
         if self.options['output'] is None:
             if output is None:
-                if self.options['overwrite']:
-                    return file
-                else:
-                    output = file
+                output = file
         else:
             output = self.options['output']
         

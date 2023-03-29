@@ -23,6 +23,7 @@ def resetXml(targetFiles:list, commentsOnly=False) -> None:
         WordDigger(targetFiles, pattern=regexFile, overwrite=True)
         removeDeletedLines(fileList=makeFileList(targetFiles))
 
+
 def formatXml(fileList:list) -> None:
     
     for fn in fileList:
@@ -257,7 +258,7 @@ def generateTitleID(prefix='title', parts=3, length=3) -> None:
     print(titleID)
 
 
-def makeFileList(targetFiles:list) -> list:
+def makeFileList(targetFiles:list, useGlob=True) -> list:
 
     fileList = []
     for fn in targetFiles:
@@ -266,15 +267,19 @@ def makeFileList(targetFiles:list) -> list:
                 content = fs.read()
                 fileList = content.split('\n')
         else:
-            for i in glob.glob(fn):
-                fileList.append(i)
+            if useGlob:
+                for i in glob.glob(fn):
+                    fileList.append(i)
+            else:
+                fileList.append(fn)
     return fileList
 
 
 def copyFrom(fileList:list, sourceFolder:str) -> None:
 
     for fn in fileList:
-        shutil.copy(os.path.join(sourceFolder, fn), '.')
+        for i in glob.glob(os.path.join(sourceFolder, fn)):
+            shutil.copy(i, '.')
 
 
 def findStatusAttribute(fileName:str) -> dict:
@@ -402,6 +407,16 @@ def extractChanged(fileList:list) -> None:
     deleteFigImage(['extracted_for_translation.txt'])
 
 
+def insertCSS(targetFiles:list) -> None:
+    
+    WordDigger(targetFiles, aim='(<\\?xml.+\\?>)', substitute='\\1\\n<?xml-stylesheet type="text/css" href="../preview.css"?>', overwrite=True)
+
+
+def removeCSS(targetFiles:list) -> None:
+    
+    WordDigger(targetFiles, aim='<\\?xml-stylesheet.+\\?>\\n', substitute='', overwrite=True)
+
+
 def deleteReportFiles() -> None:
     
     reports = ['existing_images.txt', 'missing_images.txt', 'misspelled_images.txt', 'referred_images.txt', 'unreferred_images.txt',
@@ -431,8 +446,7 @@ parser.add_argument(
     dest = 'checkCrossReferences',
     action = 'store_true',
     default = False,
-    help = 'Check if any cross-references are broken.'
-    )
+    help = 'Check if any cross-references are broken.')
 parser.add_argument(
     '-i',
     dest = 'strainImage',
@@ -462,28 +476,36 @@ parser.add_argument(
     dest = 'extractChanged' ,
     action = 'store_true',
     default = False,
-    help = 'Extract changed or added lines.'
-    )
+    help = 'Extract changed or added lines.')
 parser.add_argument(
     '-F',
     dest = 'format',
     action = 'store_true',
     default = False,
-    help = 'Format xml files.'
-    )
+    help = 'Format xml files.')
 parser.add_argument(
     '-R',
     dest = 'reset',
     action = 'store_true',
     default = False,
-    help = 'Reset xml files by unnecessary comments and attributes.'
-    )
+    help = 'Reset xml files by unnecessary comments and attributes.')
 parser.add_argument(
     '-c',
     dest = 'copy_from',
     default = None,
-    help = 'Specify a folder path from which to copy files contained in a given file.'
-    )
+    help = 'Specify a folder path from which to copy files contained in a given file.')
+parser.add_argument(
+    '-s',
+    dest = 'insert_css',
+    action = 'store_true',
+    default = False,
+    help = 'Insert preview.css into xml files.')
+parser.add_argument(
+    '-S',
+    dest = 'remove_css',
+    action = 'store_true',
+    default = False,
+    help = 'Remove preview.css from xml files.')
 parser.add_argument(
     '-d',
     dest = 'deleteReports',
@@ -508,7 +530,11 @@ elif args.titleID:
 elif args.extractChanged:
     extractChanged(makeFileList(args.targetFiles))
 elif args.copy_from is not None:
-    copyFrom(makeFileList(args.targetFiles), sourceFolder=args.copy_from)
+    copyFrom(makeFileList(args.targetFiles, useGlob=False), sourceFolder=args.copy_from)
+elif args.insert_css:
+    insertCSS(args.targetFiles)
+elif args.remove_css:
+    removeCSS(args.targetFiles)
 elif args.deleteReports:
     deleteReportFiles()    
 elif args.reset or args.format:
