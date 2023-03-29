@@ -420,18 +420,8 @@ class WordDigger(object):
                 if line1 != line2:
                     self.found.append(("{:5}: {}\n{:5}: {}".format(lineno, line1.strip(), lineno, line2.strip())))
 
+    def determine_output_indefinite(self, file:str, output=None) -> str:
 
-    def determine_output(self, file:str, output=None) -> str:
-
-        if self.options['overwrite']:
-            return file
-
-        if self.options['output'] is None:
-            if output is None:
-                output = file
-        else:
-            output = self.options['output']
-        
         iFilename, iExt = os.path.splitext(os.path.basename(file))
 
         oDir = os.path.dirname(output)
@@ -457,7 +447,19 @@ class WordDigger(object):
 
         oFile = '{}{}{}{}'.format(oPrefix, oFilename, oSuffix, oExt)
         output = os.path.join(oDir, oFile).replace('/','\\')
+        return output
+        
 
+    def determine_output(self, file:str, output=None) -> str:
+
+        if self.options['output'] is None:
+            if self.options['overwrite']:
+                return file
+            elif output is not None:
+                output = self.determine_output_indefinite(file=file, output=output)
+        else:
+            output = self.options['output']
+        
         if not self.options['overwrite']:
             if os.path.exists(output):
                 counter = 0

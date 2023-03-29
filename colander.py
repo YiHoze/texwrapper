@@ -1,9 +1,9 @@
 # xml 파일들이 있는 폴더에서 실행한다.
 
 import os
+import sys
 import glob
 import argparse
-import subprocess
 import re
 import random
 import string
@@ -43,6 +43,10 @@ def writeList(fileName:str, imageList:list) -> None:
 
 
 def StrainXML() -> None:
+    
+    if len(glob.glob('*.ditamap')) == 0:
+        print('No ditamap is found.')
+        sys.exit()
     
     # ditamap 파일에서 참조되는 xml 파일들의 목록 만들기
     referredXmlFile = 'referred_xmls.txt'
