@@ -148,7 +148,6 @@ def create_endnote(xhtml_files:list, outdir:str) -> None:
             while True:
                 line = f.readline()
                 if not line: break
-                # line = re.sub('(?<!\\\\)%.*$', '', line)
                 pattern = ['\\\\footnote', '{', '}']
                 details = WD.scan_line(line, pattern)
                 if len(details) > 0:
@@ -401,6 +400,8 @@ def merge_tex(tex:str, escape_file:str) -> str:
         except:
             print("{} isn't encoded in UTF-8.".format())
             sys.exit()
+
+    content = re.sub('(?<!\\\\)%.*$', '', content, flags=re.MULTILINE)
 
     found = re.findall('\\\\input\\{(.+)\\}', content)
     if len(found) > 0:
