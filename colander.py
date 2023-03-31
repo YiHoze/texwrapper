@@ -423,7 +423,7 @@ def insertCSS(fileList:list) -> None:
 
 def removeCSS(fileList:list) -> None:
     
-    WordDigger(fileList, aim='<\\?xml-stylesheet.+\\?>\\n', substitute='', overwrite=True)
+    WordDigger(fileList, aim='<\\?xml-stylesheet.+\\?>\\n{1,2}', substitute='', overwrite=True)
 
 
 def deleteReportFiles() -> None:
