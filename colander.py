@@ -101,7 +101,7 @@ def rummageImages() -> None:
 
     # xml 파일에서 참조되는 이미지들의 목록 만들기
     referredImageFile = 'referred_images.txt'
-    WordDigger(['*.xml'], aim='(?<=href="image/).+?(?=")', gather=True, overwrite=True, output=referredImageFile)
+    WordDigger(['*.xml'], aim='(?<=href="image/).+?(?=")', gather=True, output=referredImageFile, overwrite=True)
     with open(referredImageFile, mode='r', encoding='utf-8') as fs:
         content = fs.read()
     referredImage = content.split('\n')
@@ -219,7 +219,7 @@ def checkFileTopicTitle(fileTopicTitle:list):
 
 def checkCrossReferences() -> None:
     
-    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='XML_xrefs.txt')
+    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='XML_xrefs.txt', overwrite=True)
 
     xrefLinesFile = 'xrefs.txt'
     WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, gather=True, output=xrefLinesFile, overwrite=True)
@@ -255,7 +255,7 @@ def generateTopicID(length=11) -> None:
     while getFile(topicID):
         topicID = 'id' + ''.join(random.choice(characters) for i in range(length))    
     pyperclip.copy(topicID)
-    print(f'{topicID} is copied to the clipboard')
+    print(f'"{topicID}" is copied to the clipboard')
 
 
 def generateID(prefix='title', parts=3, length=3) -> None:
@@ -269,7 +269,7 @@ def generateID(prefix='title', parts=3, length=3) -> None:
         for i in range(parts):
             ID = ID + '_' + ''.join(random.choice(characters) for j in range(length))
     pyperclip.copy(ID)
-    print(f'{ID} is copied to the clipboard')
+    print(f'"{ID}" is copied to the clipboard')
 
 
 def makeFileList(targetFiles:list, useGlob=True) -> list:
