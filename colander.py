@@ -8,6 +8,7 @@ import re
 import random
 import string
 import shutil
+import pyperclip
 from wordig import WordDigger
 
 
@@ -171,12 +172,12 @@ def getFileTopicTitle(uri:str) -> list:
     return fileTopicTitle
 
 
-def getFile(topicid:str) -> str:
+def getFile(ID:str) -> str:
     
     for f in glob.glob('*.xml'):
         with open(f, mode='r', encoding='utf-8') as fs:
             content = fs.read()
-        pattern = f'"{topicid}"'
+        pattern = f'"{ID}"'
         if re.search(pattern, content):
             return f
     return False
@@ -236,8 +237,14 @@ def checkCrossReferences() -> None:
             result.append(uri)
     
     content = '\n'.join(result)
-    with open('mismatched_xrefs.txt', mode='w', encoding='utf-8') as fs:
+    mismatchedXrefFile = 'mismatched_xrefs.txt'
+    if os.path.exists(mismatchedXrefFile):
+        msg = f'{mismatchedXrefFile} which contains mismatched cross-references is updated.'
+    else:
+        msg = f'{mismatchedXrefFile} which contains mismatched cross-references is created.'
+    with open(mismatchedXrefFile, mode='w', encoding='utf-8') as fs:
         fs.write(content)
+    print(msg)
 
 
 def generateTopicID(length=11) -> None:
@@ -247,19 +254,22 @@ def generateTopicID(length=11) -> None:
     topicID = 'id' + ''.join(random.choice(characters) for i in range(length))  
     while getFile(topicID):
         topicID = 'id' + ''.join(random.choice(characters) for i in range(length))    
-    print(topicID)
+    pyperclip.copy(topicID)
+    print(f'{topicID} is copied to the clipboard')
 
 
-def generateTitleID(prefix='title', parts=3, length=3) -> None:
+def generateID(prefix='title', parts=3, length=3) -> None:
 
+    # characters = string.ascii_letters + string.digits
     characters = string.ascii_lowercase + string.digits
-    titleID = 'title'
+    ID = prefix
     for i in range(parts):
-        titleID = titleID + '_' + ''.join(random.choice(characters) for j in range(length))
-    while getFile(titleID):
+        ID = ID + '_' + ''.join(random.choice(characters) for j in range(length))
+    while getFile(ID):
         for i in range(parts):
-            titleID = titleID + '_' + ''.join(random.choice(characters) for j in range(length))
-    print(titleID)
+            ID = ID + '_' + ''.join(random.choice(characters) for j in range(length))
+    pyperclip.copy(ID)
+    print(f'{ID} is copied to the clipboard')
 
 
 def makeFileList(targetFiles:list, useGlob=True) -> list:
@@ -477,16 +487,22 @@ parser.add_argument(
     help = 'Remove unreferred image files.')
 parser.add_argument(
     '-t',
+    dest = 'generateID',
+    action = 'store_true',
+    default = False,
+    help = 'Generate an ID.')
+parser.add_argument(
+    '-p',
+    dest = 'IDprefix',
+    default = 'title',
+    help = 'Specify a prefix for ID creation. (Default: title)'
+    )
+parser.add_argument(
+    '-T',
     dest = 'topicID',
     action = 'store_true',
     default = False,
-    help = 'Generate a topic ID.')
-parser.add_argument(
-    '-T',
-    dest = 'titleID',
-    action = 'store_true',
-    default = False,
-    help = 'Generate a title ID.')
+    help = 'Generate an old-style topic ID.')
 parser.add_argument(
     '-e',
     dest = 'extractChanged' ,
@@ -539,10 +555,10 @@ elif args.strainImage:
         StrainImage(removeUnused=True)
     else:
         StrainImage()
+elif args.generateID:
+    generateID(prefix=args.IDprefix)
 elif args.topicID:
     generateTopicID()
-elif args.titleID:
-    generateTitleID()
 elif args.extractChanged:
     extractChanged(makeFileList(args.targetFiles))
 elif args.copy_from is not None:
