@@ -214,7 +214,13 @@ def checkFileTagID(fileTagID:list):
                 return False
     else:
         return False
+
+
+def createXrefFile(xrefLinesFile='xrefs.txt') -> None:
     
+    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, gather=True, output=xrefLinesFile, overwrite=True)
+    WordDigger([xrefLinesFile], aim='(?<=href=").+?(?=")', gather=True, output=xrefLinesFile, overwrite=True)
+
 
 def checkCrossReferences() -> None:
     
@@ -222,14 +228,10 @@ def checkCrossReferences() -> None:
     WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='XML_xrefs.txt', overwrite=True)
 
     # 모든 <xref>에서 URI를 추출하여 xrefs.txt에 저장한다.
-    xrefLinesFile = 'xrefs.txt'
-    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, gather=True, output=xrefLinesFile, overwrite=True)
-    WordDigger([xrefLinesFile], aim='(?<=href=").+?(?=")', gather=True, output=xrefLinesFile, overwrite=True)
- 
-    with open(xrefLinesFile, mode='r', encoding='utf-8') as fs:
+    createXrefFile() 
+    with open('xrefs.txt', mode='r', encoding='utf-8') as fs:
         content = fs.read()
     xrefLines = content.split('\n')
-    # print(xrefLines)
 
     result=[]
     for uri in xrefLines:
@@ -238,11 +240,15 @@ def checkCrossReferences() -> None:
         if not checkFileTagID(fileTagID):
             result.append(uri)
     
-    content = '\n'.join(result)
-    mismatchedXrefFile = 'mismatched_xrefs.txt'
-    with open(mismatchedXrefFile, mode='w', encoding='utf-8') as fs:
-        fs.write(content)
-    print(f'{mismatchedXrefFile} which contains mismatched cross-references is created.')
+    if len(result) > 0:
+        content = '\n'.join(result)
+        print(content)
+        mismatchedXrefFile = 'mismatched_xrefs.txt'
+        with open(mismatchedXrefFile, mode='w', encoding='utf-8') as fs:
+            fs.write(content)
+        print(f'{mismatchedXrefFile} which contains mismatched cross-references is created.')
+    else:
+        print('No mismatched cross-reference is found.')
 
 
 def generateTopicID(length=11) -> None:
@@ -271,35 +277,6 @@ def generateID(prefix='title', parts=3, length=3) -> None:
     print(f'"{ID}" is copied to the clipboard')
 
 
-# def checkDuplicateIDs(removeDuplicates=False) -> None:
-
-#     duplicateIDs = []
-
-#     for fn in glob.glob('*.xml'):
-#         with open(fn, mode='r', encoding='utf-8') as fs:
-#             content = fs.read()
-#         IDs = re.findall('id=".+?"', content)
-#         for fnx in glob.glob('*.xml'):
-#             with open(fn, mode='r', encoding='utf-8') as fs:
-#                 content = fs.read()
-#             for ID in IDs:
-#                 foundIDs = re.findall(ID, content)
-#                 if len(foundIDs) > 1:
-#                     duplicateIDs.append(ID)
-
-#     duplicateIDs = list(set(duplicateIDs))
-
-#     if removeDuplicates:
-#         for duplicateID in duplicateIDs:
-#             WordDigger(['*.xml'], aim=duplicateID, substitute='', overwrite=True)
-#         print('Duplicate IDs are deleted.')
-#     else:
-#         content = '\n'.join(duplicateIDs)
-#         duplicateIDFile = 'duplicate_IDs.txt'
-#         with open(duplicateIDFile, mode='w', encoding='utf-8') as fs:
-#             fs.write(content)
-#         print(f'{duplicateIDFile} which contains duplicated IDs is created.')
-
 def checkDuplicateIDs(removeDuplicates=False) -> None:
 
     foundIDs = {}
@@ -317,10 +294,20 @@ def checkDuplicateIDs(removeDuplicates=False) -> None:
     content = ''
     duplicateIDFile = 'duplicate_IDs.txt'
 
+    if removeDuplicates:
+        createXrefFile()
+        with open('xrefs.txt', mode='r', encoding='utf-8') as fs:
+            xrefs = fs.read()
+
     for key, value in foundIDs.items():
         if value > 1:
             if removeDuplicates:
-                content += f'{key}\n'
+                id = re.sub('id="(.+)"', '\\1', key)
+                if re.search(id, xrefs):
+                    # 참조되는 ID는 삭제되지 않게 한다.
+                    content += f'```{key}\n'
+                else:
+                    content += f'{key}\n'
             else:
                 content += f'{key}: {value}\n'
 
@@ -329,7 +316,7 @@ def checkDuplicateIDs(removeDuplicates=False) -> None:
 
     if removeDuplicates:
         WordDigger(['*.xml'], pattern=duplicateIDFile, overwrite=True)
-        print('Duplicate IDs are deleted.')
+        print('Except referred ones, duplicate IDs are deleted.')
     else:
         print(f'{duplicateIDFile} which contains duplicated IDs is created.')
 
