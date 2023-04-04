@@ -271,33 +271,66 @@ def generateID(prefix='title', parts=3, length=3) -> None:
     print(f'"{ID}" is copied to the clipboard')
 
 
+# def checkDuplicateIDs(removeDuplicates=False) -> None:
+
+#     duplicateIDs = []
+
+#     for fn in glob.glob('*.xml'):
+#         with open(fn, mode='r', encoding='utf-8') as fs:
+#             content = fs.read()
+#         IDs = re.findall('id=".+?"', content)
+#         for fnx in glob.glob('*.xml'):
+#             with open(fn, mode='r', encoding='utf-8') as fs:
+#                 content = fs.read()
+#             for ID in IDs:
+#                 foundIDs = re.findall(ID, content)
+#                 if len(foundIDs) > 1:
+#                     duplicateIDs.append(ID)
+
+#     duplicateIDs = list(set(duplicateIDs))
+
+#     if removeDuplicates:
+#         for duplicateID in duplicateIDs:
+#             WordDigger(['*.xml'], aim=duplicateID, substitute='', overwrite=True)
+#         print('Duplicate IDs are deleted.')
+#     else:
+#         content = '\n'.join(duplicateIDs)
+#         duplicateIDFile = 'duplicate_IDs.txt'
+#         with open(duplicateIDFile, mode='w', encoding='utf-8') as fs:
+#             fs.write(content)
+#         print(f'{duplicateIDFile} which contains duplicated IDs is created.')
+
 def checkDuplicateIDs(removeDuplicates=False) -> None:
 
-    duplicateIDs = []
+    foundIDs = {}
 
     for fn in glob.glob('*.xml'):
         with open(fn, mode='r', encoding='utf-8') as fs:
             content = fs.read()
         IDs = re.findall('id=".+?"', content)
-        for fnx in glob.glob('*.xml'):
-            with open(fn, mode='r', encoding='utf-8') as fs:
-                content = fs.read()
-            for ID in IDs:
-                foundIDs = re.findall(ID, content)
-                if len(foundIDs) > 1:
-                    duplicateIDs.append(ID)
+        for ID in IDs:
+            if ID in foundIDs.keys():
+                foundIDs[ID] += 1
+            else:
+                foundIDs[ID] = 1
 
-    duplicateIDs = list(set(duplicateIDs))
+    content = ''
+    duplicateIDFile = 'duplicate_IDs.txt'
+
+    for key, value in foundIDs.items():
+        if value > 1:
+            if removeDuplicates:
+                content += f'{key}\n'
+            else:
+                content += f'{key}: {value}\n'
+
+    with open(duplicateIDFile, mode='w', encoding='utf-8') as fs:
+        fs.write(content)
 
     if removeDuplicates:
-        for duplicateID in duplicateIDs:
-            WordDigger(['*.xml'], aim=duplicateID, substitute='', overwrite=True)
+        WordDigger(['*.xml'], pattern=duplicateIDFile, overwrite=True)
         print('Duplicate IDs are deleted.')
     else:
-        content = '\n'.join(duplicateIDs)
-        duplicateIDFile = 'duplicate_IDs.txt'
-        with open(duplicateIDFile, mode='w', encoding='utf-8') as fs:
-            fs.write(content)
         print(f'{duplicateIDFile} which contains duplicated IDs is created.')
 
 
