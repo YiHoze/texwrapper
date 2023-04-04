@@ -311,14 +311,18 @@ def checkDuplicateIDs(removeDuplicates=False) -> None:
             else:
                 content += f'{key}: {value}\n'
 
-    with open(duplicateIDFile, mode='w', encoding='utf-8') as fs:
-        fs.write(content)
+    if len(content) > 0:
+        with open(duplicateIDFile, mode='w', encoding='utf-8') as fs:
+            fs.write(content)
 
-    if removeDuplicates:
-        WordDigger(['*.xml'], pattern=duplicateIDFile, overwrite=True)
-        print('Except referred ones, duplicate IDs are deleted.')
+        if removeDuplicates:
+            WordDigger(['*.xml'], pattern=duplicateIDFile, overwrite=True)
+            print('Except referred ones, duplicate IDs are deleted.')
+        else:
+            print(content)
+            print(f'{duplicateIDFile} which contains duplicate IDs is created.')
     else:
-        print(f'{duplicateIDFile} which contains duplicated IDs is created.')
+        print('No duplicate ID is found.')
 
 
 def makeFileList(targetFiles:list, useGlob=True) -> list:
