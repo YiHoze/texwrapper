@@ -12,13 +12,13 @@ import pyperclip
 from wordig import WordDigger
 
 
-dirCalled = os.path.dirname(__file__)
-
-
 def resetXml(fileList:list, commentsOnly=False) -> None:
     
+    dirCalled = os.path.dirname(__file__)
+
     regexFile = os.path.join(dirCalled, 'hmc_remove_comments.tsv')
     WordDigger(fileList, pattern=regexFile, overwrite=True)
+    
     if not commentsOnly:
         regexFile = os.path.join(dirCalled, 'hmc_remove_attributes.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
@@ -158,52 +158,51 @@ def StrainImage(removeUnused=False) -> None:
             os.remove(i)
         rummageImages()
 
-
-def getFileTopicTitle(uri:str) -> list:
+# URI를 file, id, subid로 분리한다.
+def getFileTagID(uri:str) -> list:
     
-    fileTopicTitle = []
+    fileTagID = []
     tmp = uri.split('#')
     tmp = [item.split('/') for item in tmp]
-    fileTopicTitle.clear()
+    fileTagID.clear()
     for j in tmp:
         for k in j:
-            fileTopicTitle.append(k)
+            fileTagID.append(k)
 
-    return fileTopicTitle
+    return fileTagID
 
-
+# 파일 안에서 상호 참조하는 파일의 이름을 구한다. 이것은 또한 ID가 고유한지 확인하기 위한 목적으로 사용된다.
 def getFile(ID:str) -> str:
     
-    for f in glob.glob('*.xml'):
-        with open(f, mode='r', encoding='utf-8') as fs:
+    for fn in glob.glob('*.xml'):
+        with open(fn, mode='r', encoding='utf-8') as fs:
             content = fs.read()
         pattern = f'"{ID}"'
         if re.search(pattern, content):
-            return f
+            return fn
     return False
 
-
-def checkFileTopicTitle(fileTopicTitle:list):
+# file, id, subid가 존재하는지 확인한다.
+def checkFileTagID(fileTagID:list):
     
-    if len(fileTopicTitle) <= 3 and fileTopicTitle[0] == '':
-        fileTopicTitle[0] = getFile(fileTopicTitle[1])
-        
+    if len(fileTagID) <= 3 and fileTagID[0] == '':
+        fileTagID[0] = getFile(fileTagID[1])
 
-    if os.path.exists(fileTopicTitle[0]):
-        if len(fileTopicTitle) <= 1: 
+    if os.path.exists(fileTagID[0]):
+        if len(fileTagID) <= 1: 
             return True
         else:
-            if fileTopicTitle[1] != '':
-                with open(fileTopicTitle[0], mode='r', encoding='utf-8') as fs:
+            if fileTagID[1] != '':
+                with open(fileTagID[0], mode='r', encoding='utf-8') as fs:
                     content=fs.read()
-                    pattern = f'"{fileTopicTitle[1]}"'
+                    pattern = f'"{fileTagID[1]}"'
                 topic = re.search(pattern, content)
                 if topic:
-                    if len(fileTopicTitle) <= 2:
+                    if len(fileTagID) <= 2:
                         return True
                     else:
-                        if fileTopicTitle[2] != '':
-                            pattern = f'"{fileTopicTitle[2]}"'
+                        if fileTagID[2] != '':
+                            pattern = f'"{fileTagID[2]}"'
                             title = re.search(pattern, content)
                             if title:
                                 return True
@@ -219,8 +218,10 @@ def checkFileTopicTitle(fileTopicTitle:list):
 
 def checkCrossReferences() -> None:
     
+    # 참고용
     WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='XML_xrefs.txt', overwrite=True)
 
+    # 모든 <xref>에서 URI를 추출하여 xrefs.txt에 저장한다.
     xrefLinesFile = 'xrefs.txt'
     WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, gather=True, output=xrefLinesFile, overwrite=True)
     WordDigger([xrefLinesFile], aim='(?<=href=").+?(?=")', gather=True, output=xrefLinesFile, overwrite=True)
@@ -232,28 +233,26 @@ def checkCrossReferences() -> None:
 
     result=[]
     for uri in xrefLines:
-        fileTopicTitle = getFileTopicTitle(uri)
-        if not checkFileTopicTitle(fileTopicTitle):
+        fileTagID = getFileTagID(uri)
+        # file, id, subid 중 하나라도 맞지 않으면 목록에 추가한다.
+        if not checkFileTagID(fileTagID):
             result.append(uri)
     
     content = '\n'.join(result)
     mismatchedXrefFile = 'mismatched_xrefs.txt'
-    if os.path.exists(mismatchedXrefFile):
-        msg = f'{mismatchedXrefFile} which contains mismatched cross-references is updated.'
-    else:
-        msg = f'{mismatchedXrefFile} which contains mismatched cross-references is created.'
     with open(mismatchedXrefFile, mode='w', encoding='utf-8') as fs:
         fs.write(content)
-    print(msg)
+    print(f'{mismatchedXrefFile} which contains mismatched cross-references is created.')
 
 
 def generateTopicID(length=11) -> None:
 
     # characters = string.ascii_letters + string.digits
     characters = string.ascii_lowercase + string.digits
-    topicID = 'id' + ''.join(random.choice(characters) for i in range(length))  
-    while getFile(topicID):
+    available = True
+    while available:
         topicID = 'id' + ''.join(random.choice(characters) for i in range(length))    
+        available = getFile(topicID)
     pyperclip.copy(topicID)
     print(f'"{topicID}" is copied to the clipboard')
 
@@ -262,14 +261,44 @@ def generateID(prefix='title', parts=3, length=3) -> None:
 
     # characters = string.ascii_letters + string.digits
     characters = string.ascii_lowercase + string.digits
-    ID = prefix
-    for i in range(parts):
-        ID = ID + '_' + ''.join(random.choice(characters) for j in range(length))
-    while getFile(ID):
+    available = True
+    while available:
+        ID = prefix
         for i in range(parts):
             ID = ID + '_' + ''.join(random.choice(characters) for j in range(length))
+        available = getFile(ID)
     pyperclip.copy(ID)
     print(f'"{ID}" is copied to the clipboard')
+
+
+def checkDuplicateIDs(removeDuplicates=False) -> None:
+
+    duplicateIDs = []
+
+    for fn in glob.glob('*.xml'):
+        with open(fn, mode='r', encoding='utf-8') as fs:
+            content = fs.read()
+        IDs = re.findall('id=".+?"', content)
+        for fnx in glob.glob('*.xml'):
+            with open(fn, mode='r', encoding='utf-8') as fs:
+                content = fs.read()
+            for ID in IDs:
+                foundIDs = re.findall(ID, content)
+                if len(foundIDs) > 1:
+                    duplicateIDs.append(ID)
+
+    duplicateIDs = list(set(duplicateIDs))
+
+    if removeDuplicates:
+        for duplicateID in duplicateIDs:
+            WordDigger(['*.xml'], aim=duplicateID, substitute='', overwrite=True)
+        print('Duplicate IDs are deleted.')
+    else:
+        content = '\n'.join(duplicateIDs)
+        duplicateIDFile = 'duplicate_IDs.txt'
+        with open(duplicateIDFile, mode='w', encoding='utf-8') as fs:
+            fs.write(content)
+        print(f'{duplicateIDFile} which contains duplicated IDs is created.')
 
 
 def makeFileList(targetFiles:list, useGlob=True) -> list:
@@ -440,7 +469,7 @@ def deleteReportFiles() -> None:
     
     reports = ['existing_images.txt', 'missing_images.txt', 'misspelled_images.txt', 'referred_images.txt', 'unreferred_images.txt',
         'existing_xmls.txt', 'missing_xmls.txt', 'misspelled_xmls.txt', 'referred_xmls.txt', 'unreferred_xmls.txt',
-        'XML_xrefs.txt', 'xrefs.txt', 'mismatched_xrefs.txt']
+        'XML_xrefs.txt', 'xrefs.txt', 'mismatched_xrefs.txt', 'duplicate_IDs.txt']
     
     for i in reports:
         if os.path.exists(i):
@@ -481,10 +510,10 @@ parser.add_argument(
     help = 'Strain image files.')
 parser.add_argument(
     '-r',
-    dest = 'removeUnusedImages',
+    dest = 'removeErrors',
     action = 'store_true',
     default = False,
-    help = 'Remove unreferred image files.')
+    help = 'Remove unreferred image files or duplicate IDs.')
 parser.add_argument(
     '-t',
     dest = 'generateID',
@@ -503,6 +532,12 @@ parser.add_argument(
     action = 'store_true',
     default = False,
     help = 'Generate an old-style topic ID.')
+parser.add_argument(
+    '-I',
+    dest = 'duplicateID',
+    action = 'store_true',
+    default = False,
+    help = 'Check if there are any identical IDs')
 parser.add_argument(
     '-e',
     dest = 'extractChanged' ,
@@ -551,7 +586,7 @@ if args.strainXml:
 elif args.checkCrossReferences:
     checkCrossReferences()
 elif args.strainImage:
-    if args.removeUnusedImages:
+    if args.removeErrors:
         StrainImage(removeUnused=True)
     else:
         StrainImage()
@@ -559,6 +594,11 @@ elif args.generateID:
     generateID(prefix=args.IDprefix)
 elif args.topicID:
     generateTopicID()
+elif args.duplicateID:
+    if args.removeErrors:
+        checkDuplicateIDs(removeDuplicates=True)
+    else:
+        checkDuplicateIDs()
 elif args.extractChanged:
     extractChanged(makeFileList(args.targetFiles))
 elif args.copy_from is not None:
