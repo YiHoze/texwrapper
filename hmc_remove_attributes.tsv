@@ -7,3 +7,5 @@ rev=".+?"	rev="1.0"
 "fm:Tab Page chapter"	"fm:Tab_Page_chapter"
 "fm:Tab Page"	"fm:Tab_Page"
 >[^<]*</xref>	 />
+ xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
+(<topic(?![^>]*\brev=)[^>]*\b)xml:lang="[^"]*"	\1
