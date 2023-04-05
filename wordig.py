@@ -96,6 +96,7 @@ class WordDigger(object):
                 patterns = f.readlines()
 
             for p in patterns:
+                p = re.sub('\t.*$', '', p)
                 p = p.rstrip()
                 if p not in self.found_count.keys():
                     self.found_count[p] = 0
