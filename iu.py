@@ -140,7 +140,7 @@ class ImageUtility(object):
         }
 
         self.vectors = ('.ai', '.eps', '.pdf', '.svg')
-        self.bitmaps = ('.bmp', '.cr2', '.gif', '.jfif', '.jpg', '.jpeg', '.pbm', '.png', '.ppm', '.tga', '.tiff', '.webp')
+        self.bitmaps = ('.bmp', '.cr2', '.gif', '.jfif', '.jpg', '.jpeg', '.pbm', '.png', '.ppm', '.tga', '.tif', '.tiff', '.webp')
 
         self.cnt = 0
         self.convert_bool = False
