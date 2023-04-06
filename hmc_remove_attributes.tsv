@@ -1,8 +1,5 @@
-<\!-- Begin Document Specific Declarations -->
-<\?Fm Validation Off\?>
-<\!-- End Document Specific Declarations -->
-\sstatus="changed"
-\sstatus="new"
+\bstatus="changed"
+\bstatus="new"
 rev=".+?"	rev="1.0"
 "fm:Tab Page chapter"	"fm:Tab_Page_chapter"
 "fm:Tab Page"	"fm:Tab_Page"

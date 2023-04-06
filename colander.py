@@ -12,14 +12,15 @@ import pyperclip
 from wordig import WordDigger
 
 
-def resetXml(fileList:list, commentsOnly=False) -> None:
+def resetXml(fileList:list, flag:str) -> None:
     
     dirCalled = os.path.dirname(__file__)
 
-    regexFile = os.path.join(dirCalled, 'hmc_remove_comments.tsv')
-    WordDigger(fileList, pattern=regexFile, overwrite=True)
-    
-    if not commentsOnly:
+    if flag == '0' or flag== '2':
+        regexFile = os.path.join(dirCalled, 'hmc_remove_comments.tsv')
+        WordDigger(fileList, pattern=regexFile, overwrite=True)
+
+    if flag == '1' or flag== '2':
         regexFile = os.path.join(dirCalled, 'hmc_remove_attributes.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
         removeDeletedLines(fileList=fileList)
@@ -360,7 +361,7 @@ def findStatusAttribute(fileName:str) -> dict:
     with open(fileName, mode='r', encoding='utf-8') as fs:
         content = fs.readlines()
     for num, line in enumerate(content):
-        matched = re.search('status="changed|new"', line)
+        matched = re.search('\bstatus="changed|new"', line)
         if matched:
             foundLines[num] = line.strip()
 
@@ -472,7 +473,7 @@ def extractChanged(fileList:list) -> None:
     content = '\n'.join(extractedLines)
     with open('extracted_status_lines.txt', mode='w', encoding='utf-8') as fs:
         fs.write(content)
-    resetXml(['extracted_status_lines.txt'], commentsOnly=True)
+    resetXml(['extracted_status_lines.txt'], flag='0')
     
     shutil.copy('extracted_status_lines.txt', 'extracted_for_translation.txt')
     resetXml(['extracted_for_translation.txt'])
@@ -512,7 +513,7 @@ parser.add_argument(
     dest = 'aslist',
     action = 'store_true',
     default = False,
-    help = 'Given files are regarded as lists of files.'
+    help = 'Given files are regarded as lists of target files.'
     )
 parser.add_argument(
     '-x',
@@ -579,7 +580,12 @@ parser.add_argument(
     dest = 'reset',
     action = 'store_true',
     default = False,
-    help = 'Reset xml files by unnecessary comments and attributes.')
+    help = 'Reset xml files by deleting unnecessary comments or attributes.')
+parser.add_argument(
+    '-f',
+    dest = 'flag',
+    default = '2',
+    help = '0: comments, 1: attributes, 2: both')
 parser.add_argument(
     '-c',
     dest = 'copy_from',
@@ -635,6 +641,6 @@ elif args.deleteReports:
     deleteReportFiles()    
 elif args.reset or args.format:
     if args.reset:
-        resetXml(makeFileList(args.targetFiles))
+        resetXml(makeFileList(args.targetFiles), flag=args.flag)
     if args.format:
         formatXml(makeFileList(args.targetFiles))
