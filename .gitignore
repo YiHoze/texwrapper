@@ -8,6 +8,7 @@ dist/
 misc/
 private/
 pythontex*/
+build-wordig.ps1
 *.aux
 *.cmd
 *.csv
@@ -18,7 +19,6 @@ pythontex*/
 *.lof
 *.log
 *.pytxcode
-*.ps1
 *.spec
 *.toc
 *.vrb
