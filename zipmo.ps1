@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param (
-    [alias('b')][string] $fiducial, # 2023-04-06T16:20:00
+    [alias('f')][string] $fiducial, # 2023-04-06T16:20:00
     [alias('p')][string] $filePattern = '*.*',
     [alias('o')][string] $output
 )
