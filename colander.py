@@ -53,7 +53,7 @@ def StrainXML() -> None:
         sys.exit()
     
     # ditamap 파일에서 참조되는 xml 파일들의 목록 만들기
-    referredXmlFile = 'referred_xmls.txt'
+    referredXmlFile = 'xmls_referred.txt'
     WordDigger(['*.ditamap'], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile, overwrite=True)
     # xml 아닌 것 삭제하기
     WordDigger([referredXmlFile], aim='^.+?\.css$\n', substitute='', overwrite=True)
@@ -67,7 +67,7 @@ def StrainXML() -> None:
     for f in glob.glob('*.xml'):
         existingXml.append(f)
     existingXml = (sorted(existingXml, key=str.lower))
-    writeList('existing_xmls.txt', existingXml)
+    writeList('xmls_existing.txt', existingXml)
 
     # 존재하는 xml 파일들 중에서 참조되지 않는 xml 파일들 가려내기
     referredXmlLower = list(map(str.lower, referredXml))
@@ -78,7 +78,7 @@ def StrainXML() -> None:
             agreedXml.append(i)
         else:
             unreferredXml.append(i)
-    writeList('unreferred_xmls.txt', unreferredXml)
+    writeList('xmls_unreferred.txt', unreferredXml)
 
     # 참조되지만 존재하지 않는 xml 파일들 가려내기
     agreedXmlLower = list(map(str.lower, agreedXml))
@@ -89,8 +89,8 @@ def StrainXML() -> None:
             missingXml.append(i)
         if not i in agreedXml:
             misspelledXml.append(i)
-    writeList('missing_xmls.txt', missingXml)
-    writeList('misspelled_xmls.txt', misspelledXml)
+    writeList('xmls_missing.txt', missingXml)
+    writeList('xmls_misspelled.txt', misspelledXml)
 
     output = '''\nReferred XMLs: {}
 Existing XMLs: {}
@@ -103,7 +103,7 @@ Misspelled XMLs: {}\n'''.format(len(referredXml), len(existingXml), len(unreferr
 def rummageImages() -> None:
 
     # xml 파일에서 참조되는 이미지들의 목록 만들기
-    referredImageFile = 'referred_images.txt'
+    referredImageFile = 'images_referred.txt'
     WordDigger(['*.xml'], aim='(?<=href="image/).+?(?=")', gather=True, output=referredImageFile, overwrite=True)
     with open(referredImageFile, mode='r', encoding='utf-8') as fs:
         content = fs.read()
@@ -116,7 +116,7 @@ def rummageImages() -> None:
     for f in glob.glob('image/*.eps'):
         existingImage.append(os.path.basename(f))
     existingImage = (sorted(existingImage, key=str.lower))
-    writeList('existing_images.txt', existingImage)
+    writeList('images_existing.txt', existingImage)
 
     # 존재하는 이미지들 중에서 참조되지 않는 이미지들 가려내기
     referredImageLower = list(map(str.lower, referredImage))
@@ -127,7 +127,7 @@ def rummageImages() -> None:
             agreedImage.append(i)
         else:        
             unreferredImage.append(i)
-    writeList('unreferred_images.txt', unreferredImage)
+    writeList('images_unreferred.txt', unreferredImage)
 
     # 참조되지만 존재하지 않는 이미지들 가려내기
     agreedImageLower = list(map(str.lower, agreedImage))
@@ -138,8 +138,8 @@ def rummageImages() -> None:
             missingImage.append(i)
         if not i in agreedImage:
             misspelledImage.append(i)
-    writeList('missing_images.txt', missingImage)
-    writeList('misspelled_images.txt', misspelledImage)
+    writeList('images_missing.txt', missingImage)
+    writeList('images_misspelled.txt', misspelledImage)
 
     output = '''\nReferred images: {}
 Existing images: {}
@@ -228,7 +228,7 @@ def createXrefFile(xrefLinesFile='xrefs.txt') -> None:
 def checkCrossReferences() -> None:
     
     # 참고용
-    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='XML_xrefs.txt', overwrite=True)
+    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='xrefs_xml.txt', overwrite=True)
 
     # 모든 <xref>에서 URI를 추출하여 xrefs.txt에 저장한다.
     createXrefFile() 
@@ -246,7 +246,7 @@ def checkCrossReferences() -> None:
     if len(result) > 0:
         content = '\n'.join(result)
         print(content)
-        mismatchedXrefFile = 'mismatched_xrefs.txt'
+        mismatchedXrefFile = 'xrefs_mismatched.txt'
         with open(mismatchedXrefFile, mode='w', encoding='utf-8') as fs:
             fs.write(content)
         print(f'{mismatchedXrefFile} which contains mismatched cross-references is created.')
@@ -516,15 +516,13 @@ def makePreviewHTML(fileList:list) -> None:
         opener.open_web([htmlFile])
 
 
-def deleteReportFiles() -> None:
+def deleteDerivativeFiles() -> None:
     
-    reports = ['existing_images.txt', 'missing_images.txt', 'misspelled_images.txt', 'referred_images.txt', 'unreferred_images.txt',
-        'existing_xmls.txt', 'missing_xmls.txt', 'misspelled_xmls.txt', 'referred_xmls.txt', 'unreferred_xmls.txt',
-        'XML_xrefs.txt', 'xrefs.txt', 'mismatched_xrefs.txt', 'duplicate_IDs.txt']
+    derivatives = ['images*.txt', 'xmls*.txt', 'xrefs*.txt', 'duplicate*.txt', '*.html']
     
-    for i in reports:
-        if os.path.exists(i):
-            os.remove(i)
+    for i in derivatives:
+        for fn in glob.glob(i):
+            os.remove(fn)
 
 
 # main ########################################################
@@ -637,10 +635,10 @@ parser.add_argument(
     help = 'Make HTML for preview.')
 parser.add_argument(
     '-d',
-    dest = 'deleteReports',
+    dest = 'deleteDerivative',
     action = 'store_true',
     default = False,
-    help = 'Delete report files.')
+    help = 'Delete derivative files.')
 args = parser.parse_args()
 
 if args.preview_html:
@@ -671,8 +669,8 @@ elif args.insert_css:
     insertCSS(makeFileList(args.targetFiles))
 elif args.remove_css:
     removeCSS(makeFileList(args.targetFiles))
-elif args.deleteReports:
-    deleteReportFiles()    
+elif args.deleteDerivative:
+    deleteDerivativeFiles()    
 elif args.reset or args.format:
     if args.reset:
         resetXml(makeFileList(args.targetFiles), flag=args.flag)
