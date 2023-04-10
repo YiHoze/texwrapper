@@ -1,12 +1,13 @@
 body {
+    width: 55em;
     margin-left: 2em;
 }
 
-h1 { font-size: 2.0em;}
-h2 { font-size: 1.75em;}
-h3 { font-size: 1.5em;}
-h4 { font-size: 1.25em;}
-h5 { font-size: 1em;}
+h1 { font-size: 2.0em;                     margin-bottom:1.0em; color: black;} 
+h2 { font-size: 1.75em; margin-top:1.75em; margin-bottom:1.0em; color: darkgray;}
+h3 { font-size: 1.5em;  margin-top:1.5em;  margin-bottom:1.0em; color: darkblue;}
+h4 { font-size: 1.25em; margin-top:1.25em; margin-bottom:1.0em; color: darkgreen;}
+h5 { font-size: 1em;    margin-top:1.0em;  margin-bottom:1.0em; color: black;}
 
 h1::after { content: " H1"; font-size: x-small; color: purple;}
 h2::after { content: " H2"; font-size: x-small; color: purple;}
@@ -117,6 +118,11 @@ ol, ul, sl, steps {
 	counter-reset:none;
 }
 
+li {
+    margin-top: 0pt;
+    margin-bottom: 0pt;
+}
+
 steps > step { 
 	display:list-item;
 	list-style-type:decimal;
@@ -125,12 +131,18 @@ steps > step {
 
 ol > li { 
 	display:list-item;
-    list-style-type:decimal;
+    list-style-type:decimal;    
 }
 
 ul > li { 
 	display:list-item;
 	list-style-type: disc;
+    padding-bottom: -1em;
+}
+
+ul > li > ul > li { 
+	display:list-item;
+	list-style-type: "– ";
 }
 
 sl > sli { 
