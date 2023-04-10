@@ -159,14 +159,29 @@
         </a>
     </xsl:template>
 
-    <xsl:template match="image">
-        <img>
-            <!-- <xsl:apply-templates select="@*|node()" /> -->
+    <xsl:template match="image[@placement='inline']">
+        <img height='24px'>
             <xsl:attribute name="src">
                 <xsl:value-of select="@href" />
             </xsl:attribute>
         </img>
     </xsl:template>
+
+    <xsl:template match="image[@placement='break']">
+        <img max-width='800px'>
+            <xsl:attribute name="src">
+                <xsl:value-of select="@href" />
+            </xsl:attribute>
+        </img>
+    </xsl:template>
+
+    <!-- <xsl:template match="image">
+        <img width='90%'>
+            <xsl:attribute name="src">
+                <xsl:value-of select="@href" />
+            </xsl:attribute>
+        </img>
+    </xsl:template> -->
 
     <xsl:template match="@*|node()">
         <xsl:copy>

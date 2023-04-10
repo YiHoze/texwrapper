@@ -182,12 +182,6 @@ entry {
 	padding: 3px;
 }
 
-/* table > tgroup > tbody > row > entry > p > image {
-	margin-left: 20px;
-	margin-right: 100px;
-	padding-right: 1000px;
-} */
-
 /* character */
 
 b { font-weight: bolder; }
