@@ -4,6 +4,7 @@ import argparse
 import configparser
 import subprocess
 import pyperclip
+import pywinauto
 
 
 class FileOpener(object):
@@ -137,16 +138,12 @@ class FileOpener(object):
 
     def open_default(self, file) -> None:
 
-        # cmd = 'start \"\" \"{}\"'.format(file)
-        # os.system(cmd)
         os.startfile(file)
 
 
     def open_app(self, file, **options) -> None:
 
         self.reconfigure(options)
-        # cmd = '\"{}\" {} \"{}\"'.format(self.options['app'], self.options['app_option'], file)
-        # subprocess.Popen(cmd, stdout=subprocess.PIPE)
         subprocess.Popen([self.options['app'], self.options['app_option'], file], stdout=subprocess.PIPE)
 
 
@@ -155,8 +152,6 @@ class FileOpener(object):
         self.reconfigure(options)
 
         if self.editor:
-            # cmd = '\"{}\" {} \"{}\"'.format(self.editor, self.options['app_option'], file)
-            # subprocess.Popen(cmd, stdout=subprocess.PIPE)
             subprocess.Popen([self.editor, self.options['app_option'], file], stdout=subprocess.PIPE)
         else:
             self.open_default(file)
@@ -167,12 +162,8 @@ class FileOpener(object):
         self.reconfigure(options)
 
         if self.options['adobe']:
-            # cmd = '\"{}\" /n \"{}\"'.format(self.AdobeReader, file)
-            # subprocess.Popen(cmd, stdout=subprocess.PIPE)
             subprocess.Popen([self.AdobeReader, file], stdout=subprocess.PIPE)
         elif self.pdf_viewer:
-            # cmd = '\"{}\" \"{}\"'.format(self.pdf_viewer, file)
-            # subprocess.Popen(cmd, stdout=subprocess.PIPE)
             subprocess.Popen([self.pdf_viewer, file], stdout=subprocess.PIPE)
         else:
             self.open_default(file)
@@ -204,8 +195,6 @@ class FileOpener(object):
         target_files = glob.glob(file)
         for file in target_files:
             if os.path.isfile(file):
-                # cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, os.path.abspath(file))
-                # subprocess.Popen(cmd)
                 subprocess.Popen([self.WebBrowser, os.path.abspath(file)])
 
 
@@ -221,8 +210,6 @@ class FileOpener(object):
                 if self.options['as_web']:
                     self.open_with_browser(url)
                 else:
-                    # cmd = '\"{}\" \"{}\"'.format(self.WebBrowser, url)
-                    # subprocess.Popen(cmd)
                     subprocess.Popen([self.WebBrowser, url])
         else:
             for url in urls:

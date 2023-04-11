@@ -64,14 +64,13 @@
     </xsl:template> -->
     
     <xsl:template match="sl">
-        <ul>
-            <xsl:attribute name="class" select="'nobullet'" />
+        <ol>
             <xsl:for-each select="sli">
                 <li>
                     <xsl:apply-templates select="@*|node()" />
                 </li>
             </xsl:for-each>
-        </ul>
+        </ol>
     </xsl:template>
 
 
@@ -168,9 +167,12 @@
     </xsl:template>
 
     <xsl:template match="image[@placement='break']">
-        <img max-width='800px'>
+        <img width='80%'>
             <xsl:attribute name="src">
                 <xsl:value-of select="@href" />
+            </xsl:attribute>
+            <xsl:attribute name="max-width">
+                '800px'
             </xsl:attribute>
         </img>
     </xsl:template>
