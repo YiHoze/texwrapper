@@ -166,13 +166,11 @@
         </img>
     </xsl:template>
 
-    <xsl:template match="image[@placement='break']">
+    <!-- <xsl:template match="image[@placement='break']"> -->
+    <xsl:template match="image">
         <img width='80%'>
             <xsl:attribute name="src">
                 <xsl:value-of select="@href" />
-            </xsl:attribute>
-            <xsl:attribute name="max-width">
-                '800px'
             </xsl:attribute>
         </img>
     </xsl:template>

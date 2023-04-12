@@ -18,11 +18,13 @@ def resetXml(fileList:list, flag:str) -> None:
     
     dirCalled = os.path.dirname(__file__)
 
-    if flag == '0' or flag== '2':
+    flag = int(flag)
+
+    if flag == 0 or flag == 2:
         regexFile = os.path.join(dirCalled, 'hmc_remove_comments.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
 
-    if flag == '1' or flag== '2':
+    if flag == 1 or flag == 2:
         regexFile = os.path.join(dirCalled, 'hmc_remove_attributes.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
         removeDeletedLines(fileList=fileList)
@@ -665,14 +667,14 @@ elif args.extractChanged:
     extractChanged(makeFileList(args.targetFiles))
 elif args.copy_from is not None:
     copyFrom(makeFileList(args.targetFiles, useGlob=False), sourceFolder=args.copy_from)
-elif args.insert_css:
-    insertCSS(makeFileList(args.targetFiles))
-elif args.remove_css:
-    removeCSS(makeFileList(args.targetFiles))
 elif args.deleteDerivative:
     deleteDerivativeFiles()    
-elif args.reset or args.format:
+elif args.reset or args.format or args.insert_css or args.remove_css:
     if args.reset:
         resetXml(makeFileList(args.targetFiles), flag=args.flag)
     if args.format:
         formatXml(makeFileList(args.targetFiles))
+    if args.insert_css:
+        insertCSS(makeFileList(args.targetFiles))
+    if args.remove_css:
+        removeCSS(makeFileList(args.targetFiles))
