@@ -507,7 +507,7 @@ def xsltDITAOT(fileList:list) -> None:
     opener = FileOpener(as_web=True)
 
     for fn in fileList:
-        cmd = f'dita.bat  --input=="{fn}" --format=html5 --output=_html --repeat=1'
+        cmd = f'dita.bat  --input="{fn}" --format=html5 --output=_html --repeat=1'
         subprocess.call(cmd)
         htmlFile = os.path.splitext(os.path.basename(fn))[0] + '.html'
         htmlFile = os.path.join(currDir, '_html', htmlFile)
