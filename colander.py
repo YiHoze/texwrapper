@@ -1,4 +1,7 @@
 # xml 파일들이 있는 폴더에서 실행한다.
+# 처음에:   C:\>colander.py -R -F -s
+# 마지막에: C:\>colander.py -R -f=0 -S
+
 
 import os
 import sys
@@ -9,6 +12,8 @@ import random
 import string
 import shutil
 import pyperclip
+import subprocess
+import time
 from lxml import etree
 from wordig import WordDigger
 from op import FileOpener
@@ -494,8 +499,23 @@ def removeCSS(fileList:list) -> None:
     WordDigger(fileList, aim='<\\?xml-stylesheet.+\\?>\\n{1,2}', substitute='', overwrite=True)
 
 
-def makePreviewHTML(fileList:list) -> None:
-    
+def xsltDITAOT(fileList:list) -> None:    
+
+    currDir = os.path.dirname(os.path.abspath(fileList[0]))
+    os.chdir(currDir)
+
+    opener = FileOpener(as_web=True)
+
+    for fn in fileList:
+        cmd = f'dita.bat  --input=="{fn}" --format=html5 --output=_html --repeat=1'
+        subprocess.call(cmd)
+        htmlFile = os.path.splitext(os.path.basename(fn))[0] + '.html'
+        htmlFile = os.path.join(currDir, '_html', htmlFile)
+        opener.open_web([htmlFile])
+
+
+def xsltColander(fileList:list) -> None:
+
     dirCalled = os.path.dirname(__file__)
     xslFile = os.path.join(dirCalled, 'colander.xsl')
     xslt = etree.parse(xslFile)
@@ -505,14 +525,14 @@ def makePreviewHTML(fileList:list) -> None:
     os.chdir(os.path.dirname(os.path.abspath(fileList[0])))
     if not os.path.exists('../preview.css'):
         shutil.copy(cssFile, '..')
+
     opener = FileOpener(as_web=True)
 
     for fn in fileList:
-        fileName = os.path.splitext(os.path.basename(fn))[0]
         xml = etree.parse(fn)
         html = xslt_transformer(xml)
         html = etree.tostring(html, pretty_print=True, encoding='utf-8')
-        htmlFile = fileName + '.html'
+        htmlFile = os.path.splitext(os.path.basename(fn))[0] + '.html'
         with open(htmlFile, mode='wb') as fs:
             fs.write(html)
         opener.open_web([htmlFile])
@@ -636,6 +656,12 @@ parser.add_argument(
     default = False,
     help = 'Make HTML for preview.')
 parser.add_argument(
+    '-D',
+    dest = 'DITAOT',
+    action = 'store_true',
+    default = False,
+    help = 'Make HTML for preview using DITA-OT.')
+parser.add_argument(
     '-d',
     dest = 'deleteDerivative',
     action = 'store_true',
@@ -644,7 +670,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 if args.preview_html:
-    makePreviewHTML(makeFileList(args.targetFiles))    
+    xsltColander(makeFileList(args.targetFiles))
+elif args.DITAOT:
+    xsltDITAOT(makeFileList(args.targetFiles))
 elif args.strainXml:
     StrainXML()
 elif args.checkCrossReferences:
