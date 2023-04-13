@@ -3,7 +3,7 @@ import argparse
 import csv
 import fitz # pip install pymupdf
 import glob
-import itertools
+# import itertools
 import openpyxl
 import os
 import re

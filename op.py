@@ -4,7 +4,6 @@ import argparse
 import configparser
 import subprocess
 import pyperclip
-import pywinauto
 
 
 class FileOpener(object):
