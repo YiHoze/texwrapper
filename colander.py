@@ -250,15 +250,17 @@ def checkCrossReferences() -> None:
         if not checkFileTagID(fileTagID):
             result.append(uri)
     
+    mismatchedXrefFile = 'xrefs_mismatched.txt'
     if len(result) > 0:
         content = '\n'.join(result)
         print(content)
-        mismatchedXrefFile = 'xrefs_mismatched.txt'
         with open(mismatchedXrefFile, mode='w', encoding='utf-8') as fs:
             fs.write(content)
         print(f'{mismatchedXrefFile} which contains mismatched cross-references is created.')
     else:
         print('No mismatched cross-reference is found.')
+        if os.path.exists(mismatchedXrefFile):
+            os.remove(mismatchedXrefFile)
 
 
 def generateTopicID(length=11) -> None:
@@ -333,6 +335,8 @@ def checkDuplicateIDs(removeDuplicates=False) -> None:
             print(f'{duplicateIDFile} which contains duplicate IDs is created.')
     else:
         print('No duplicate ID is found.')
+        if os.path.exists(duplicateIDFile):
+            os.remove(duplicateIDFile)
 
 
 def makeFileList(targetFiles:list, useGlob=True) -> list:
