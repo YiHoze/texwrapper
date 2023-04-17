@@ -245,7 +245,10 @@ class ImageUtility(object):
 
         cmd = '"{}" identify -verbose "{}"'.format(self.Magick, img)
         result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        result = result.decode(encoding='utf-8')
+        try:
+            result = result.decode(encoding='utf-8')
+        except:
+            result = result.decode(encoding='latin_1')
         result = result.split('\r\n')
         print('\n{}'.format(img))
         for n in range(5):
