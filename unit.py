@@ -16,6 +16,7 @@ class ConvertUnit(object):
 
         self.units = {
             'acre': ['acres', 'm²', 4046.86],
+            'cubic foot': ['cubic feet', 'liters', 28.3168],
             'degree': ['°', '%', 'self.gradient'],
             'fahrenheit': ['F°', 'C°', 'self.temperature'],
             'feet': ['feet', 'm', 0.3048],
