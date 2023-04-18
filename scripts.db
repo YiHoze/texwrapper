@@ -1,16 +1,22 @@
 [gencode]
-description = [Python] Generate barcodes or QR codes in PNG.
+description = [Python] Generate barcodes or QR codes in PNG. The last check digit of barcode will be automatically corrected if it is wrong.
 code_output = gencode.py
 code = ```
 	```# pip python-barcode
 	```# pip install qrcode[pil]
-	```
-	```import os, argparse
-	```import barcode, qrcode, qrcode.image.svg, codecs, re, webbrowser
-	```from pyzbar.pyzbar import decode
-	```from PIL import Image
-	```from barcode.writer import ImageWriter
+	```import os
+	```import argparse
+	```import re
+	```import webbrowser
+	```import barcode
+	```import qrcode
+	```import qrcode.image.svg as qrSVG
 	```from barcode import generate
+	```from barcode.writer import ImageWriter
+	```from PIL import Image
+	```from pyzbar.pyzbar import decode as qrDecode
+	```from pylibdmtx.pylibdmtx import decode as dmDecode
+	```from pylibdmtx.pylibdmtx import encode as dmEncode
 	```
 	```
 	```class GenerateCode(object):
@@ -19,6 +25,7 @@ code = ```
 	```
 	```        self.options = {
 	```            'qrcode': False,
+	```            'datamatrix': False,
 	```            'output': None,
 	```            'svg': False,
 	```            'decode': False,
@@ -29,10 +36,15 @@ code = ```
 	```
 	```        if codes is not None:
 	```            if self.options['decode']:
-	```                self.decode_qrcode(codes)
+	```                if self.options['datamatrix']:
+	```                    self.decode_datamatrix(codes)
+	```                else:
+	```                    self.decode_qrcode(codes)
 	```            else:
 	```                if self.options['qrcode']:
 	```                    self.encode_qrcode(codes)
+	```                elif self.options['datamatrix']:
+	```                    self.encode_datamatrix(codes)
 	```                else:
 	```                    self.encode_barcode(codes)
 	```
@@ -95,10 +107,31 @@ code = ```
 	```            img.save(png)
 	```            qr.clear()
 	```            if self.options['svg']:
-	```                factory = qrcode.image.svg.SvgPathImage
+	```                factory = qrSVG.SvgPathImage
 	```                img = qrcode.make(code, image_factory=factory)
 	```                svg = filename + '.svg'
 	```                img.save(svg)
+	```            counter +=1
+	```
+	```
+	```    def encode_datamatrix(self, codes, **options) -> None:
+	```
+	```        if len(options) > 0:
+	```            self.reconfigure(options)
+	```
+	```        if self.options['output'] is None:
+	```            self.options['output'] = 'datamatrix'
+	```        counter = 1
+	```
+	```        for code in codes:
+	```            filename = self.name_file(len(codes), counter)
+	```            encoded = dmEncode(code.encode('utf-8'))
+	```            img = Image.frombytes('RGB', (encoded.width, encoded.height), encoded.pixels)
+	```            png = filename + '.png'
+	```            img.save(png)
+	```            # if self.options['svg']:
+	```            #     svg = filename + '.svg'
+	```            #     img.save(svg)
 	```            counter +=1
 	```
 	```
@@ -112,7 +145,29 @@ code = ```
 	```            if not os.path.exists(img):
 	```                print('{} does not exist.'.format(img))
 	```                return
-	```            data = decode(Image.open(img))[0][0]
+	```            data = qrDecode(Image.open(img))[0][0]
+	```            data = data.decode('utf-8')
+	```            link = data.replace('\\:', ':')
+	```            link = link.replace(';', '')
+	```            result = re.search('http.*', link)
+	```            if result is not None:
+	```                uri = result.group()
+	```                print(uri)
+	```                webbrowser.open_new_tab(uri)
+	```            else:
+	```                print(data)
+	```
+	```
+	```    def decode_datamatrix(self, images, **options) -> None:
+	```
+	```        if len(options) > 0:
+	```            self.reconfigure(options)
+	```
+	```        for img in images:
+	```            if not os.path.exists(img):
+	```                print('{} does not exist.'.format(img))
+	```                return
+	```            data = dmDecode(Image.open(img))[0][0]
 	```            data = data.decode('utf-8')
 	```            link = data.replace('\\:', ':')
 	```            link = link.replace(';', '')
@@ -159,6 +214,13 @@ code = ```
 	```        help = 'Create QR codes.'
 	```    )
 	```    parser.add_argument(
+	```        '-m',
+	```        dest = 'datamatrix',
+	```        action = 'store_true',
+	```        default = False,
+	```        help = 'Create data matrix codes.'
+	```    )
+	```    parser.add_argument(
 	```        '-o',
 	```        dest = 'output',
 	```        default = None,
@@ -192,6 +254,7 @@ code = ```
 	```    gencode = GenerateCode(
 	```        codes = args.codes,
 	```        qrcode = args.qrcode,
+	```        datamatrix = args.datamatrix,
 	```        output = args.output,
 	```        svg = args.svg,
 	```        decode = args.decode,
