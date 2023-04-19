@@ -70,6 +70,8 @@ class FileOpener(object):
                 self.open_txt(file)
             elif filetype ==  'pdf':
                 self.open_pdf(file)
+            elif self.options['web'] or self.options['as_web']:
+                self.open_with_browser(file)
             else:
                 self.open_default(file)
 
@@ -191,10 +193,8 @@ class FileOpener(object):
 
     def open_with_browser(self, file) -> None:
 
-        target_files = glob.glob(file)
-        for file in target_files:
-            if os.path.isfile(file):
-                subprocess.Popen([self.WebBrowser, os.path.abspath(file)])
+        if os.path.isfile(file):
+            subprocess.Popen([self.WebBrowser, os.path.abspath(file)])
 
 
     def open_web(self, urls, **options) -> None:
@@ -206,10 +206,7 @@ class FileOpener(object):
                 self.open_app(url)
         elif self.WebBrowser:
             for url in urls:
-                if self.options['as_web']:
-                    self.open_with_browser(url)
-                else:
-                    subprocess.Popen([self.WebBrowser, url])
+                subprocess.Popen([self.WebBrowser, url])
         else:
             for url in urls:
                 self.open_default(url)
@@ -221,7 +218,7 @@ class FileOpener(object):
 
         if self.options['texlive']:
             self.search_tex_live(files)
-        elif self.options['web'] or self.options['as_web']:
+        elif self.options['web']:
             self.open_web(files)
         else:
             self.open_here(files)
