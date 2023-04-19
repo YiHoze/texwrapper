@@ -12,7 +12,6 @@ import random
 import string
 import shutil
 import pyperclip
-import time
 from lxml import etree
 from wordig import WordDigger
 from op import FileOpener
