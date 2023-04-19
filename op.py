@@ -74,7 +74,7 @@ class FileOpener(object):
                 self.open_default(file)
 
 
-    def open_selected(self, files) -> None:
+    def open_selected(self, files:list) -> None:
 
         if len(files) == 1:
             print(files[0])
@@ -86,8 +86,8 @@ class FileOpener(object):
             try:
                 selection = int(selection)
             except:
-                # print('Wrong selection.')
                 return
+            
             if selection == 0:
                 for file in files:
                     self.open_by_type(file)
@@ -131,7 +131,7 @@ class FileOpener(object):
                     found_files = []
                     for file in filelist:
                         if filename.lower() in file.lower():
-                            found_files.append(file)
+                            found_files.append(os.path.join(dir, file))
                     self.open_selected(found_files)
 
 
