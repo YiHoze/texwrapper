@@ -4,6 +4,7 @@ import argparse
 import configparser
 import subprocess
 import pyperclip
+import win32clipboard
 
 
 class FileOpener(object):
@@ -213,6 +214,11 @@ class FileOpener(object):
 
 
     def open(self, files, **options) -> None:
+        
+        if len(files) == 0:
+            win32clipboard.OpenClipboard()
+            files = [win32clipboard.GetClipboardData()]
+            win32clipboard.CloseClipboard()
 
         self.reconfigure(options)
 
@@ -231,7 +237,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         'files',
-        nargs = '+',
+        nargs = '*',
         help = 'Specify files to open.'
     )
     parser.add_argument(
