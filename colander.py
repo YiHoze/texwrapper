@@ -12,7 +12,6 @@ import random
 import string
 import shutil
 import pyperclip
-import subprocess
 import time
 from lxml import etree
 from wordig import WordDigger
@@ -512,10 +511,10 @@ def xsltDITAOT(fileList:list) -> None:
 
     for fn in fileList:
         cmd = f'dita.bat  --input="{fn}" --format=html5 --output=_html --repeat=1'
-        subprocess.call(cmd)
+        os.system(cmd)
         htmlFile = os.path.splitext(os.path.basename(fn))[0] + '.html'
         htmlFile = os.path.join(currDir, '_html', htmlFile)
-        opener.open_web([htmlFile])
+        opener.open_with_browser(htmlFile)
 
 
 def xsltColander(fileList:list) -> None:
@@ -539,7 +538,7 @@ def xsltColander(fileList:list) -> None:
         htmlFile = os.path.splitext(os.path.basename(fn))[0] + '.html'
         with open(htmlFile, mode='wb') as fs:
             fs.write(html)
-        opener.open_web([htmlFile])
+        opener.open_with_browser(htmlFile)
 
 
 def deleteDerivativeFiles() -> None:
