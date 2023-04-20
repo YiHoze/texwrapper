@@ -121,7 +121,7 @@ C:\>code.cmd --install-extension yutengjing.open-in-external-app
                 { 
                     "title": "DITA-OT by Colander",
                     "openCommand": "colander.py",
-                    "args": ["-D"]
+                    "args": ["-D", "-V"]
                 }
             ]
         },
@@ -140,7 +140,7 @@ C:\>code.cmd --install-extension yutengjing.open-in-external-app
                 { 
                     "title": "DITA-OT by Colander",
                     "openCommand": "colander.py",
-                    "args": ["-D"]
+                    "args": ["-D", "-V"]
                 }
             ]
         }

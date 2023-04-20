@@ -15,6 +15,7 @@ import subprocess
 from lxml import etree
 from wordig import WordDigger
 from op import FileOpener
+import time
 
 
 def resetXml(fileList:list, flag:str) -> None:
@@ -501,7 +502,7 @@ def removeCSS(fileList:list) -> None:
     WordDigger(fileList, aim='<\\?xml-stylesheet.+\\?>\\n{1,2}', substitute='', overwrite=True)
 
 
-def xsltDITAOT(fileList:list) -> None:    
+def xsltDITAOT(fileList:list, VSCode:bool) -> None:    
 
     currDir = os.path.dirname(os.path.abspath(fileList[0]))
     os.chdir(currDir)
@@ -509,8 +510,14 @@ def xsltDITAOT(fileList:list) -> None:
     opener = FileOpener(as_web=True)
 
     for fn in fileList:
-        subprocess.run(f'dita.bat  --input="{fn}" --format=html5 --output=_html --repeat=1')
-        htmlFile = os.path.splitext(os.path.basename(fn))[0] + '.html'
+        filename = os.path.basename(fn)
+        ditacmd = f'dita.bat  --input="{filename}" --format=html5 --output=_html --repeat=1'
+        shellcmd = ['powershell.exe', '-Command', ditacmd]
+        if VSCode:
+            subprocess.run(shellcmd, check=False)
+        else:
+            subprocess.run(ditacmd, check=False)
+        htmlFile = os.path.splitext(filename)[0] + '.html'
         htmlFile = os.path.join(currDir, '_html', htmlFile)
         opener.open_with_browser(htmlFile)
 
@@ -663,6 +670,12 @@ parser.add_argument(
     default = False,
     help = 'Make HTML for preview using DITA-OT.')
 parser.add_argument(
+    '-V',
+    dest = 'VSCode',
+    action = 'store_true',
+    default = False,
+    help = 'Do not use this option.')
+parser.add_argument(
     '-d',
     dest = 'deleteDerivative',
     action = 'store_true',
@@ -673,7 +686,7 @@ args = parser.parse_args()
 if args.preview_html:
     xsltColander(makeFileList(args.targetFiles))
 elif args.DITAOT:
-    xsltDITAOT(makeFileList(args.targetFiles))
+    xsltDITAOT(makeFileList(args.targetFiles), args.VSCode)
 elif args.strainXml:
     StrainXML()
 elif args.checkCrossReferences:
