@@ -130,12 +130,15 @@ class FileOpener(object):
                     if dir == '':
                         dir = '.'
                     filename = os.path.basename(fnpattern) 
-                    filelist = os.listdir(dir)
-                    found_files = []
-                    for file in filelist:
-                        if filename.lower() in file.lower():
-                            found_files.append(os.path.join(dir, file))
-                    self.open_selected(found_files)
+                    if os.path.exists(dir):
+                        filelist = os.listdir(dir)
+                        found_files = []
+                        for file in filelist:
+                            if filename.lower() in file.lower():
+                                found_files.append(os.path.join(dir, file))
+                        self.open_selected(found_files)
+                    else:
+                        print(f'{dir} does not exist.')
 
 
     def open_default(self, file) -> None:
