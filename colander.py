@@ -504,21 +504,23 @@ def removeCSS(fileList:list) -> None:
 
 def xsltDITAOT(fileList:list, VSCode:bool) -> None:    
 
-    currDir = os.path.dirname(os.path.abspath(fileList[0]))
-    os.chdir(currDir)
+    if VSCode:
+        currDir = os.path.dirname(os.path.abspath(fileList[0]))
+        os.chdir(currDir)
 
     opener = FileOpener(as_web=True)
 
     for fn in fileList:
         filename = os.path.basename(fn)
+        htmlFile = os.path.splitext(filename)[0] + '.html'
         ditacmd = f'dita.bat  --input="{filename}" --format=html5 --output=_html --repeat=1'
         shellcmd = ['powershell.exe', '-Command', ditacmd]
         if VSCode:
             subprocess.run(shellcmd, check=False)
+            # htmlFile = os.path.join(currDir, '_html', htmlFile)
         else:
             subprocess.run(ditacmd, check=False)
-        htmlFile = os.path.splitext(filename)[0] + '.html'
-        htmlFile = os.path.join(currDir, '_html', htmlFile)
+        htmlFile = os.path.join('_html', htmlFile)
         opener.open_with_browser(htmlFile)
 
 
@@ -674,7 +676,7 @@ parser.add_argument(
     dest = 'VSCode',
     action = 'store_true',
     default = False,
-    help = 'Do not use this option.')
+    help = 'With -D, this option is used only by VS Code.')
 parser.add_argument(
     '-d',
     dest = 'deleteDerivative',
