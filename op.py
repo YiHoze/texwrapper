@@ -19,8 +19,7 @@ class FileOpener(object):
             'texlive': False,
             'recursive': False,
             'default_app': False,
-            'web': False,
-            'as_web': False,
+            'web': False
         }
 
         self.reconfigure(kwargs)
@@ -71,7 +70,7 @@ class FileOpener(object):
                 self.open_txt(file)
             elif filetype ==  'pdf':
                 self.open_pdf(file)
-            elif self.options['web'] or self.options['as_web']:
+            elif self.options['web']:
                 self.open_with_browser(file)
             else:
                 self.open_default(file)
@@ -297,13 +296,6 @@ def parse_args() -> argparse.Namespace:
         default = False,
         help = 'Access the given website.'
     )
-    parser.add_argument(
-        '-W',
-        dest = 'as_web',
-        action = 'store_true',
-        default = False,
-        help = 'Open the given file with the default web browser.'
-    )
 
     return parser.parse_args()
 
@@ -318,6 +310,5 @@ if __name__ == '__main__':
         texlive = args.texlive, 
         recursive = args.recursive, 
         default_app = args.default_app,
-        web = args.web,
-        as_web = args.as_web)
+        web = args.web)
     opener.open(args.files)
