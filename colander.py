@@ -42,7 +42,7 @@ def formatXml(fileList:list) -> None:
         content = re.sub('\s+', ' ', content)
         with open(fn, mode='w', encoding='utf-8') as fs:
             fs.write(content)
-        os.system(f'xmlformat.exe --overwrite {fn}')
+        subprocess.run(f'xmlformat.exe --overwrite {fn}')
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -509,8 +509,7 @@ def xsltDITAOT(fileList:list) -> None:
     opener = FileOpener(as_web=True)
 
     for fn in fileList:
-        cmd = f'dita.bat  --input="{fn}" --format=html5 --output=_html --repeat=1'
-        subprocess.run(cmd)
+        subprocess.run(f'dita.bat  --input="{fn}" --format=html5 --output=_html --repeat=1')
         htmlFile = os.path.splitext(os.path.basename(fn))[0] + '.html'
         htmlFile = os.path.join(currDir, '_html', htmlFile)
         opener.open_with_browser(htmlFile)
