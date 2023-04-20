@@ -11,6 +11,7 @@ import random
 import string
 import shutil
 import pyperclip
+import subprocess
 from lxml import etree
 from wordig import WordDigger
 from op import FileOpener
@@ -509,7 +510,7 @@ def xsltDITAOT(fileList:list) -> None:
 
     for fn in fileList:
         cmd = f'dita.bat  --input="{fn}" --format=html5 --output=_html --repeat=1'
-        os.system(cmd)
+        subprocess.run(cmd)
         htmlFile = os.path.splitext(os.path.basename(fn))[0] + '.html'
         htmlFile = os.path.join(currDir, '_html', htmlFile)
         opener.open_with_browser(htmlFile)
