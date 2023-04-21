@@ -105,46 +105,46 @@ C:\>code.cmd --install-extension yutengjing.open-in-external-app
 사용자 설정에 다음과 같이 추가하라.
 
 ```
-    "openInExternalApp.openMapper": [
-        {
-            "extensionName": "xml",
-            "apps": [
-                { 
-                    "title": "Chrome",
-                    "openCommand": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-                },
-                { 
-                    "title": "Colander",
-                    "openCommand": "colander.py",
-                    "args": ["-H"]
-                },
-                { 
-                    "title": "DITA-OT by Colander",
-                    "openCommand": "colander.py",
-                    "args": ["-D", "-V"]
-                }
-            ]
-        },
-        {
-            "extensionName": "dita",
-            "apps": [
-                { 
-                    "title": "Firefox",
-                    "openCommand": "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
-                },
-                { 
-                    "title": "Colander",
-                    "openCommand": "colander.py",
-                    "args": ["-H"]
-                },
-                { 
-                    "title": "DITA-OT by Colander",
-                    "openCommand": "colander.py",
-                    "args": ["-D", "-V"]
-                }
-            ]
-        }
-    ]
+"openInExternalApp.openMapper": [
+    {
+        "extensionName": "xml",
+        "apps": [
+            { 
+                "title": "Chrome",
+                "openCommand": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+            },
+            { 
+                "title": "Colander",
+                "openCommand": "colander.py",
+                "args": ["-H"]
+            },
+            { 
+                "title": "DITA-OT by Colander",
+                "openCommand": "colander.py",
+                "args": ["-D", "-V"]
+            }
+        ]
+    },
+    {
+        "extensionName": "dita",
+        "apps": [
+            { 
+                "title": "Firefox",
+                "openCommand": "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+            },
+            { 
+                "title": "Colander",
+                "openCommand": "colander.py",
+                "args": ["-H"]
+            },
+            { 
+                "title": "DITA-OT by Colander",
+                "openCommand": "colander.py",
+                "args": ["-D", "-V"]
+            }
+        ]
+    }
+]
 ```
 
 크롬은 .dita 파일을 XML로 파일로 간주하지 않는다.

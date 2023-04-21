@@ -43,7 +43,9 @@ def formatXml(fileList:list) -> None:
         content = re.sub('\s+', ' ', content)
         with open(fn, mode='w', encoding='utf-8') as fs:
             fs.write(content)
-        subprocess.run(f'xmlformat.exe --overwrite {fn}')
+        subprocess.run(f'xmlformat.exe --overwrite {fn}', check=False)
+        # os.system(f'xmlformat.exe --overwrite {fn}')
+        
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -426,6 +428,7 @@ def removeDeletedLines(fileList:list) -> None:
                 tail = i.replace('<', '</')
                 p = deletedPattern.replace('HEAD', head)
                 p = p.replace('TAIL', tail)
+            # print(p)
             content = re.sub(p, '', content)
         
         with open(fn, mode='w', encoding='utf-8') as fs:
@@ -494,6 +497,13 @@ def extractChanged(fileList:list) -> None:
 
 def insertCSS(fileList:list) -> None:
     
+
+    dirCalled = os.path.dirname(__file__)
+    cssFile = os.path.join(dirCalled, 'preview.css')
+    os.chdir(os.path.dirname(os.path.abspath(fileList[0])))
+    if not os.path.exists('../preview.css'):
+        shutil.copy(cssFile, '..')
+
     WordDigger(fileList, aim='(<\\?xml.+\\?>)', substitute='\\1\\n<?xml-stylesheet type="text/css" href="../preview.css"?>', overwrite=True)
 
 
