@@ -4448,7 +4448,8 @@ tex = ```\documentclass{article}
 	```″\textsubscript{double prime for inch}
 	```⌀\textsubscript{diameter} ø\textsubscript{o with stroke}
 	```
-	```• · 『 』「 」≪ ≫ … ⧵
+    ``` ` ' `` ''
+	```• · 『 』「 」≪ ≫ …  ⧵
 	```± ÷ × ≤ ≥ ² ³ ₂ ₃
 	```◯ ✓ ✔ ✗ ✘ □ ☐ ☑
 	```°C °F ㈜ ₩ © ® ™  ㈜

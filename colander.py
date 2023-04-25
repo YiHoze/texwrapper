@@ -17,6 +17,8 @@ from wordig import WordDigger
 from op import FileOpener
 import time
 
+global RemovedLinebreaks
+RemovedLinebreaks = False
 
 def resetXml(fileList:list, flag:str) -> None:
     
@@ -35,17 +37,19 @@ def resetXml(fileList:list, flag:str) -> None:
 
 
 def formatXml(fileList:list) -> None:
-    
+
+    global RemovedLinebreaks
+
     for fn in fileList:
-        with open(fn, mode='r', encoding='utf-8') as fs:
-            content = fs.read()
-        content = re.sub('\n', ' ', content)
-        content = re.sub('\s+', ' ', content)
-        with open(fn, mode='w', encoding='utf-8') as fs:
-            fs.write(content)
+        if not RemovedLinebreaks:
+            with open(fn, mode='r', encoding='utf-8') as fs:
+                content = fs.read()
+            content = re.sub('\n', ' ', content)
+            content = re.sub('\s+', ' ', content)
+            with open(fn, mode='w', encoding='utf-8') as fs:
+                fs.write(content)
         subprocess.run(f'xmlformat.exe --overwrite {fn}', check=False)
-        # os.system(f'xmlformat.exe --overwrite {fn}')
-        
+
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -409,7 +413,9 @@ def getTagsHavingStatus(fileList:list, deletedOnly=False) -> list:
 
 
 def removeDeletedLines(fileList:list) -> None:
-    
+
+    global RemovedLinebreaks
+
     deletedTags = getTagsHavingStatus(fileList=fileList, deletedOnly=True)
     deletedPattern = r'HEAD[^>]*\bstatus="deleted".*?>.*?TAIL'
 
@@ -434,6 +440,7 @@ def removeDeletedLines(fileList:list) -> None:
         with open(fn, mode='w', encoding='utf-8') as fs:
             fs.write(content)
 
+    RemovedLinebreaks = True
 
 def deleteFigImage(fileList:list) -> None:
     
