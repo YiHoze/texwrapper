@@ -2433,7 +2433,7 @@ code = ```import os
 	```import glob
 	```import subprocess
 	```import img2pdf
-	```from PyPDF2 import PdfFileReader
+	```from PyPDF2 import PdfReader
 	```from pdf2image import convert_from_path
 	```from PIL import Image
 	```
@@ -2473,8 +2473,8 @@ code = ```import os
 	```    def count_page_digits(self, img):
 	```
 	```        with open(img, 'rb') as f:
-	```            pdf = PdfFileReader(f)
-	```            pages = pdf.getNumPages()
+	```            pdf = PdfReader(f)
+	```            pages = len(pdf.pages)
 	```
 	```        digits = 0
 	```        while(pages >= 1):
