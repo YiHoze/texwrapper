@@ -88,7 +88,7 @@
     </xsl:template> -->
 
     <xsl:template match="image[@placement='inline']">
-        <img height='24px'>
+        <img height='36px'>
             <xsl:attribute name="src">
                 <xsl:value-of select="@href" />
             </xsl:attribute>

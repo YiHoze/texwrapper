@@ -4,6 +4,7 @@
 
 import os
 import sys
+import pathlib
 import glob
 import argparse
 import re
@@ -15,7 +16,7 @@ import subprocess
 from lxml import etree
 from wordig import WordDigger
 from op import FileOpener
-import time
+
 
 global RemovedLinebreaks
 RemovedLinebreaks = False
@@ -368,9 +369,15 @@ def makeFileList(targetFiles:list, useGlob=True) -> list:
 
 def copyFrom(fileList:list, sourceFolder:str) -> None:
 
+    targetFolder = '.'
+    if pathlib.PurePath(sourceFolder).name == 'image':
+        if os.path.exists('image') and os.path.isdir('image'):
+            targetFolder = 'image'
+
     for fn in fileList:
         for i in glob.glob(os.path.join(sourceFolder, fn)):
-            shutil.copy(i, '.')
+            print(f"{i} > {targetFolder}")
+            shutil.copy(i, targetFolder)
 
 
 def findStatusAttribute(fileName:str) -> dict:
