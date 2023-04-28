@@ -385,7 +385,9 @@ class Renamer(object):
                     newname = re.sub(self.options['affix'], self.options['substitute'], file)
                 else: # remove spaces
                     newname = re.sub(' ', '', file)
-                os.rename(file, newname)
+                if not os.path.exists(newname):
+                    print(f'{file} chagned to {newname}.')
+                    os.rename(file, newname)
 
 
     def rename_uppercase(self, files) -> None:

@@ -1,0 +1,9 @@
+\n	
+\s+	 
+\?><	?>\n<
+\]><	]>\n<
+<title>	\n<title>
+<topicref	\n<topicref
+</map>	\n</map>
+</topicref>\s?</topicref>	</topicref>\n</topicref>\n
+(navtitle=".+?")\s(href=".+?")	\2 \1

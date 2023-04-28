@@ -52,8 +52,19 @@ def formatXml(fileList:list) -> None:
         subprocess.run(f'xmlformat.exe --overwrite {fn}', check=False)
 
 
+def formatMap() -> None:
+
+    if len(glob.glob('*.ditamap')) == 0:
+        print('No ditamap is found.')
+        sys.exit()
+
+    dirCalled = os.path.dirname(__file__)
+    regexFile = os.path.join(dirCalled, 'hmc_format_ditamap.tsv')
+    WordDigger(['*.ditamap'], pattern=regexFile, overwrite=True)
+
 
 def writeList(fileName:str, imageList:list) -> None:
+    
     content = '\n'.join(imageList)
     with open(fileName, mode='w', encoding='utf-8') as fs:
         fs.write(content)
@@ -667,6 +678,12 @@ parser.add_argument(
     default = '2',
     help = '0: comments, 1: attributes, 2: both')
 parser.add_argument(
+    '-M',
+    dest = 'formatmap',
+    action = 'store_true',
+    default = False,
+    help = 'Format the ditamap file in the current folder.')
+parser.add_argument(
     '-c',
     dest = 'copy_from',
     default = None,
@@ -736,7 +753,7 @@ elif args.extractChanged:
 elif args.copy_from is not None:
     copyFrom(makeFileList(args.targetFiles, useGlob=False), sourceFolder=args.copy_from)
 elif args.deleteDerivative:
-    deleteDerivativeFiles()    
+    deleteDerivativeFiles()
 elif args.reset or args.format or args.insert_css or args.remove_css:
     if args.reset:
         resetXml(makeFileList(args.targetFiles), flag=args.flag)
@@ -746,3 +763,5 @@ elif args.reset or args.format or args.insert_css or args.remove_css:
         insertCSS(makeFileList(args.targetFiles))
     if args.remove_css:
         removeCSS(makeFileList(args.targetFiles))
+elif args.formatmap:
+    formatMap()
