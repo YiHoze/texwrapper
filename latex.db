@@ -1,7 +1,6 @@
 [article]
 tex_output = mydoc.tex
-tex = 
-	\documentclass[a4paper]{article}
+tex = documentclass{article}
 	
 	\begin{document}
 	Hello.
@@ -30,8 +29,7 @@ tex =
 [hzguide]
 description = The hzguide class is available from https://github.com/YiHoze/HzGuide.
 tex_output = mydoc.tex
-tex = 
-	\documentclass[Noto]{hzguide}
+tex = \documentclass[Noto]{hzguide}
 	\LayoutSetup{}
 	
 	\begin{document}
@@ -40,8 +38,7 @@ tex =
 
 [memoir]
 tex_output = mydoc.tex
-tex = 
-	\documentclass[a4paper]{memoir}
+tex = documentclass{memoir}
 	\usepackage{fontspec}
 	
 	\begin{document}
@@ -50,8 +47,7 @@ tex =
 
 [oblivoir]
 tex_output = mydoc.tex
-tex = 
-	\documentclass{oblivoir}
+tex = \documentclass{oblivoir}
 	
 	\usepackage{fapapersize}
 	\usefapapersize{*,*,30mm,*,30mm,*}
@@ -65,8 +61,7 @@ description = Use this template to write a manual such as user guide.
 	This requires the hzguide class, which is available from https://github.com/YiHoze/HzGuide.
 compiler = -w
 tex_output = manual.tex
-tex = 
-	\documentclass[10pt, openany, english, template]{hzguide}
+tex = \documentclass[10pt, openany, english, template]{hzguide}
 	
 	\LayoutSetup{}
 	\HeadingSetup{chapterstyle=tandh}

@@ -11,9 +11,12 @@ rev=".+?"	rev="1.0"
 \sid="ol_.+?"
 \sid="note_.+?"
 \sid="section_.+?"
+\sid="sl_.+?"
 \sid="table_.+?"
 \sid="ul_.+?"
 <row rowsep="1">	<row>
 <row rowsep="0">	<row>
 \svalign="middle"
 <fig frame="all">	<fig>
+<p outputclass="right_w">	<p>
+<p outputclass="right">	<p>
