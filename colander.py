@@ -385,10 +385,16 @@ def copyFrom(fileList:list, sourceFolder:str) -> None:
         if os.path.exists('image') and os.path.isdir('image'):
             targetFolder = 'image'
 
+    if targetFolder == 'image':
+        if not os.path.exists('_added'):
+            os.mkdir('_added')
+
     for fn in fileList:
         for i in glob.glob(os.path.join(sourceFolder, fn)):
             print(f"{i} > {targetFolder}")
             shutil.copy(i, targetFolder)
+            if targetFolder == 'image':
+                shutil.copy(i, '_added')
 
 
 def findStatusAttribute(fileName:str) -> dict:

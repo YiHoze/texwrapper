@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param (
     [alias('f')][string] $fiducial, # 2023-04-06T16:20:00
-    [alias('p')][string] $filePattern = '*.*',
+    [alias('p')][string] $filePattern = '*.xml',
     [alias('o')][string] $output
 )
 
