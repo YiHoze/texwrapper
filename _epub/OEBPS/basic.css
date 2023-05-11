@@ -44,6 +44,11 @@ p {
     text-indent: 0em;
 }
 
+.centered {
+    text-align: center;
+}
+
+
 .framed {
     margin-top: 10px;
     margin-bottom: 10px;

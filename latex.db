@@ -1,6 +1,6 @@
 [article]
 tex_output = mydoc.tex
-tex = documentclass{article}
+tex = \documentclass{article}
 	
 	\begin{document}
 	Hello.

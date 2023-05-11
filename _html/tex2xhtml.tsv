@@ -15,6 +15,8 @@
 \\headingref\{(.+?)\}\{(.+?)\}\{(.+?)\}	<a href="\1#heading_\2">\3</a>
 \\endnoteline\{(.+)\}\{(.+)\}\{(.+)\}	<p><sup><a id="endnote_text_\1" href="\2#endnote_number_\1">\1</a></sup> \3</p>
 ~~~ BASIC CONTROL
+\\begin\{html\}
+\\end\{html\}
 \\begin\{document\}
 \\end\{document\}
 \\title.+$
@@ -31,6 +33,8 @@
 \\begin\{wrapfigure\}.*$
 \\end\{wrapfigure\}
 ~~~ blocks
+\\begin\{center\}	<p class="centered">
+\\end\{center\}	</p>
 \\begin\{quote\}	<blockquote>
 \\end\{quote\}	</blockquote>
 \\begin\{verbatim\}\n	<pre>
@@ -103,7 +107,7 @@
 \\end\{IllustImage\}	</p>
 \\begin\{code\}\n	<pre>
 \\end\{code\}	</pre>
-\\begin\{lyrics\}\n	<pre>
+\\begin\{lyrics\}\n	<pre class="lyrics">
 \\end\{lyrics\}	</pre>
 \\begin\{callout\}	<ol>
 \\end\{callout\}	</ol>
