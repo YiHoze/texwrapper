@@ -196,8 +196,10 @@ class FileOpener(object):
 
     def open_with_browser(self, file) -> None:
 
-        if os.path.isfile(file):
+        if self.WebBrowser and os.path.isfile(file):
             subprocess.Popen([self.WebBrowser, os.path.abspath(file)])
+        else:
+            self.open_default(file)
 
 
     def open_web(self, urls, **options) -> None:
@@ -209,7 +211,10 @@ class FileOpener(object):
                 self.open_app(url)
         elif self.WebBrowser:
             for url in urls:
-                subprocess.Popen([self.WebBrowser, url])
+                if os.path.isfile(url):
+                    subprocess.Popen([self.WebBrowser, os.path.abspath(url)])
+                else:
+                    subprocess.Popen([self.WebBrowser, url])
         else:
             for url in urls:
                 self.open_default(url)
