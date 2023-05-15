@@ -21,6 +21,7 @@ class ConvertUnit(object):
             'fahrenheit': ['F°', 'C°', 'self.temperature'],
             'feet': ['feet', 'm', 0.3048],
             'gallon': ['gallons', 'liters', 0.26417],
+            'impgallon': ['Imperial gallons', 'liters', 0.219969],
             'hp': ['hp', 'kW', 0.7457],
             'inch': ['inches', 'mm', 25.4],
             'km/h': ['km/h', 'm/s', 0.277778],
@@ -37,7 +38,8 @@ class ConvertUnit(object):
             'ppi': ['ppi', 'pixel/cm', 0.393701],
             'psi': ['PSI', 'kPa', 6.89476],
             'pyeong': ['pyeong', 'm²', 3.305785],
-            'quart': ['quarts', 'liters', 0.95],
+            'quart': ['US quarts', 'liters', 0.95],
+            'impquart': ['Imperial quarts', 'liters', 0.87987],
             'yard': ['yards', 'm', 0.9144]
         }
 

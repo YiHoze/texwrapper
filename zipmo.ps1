@@ -5,15 +5,12 @@ param (
     [alias('o')][string] $output
 )
 
-if ([string]::IsNullOrEmpty($output)) {
-    $fileName = Split-Path -Leaf $PWD
-    $today = get-date -format "yyyy-MM-dd"
-    $fileName = $fileName + '_' + $today + '.zip'
-}
+$timeFile = Split-Path -Leaf $PWD
+$timeFile = '..\' + $timeFile + '_' + 'zipped_time.txt'
 
 if ([string]::IsNullOrEmpty($fiducial)) {
-    if (Test-Path '..\last_zipped_time.txt') {
-        $fiducial = Get-Content '..\last_zipped_time.txt'
+    if (Test-Path $timeFile) {
+        $fiducial = Get-Content $timeFile
         $fiducial = $fiducial.Trim()
     } else {
         Write-Output 'Specify fiducial date and time like "2023-04-06T16:20:00".'
@@ -21,14 +18,21 @@ if ([string]::IsNullOrEmpty($fiducial)) {
     }
 }
 
-if (Test-Path $fileName) {
-    Remove-Item $fileName
-}
-$modifiedFiles = @(Get-ChildItem $filePattern -File | Where-Object {$_.LastWriteTime -gt $fiducial} | Select-Object -ExpandProperty Name)
-zip.exe $fileName $modifiedFiles
-if (Test-Path $fileName) {
-    Move-Item -Force $fileName ..
+if ([string]::IsNullOrEmpty($output)) {
+    $zipFile = Split-Path -Leaf $PWD
+    $today = get-date -format "yyyy-MM-dd"
+    $zipFile = $zipFile + '_' + $today + '.zip'
 }
 
-$lastZippedTime = get-date -format "yyyy-MM-ddTHH:mm:ss"
-Set-Content -Path '..\last_zipped_time.txt' $lastZippedTime
+if (Test-Path $zipFile) {
+    Remove-Item $zipFile
+}
+
+$modifiedFiles = @(Get-ChildItem $filePattern -File | Where-Object {$_.LastWriteTime -gt $fiducial} | Select-Object -ExpandProperty Name)
+
+if ($modifiedFiles.Length -gt 0) {
+    zip.exe $zipFile $modifiedFiles
+    Move-Item -Force $zipFile ..
+    $lastZippedTime = get-date -format "yyyy-MM-ddTHH:mm:ss"
+    Set-Content -Path $timeFile $lastZippedTime
+}
