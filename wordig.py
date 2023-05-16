@@ -722,6 +722,8 @@ class WordDigger(object):
                     self.run_recursive(self.find)
                     for key in self.found_count.keys():
                         print('{}: {}'.format(key, self.found_count[key]))
+                    if self.options['output']:
+                        self.write_found()
             else:
                 print('{} is not found.'.format(self.options['aim_pattern']))
         elif self.options['aim']:
