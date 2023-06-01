@@ -185,6 +185,8 @@ entry {
 /* character */
 
 b { font-weight: bolder; }
+u { font-family: HYUNDAI_OWNS;}
+userinput { font-family: HYUNDAI_OWNS;}
 
 cmdname, uicontrol {
 	color:navy;
