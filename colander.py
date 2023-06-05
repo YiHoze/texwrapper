@@ -280,16 +280,16 @@ def checkCrossReferences() -> None:
             os.remove(mismatchedXrefFile)
 
 
-def generateTopicID(length=11) -> None:
+def generateObscureID(length=11) -> None:
 
     # characters = string.ascii_letters + string.digits
     characters = string.ascii_lowercase + string.digits
     available = True
     while available:
-        topicID = 'id' + ''.join(random.choice(characters) for i in range(length))    
-        available = getFile(topicID)
-    pyperclip.copy(topicID)
-    print(f'"{topicID}" is copied to the clipboard')
+        obscureID = 'id' + ''.join(random.choice(characters) for i in range(length))    
+        available = getFile(obscureID)
+    pyperclip.copy(obscureID)
+    print(f'"{obscureID}" is copied to the clipboard')
 
 
 def generateID(prefix='title', parts=3, length=3) -> None:
@@ -649,11 +649,11 @@ parser.add_argument(
     help = 'Specify a prefix for ID creation. (Default: title)'
     )
 parser.add_argument(
-    '-T',
-    dest = 'topicID',
+    '-o',
+    dest = 'obscureID',
     action = 'store_true',
     default = False,
-    help = 'Generate an old-style topic ID.')
+    help = 'Generate an obscure ID.')
 parser.add_argument(
     '-I',
     dest = 'duplicateID',
@@ -747,8 +747,8 @@ elif args.strainImage:
         StrainImage()
 elif args.generateID:
     generateID(prefix=args.IDprefix)
-elif args.topicID:
-    generateTopicID()
+elif args.obscureID:
+    generateObscureID()
 elif args.duplicateID:
     if args.removeErrors:
         checkDuplicateIDs(removeDuplicates=True)
