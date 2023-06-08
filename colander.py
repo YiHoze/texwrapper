@@ -532,8 +532,7 @@ def insertCSS(fileList:list) -> None:
     dirCalled = os.path.dirname(__file__)
     cssFile = os.path.join(dirCalled, 'preview.css')
     os.chdir(os.path.dirname(os.path.abspath(fileList[0])))
-    if not os.path.exists('../preview.css'):
-        shutil.copy(cssFile, '..')
+    shutil.copy(cssFile, '..')
 
     WordDigger(fileList, aim='(<\\?xml.+\\?>)', substitute='\\1\\n<?xml-stylesheet type="text/css" href="../preview.css"?>', overwrite=True)
 
@@ -554,7 +553,7 @@ def xsltDITAOT(fileList:list, VSCode:bool) -> None:
     for fn in fileList:
         filename = os.path.basename(fn)
         htmlFile = os.path.splitext(filename)[0] + '.html'
-        ditacmd = f'dita.bat  --input="{filename}" --format=html5 --output=_html --repeat=1'
+        ditacmd = f'dita.bat  --input="{filename}" --format=html5 --output=_html --repeat=1 --propertyfile="C:\\home\\bin\\preview.properties"'
         shellcmd = ['powershell.exe', '-Command', ditacmd]
         if VSCode:
             subprocess.run(shellcmd, check=False)

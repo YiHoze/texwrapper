@@ -36,10 +36,8 @@ p {
 	margin-top: 0.25em;
 }
 
-[outputclass="callout-image"] {
-	margin-top: 1em;
-	margin-bottom: 1em;
-	text-align: center;	
+[outputclass="cluster"] {
+	font-size:4em
 }
 
 info {
@@ -187,6 +185,8 @@ entry {
 b { font-weight: bolder; }
 u { font-family: HYUNDAI_OWNS;}
 userinput { font-family: HYUNDAI_OWNS;}
+kbd { font-family: HYUNDAI_OWNS;}
+.cluster { font-size: 30pt; }
 
 cmdname, uicontrol {
 	color:navy;

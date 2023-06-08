@@ -69,7 +69,6 @@
         <xsl:apply-templates />
     </xsl:template>
 
-
 <!-- cross-reference -->
 
     <xsl:template match="xref">
@@ -80,13 +79,6 @@
 
 <!-- image -->
 
-    <!-- <xsl:template match="figgroup">
-        <div>
-            <xsl:attribute name="class" select="'figgroup'" />
-            <xsl:apply-templates select="@*|node()" />
-        </div>
-    </xsl:template> -->
-
     <xsl:template match="image[@placement='inline']">
         <img height='36px'>
             <xsl:attribute name="src">
@@ -95,7 +87,6 @@
         </img>
     </xsl:template>
 
-    <!-- <xsl:template match="image[@placement='break']"> -->
     <xsl:template match="image">
         <img width='80%'>
             <xsl:attribute name="src">
