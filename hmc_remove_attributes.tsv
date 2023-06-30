@@ -6,14 +6,15 @@ rev=".+?"	rev="1.0"
 >[^<]*</xref>	 />
  xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
 (<topic(?![^>]*\brev=)[^>]*\b)xml:lang="[^"]*"	\1
-\sid="fig_.+?"
-\sid="image_.+?"
-\sid="ol_.+?"
-\sid="note_.+?"
-\sid="sl_.+?"
-\sid="section_.+?"
-\sid="table_.+?"
-\sid="ul_.+?"
+```\sid="fig_.+?"
+```\sid="image_.+?"
+```\sid="ol_.+?"
+```\sid="note_.+?"
+```\sid="sl_.+?"
+```\sid="section_.+?"
+```\sid="sectiondiv_.+?"
+```\sid="table_.+?"
+```\sid="ul_.+?"
 <row rowsep="1">	<row>
 <row rowsep="0">	<row>
 \svalign="middle"

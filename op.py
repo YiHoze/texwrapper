@@ -14,6 +14,7 @@ class FileOpener(object):
         self.options = {
             'force': False,
             'adobe': False,
+            'page': '1',
             'app': None,
             'app_option': '',
             'texlive': False,
@@ -89,7 +90,7 @@ class FileOpener(object):
                 selection = int(selection)
             except:
                 return
-            
+
             if selection == 0:
                 for file in files:
                     self.open_by_type(file)
@@ -166,9 +167,10 @@ class FileOpener(object):
         self.reconfigure(options)
 
         if self.options['adobe']:
-            subprocess.Popen([self.AdobeReader, file], stdout=subprocess.PIPE)
+            page = 'page={}'.format(self.options['page'])
+            subprocess.Popen([self.AdobeReader, "/A", page, file], stdout=subprocess.PIPE)
         elif self.pdf_viewer:
-            subprocess.Popen([self.pdf_viewer, file], stdout=subprocess.PIPE)
+            subprocess.Popen([self.pdf_viewer, file, "-page", self.options['page']], stdout=subprocess.PIPE)
         else:
             self.open_default(file)
 
@@ -221,7 +223,7 @@ class FileOpener(object):
 
 
     def open(self, files, **options) -> None:
-        
+
         if len(files) == 0:
             win32clipboard.OpenClipboard()
             files = [win32clipboard.GetClipboardData()]
@@ -267,6 +269,12 @@ def parse_args() -> argparse.Namespace:
         help = 'Use Adobe Reader to view PDF.'
     )
     parser.add_argument(
+        '-p',
+        dest = 'page',
+        default = "1",
+        help = 'Open PDF files at a specific page.'
+    )
+    parser.add_argument(
         '-r',
         dest = 'recursive',
         action = 'store_true',
@@ -310,6 +318,7 @@ if __name__ == '__main__':
     opener = FileOpener(
         force = args.force, 
         adobe = args.adobe,
+        page = args.page,
         app = args.app, 
         app_option = args.app_option,
         texlive = args.texlive, 

@@ -1,6 +1,6 @@
 body {
     width: 50em;
-    margin-left: 2em;
+    margin-left: 1em;
 }
 
 h1 { font-size: 2.0em;                     margin-bottom:1.0em; color: black;} 
@@ -96,6 +96,11 @@ note {
 
 /* image */
 
+img.image {
+    min-width: 2em;
+}
+
+
 image {
 	display: inline-block;
 	color:coral;
@@ -155,7 +160,7 @@ table {
 	/* border: 1px solid #000; */
 }
 
-tgroup {
+/* tgroup {
 	display: table-row-group;
 }
 
@@ -178,12 +183,12 @@ entry {
 	display: table-cell;
 	border: 1px solid #000;
 	padding: 3px;
-}
+} */
 
 /* character */
 
 b { font-weight: bolder; }
-u { font-family: HYUNDAI_OWNS;}
+/* u { font-family: HYUNDAI_OWNS;} */
 userinput { font-family: HYUNDAI_OWNS;}
 kbd { font-family: HYUNDAI_OWNS;}
 .cluster { font-size: 30pt; }
