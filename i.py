@@ -96,14 +96,15 @@ def run_preprocess(target) -> None:
     conf.read(ini)
 
     if args.draft_bool:
-        cmd = conf.get('tex', 'draft', fallback=False)
+        cmds = conf.get('tex', 'draft', fallback=False)
     else:
-        cmd = conf.get('tex', 'final', fallback=False)
+        cmds = conf.get('tex', 'final', fallback=False)
 
-    if cmd:
-        if '.tex' not in cmd:
-            cmd = '{} {}'.format(cmd, target)
-        os.system(cmd)
+    if cmds:
+        cmds = cmds.split('\n')
+        for cmd in cmds:
+            os.system(cmd)
+
 
     if args.final_bool:
         compiler = conf.get('tex', 'final_compiler', fallback=False)

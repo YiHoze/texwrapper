@@ -8,7 +8,6 @@ import openpyxl
 import os
 import re
 import unicodedata
-from op import FileOpener
 
 class WordDigger(object):
 
@@ -21,7 +20,6 @@ class WordDigger(object):
             'aim': None,
             'aim_pattern': None,
             'substitute': None,
-            'open_found': False,
             'pattern': None,
             'compare': False,
             'case_sensitive': True,
@@ -66,8 +64,6 @@ class WordDigger(object):
             self.options['flag'] == 'ONCE'
         if self.options['flag'] == '2':
             self.options['flag'] == 'EXPAND'
-        if self.options['open_found']:
-            self.opener = FileOpener()
 
 
     def run_recursive(self, func:str) -> None:
@@ -118,6 +114,13 @@ class WordDigger(object):
 
     def find_txt(self, file:str, pattern:str) -> int:
 
+        if self.options['dotall']:
+            return self.find_txt_entire(file, pattern)
+        else:
+            return self.find_txt_byline(file, pattern)
+
+    def find_txt_byline(self, file:str, pattern:str) -> int:
+
         count = 0
         found_line = ""
 
@@ -139,8 +142,30 @@ class WordDigger(object):
         if count > 0:
             self.add_found(f"\x1b[32m{file}: {count}\x1b[0m")
             self.add_found(found_line)
-            if self.options['open_found']:
-                self.opener.open_txt(file)
+
+        return count
+
+    def find_txt_entire(self, file:str, pattern:str) -> int:
+
+        count = 0
+        found_line = ""
+
+        try:
+            with open(file, mode='r', encoding='utf-8') as f:
+                content = f.read()
+        except:
+            print('{} is not encoded in UTF-8.'.format(file))
+            return 0
+        
+        matched = re.findall(pattern, content, re.DOTALL)
+        if matched:
+            for i in range(len(matched)):
+                found_line = found_line + "\t{}\n".format(matched[i])
+                count += 1 
+
+        if count > 0:
+            self.add_found(f"\x1b[32m{file}: {count}\x1b[0m")
+            self.add_found(found_line)
 
         return count
 
@@ -899,13 +924,6 @@ def parse_args() -> argparse.Namespace:
         help = 'Specify a text file which contains regular expressions for text search.'
     )
     parser.add_argument(
-        '-O',
-        dest = 'open_found',
-        action = 'store_true',
-        default = False,
-        help = 'Open found files.'
-    )
-    parser.add_argument(
         '-s',
         dest = 'substitute',
         default = None,
@@ -1057,7 +1075,6 @@ if __name__ == '__main__':
         args.targets,
         aim = args.aim,
         aim_pattern = args.aim_pattern,
-        open_found = args.open_found,
         substitute = args.substitute,
         pattern = args.pattern,
         compare = args.compare,
