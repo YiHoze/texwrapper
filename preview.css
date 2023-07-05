@@ -153,6 +153,10 @@ sl > sli {
 	list-style-type:decimal;
 }
 
+.sli {
+	list-style-type:decimal;
+}
+
 /* table */
 
 table {

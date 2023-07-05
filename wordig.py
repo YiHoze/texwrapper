@@ -156,7 +156,7 @@ class WordDigger(object):
         except:
             print('{} is not encoded in UTF-8.'.format(file))
             return 0
-        
+
         matched = re.findall(pattern, content, re.DOTALL)
         if matched:
             for i in range(len(matched)):
