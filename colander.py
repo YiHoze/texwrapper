@@ -64,10 +64,11 @@ def formatMap() -> None:
 
 
 def writeList(fileName:str, imageList:list) -> None:
-    
-    content = '\n'.join(imageList)
-    with open(fileName, mode='w', encoding='utf-8') as fs:
-        fs.write(content)
+
+    if len(imageList) > 0:
+        content = '\n'.join(imageList)
+        with open(fileName, mode='w', encoding='utf-8') as fs:
+            fs.write(content)
 
 
 def StrainXML() -> None:
@@ -589,9 +590,9 @@ def xsltColander(fileList:list) -> None:
 
 
 def deleteDerivativeFiles() -> None:
-    
+
     derivatives = ['images*.txt', 'xmls*.txt', 'xrefs*.txt', 'duplicate*.txt', '*.html']
-    
+
     for i in derivatives:
         for fn in glob.glob(i):
             os.remove(fn)
