@@ -182,6 +182,7 @@ def do_compile(tex) -> None:
         if pdf:
             tex = 't@x.tex'
 
+    compile_option.reverse()
     print('{} {}'.format(tex, compile_option))
     LC = LatexCompiler(tex, compile_option)
     LC.compile()
