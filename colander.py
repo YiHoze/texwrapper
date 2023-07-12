@@ -1,6 +1,8 @@
-# xml 파일들이 있는 폴더에서 실행한다.
-# 처음에:   C:\>colander.py -R -F -s
-# 마지막에: C:\>colander.py -R -f=0 -S
+# 1> colander -R -F    XML 파일들에서 status 속성과 주석 제거하기
+# 2> colander -g       XML 파일들 이름 바꾸기
+# 3> renamed.tsv       편집하면서 그에 따라 파일들 이름 바꾸기
+# 4> colander -M       ditamap 만들기
+# 5> _NEW.ditamap에서 제목 오류 찾아 고치기
 
 import os
 import sys
@@ -61,6 +63,75 @@ def formatMap() -> None:
     dirCalled = os.path.dirname(__file__)
     regexFile = os.path.join(dirCalled, 'hmc_format_ditamap.tsv')
     WordDigger(['*.ditamap'], pattern=regexFile, overwrite=True)
+
+
+def createMap() -> None:
+    
+    ditamap = '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "technicalContent/dtd/map.dtd" []>
+<map xml:lang="??_??" platform="genesis/hyundai" product="????" audience="2024" base="electric/engine" xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" rev="1.0">
+<title>????</title>'''
+    
+    chapterFiles = [
+            "information_getting_started_with_your_electric_vehicle",
+            "vehicle_information",
+            "seats_amp_safety_system",
+            "instrument_cluster",
+            "Convenience_Features",
+            "driving_your_vehicle",
+            "driver_assistance_system",
+            "emergency_situations",
+            "maintenance",
+            "index"
+        ]
+    
+    for cf in chapterFiles:
+        fileName = cf + '.xml'
+        title = getTopicTitle(fileName)
+        ditamap += f'\n<topicref  type="topic" href="{fileName}" navtitle="{title}"><topicmeta><navtitle>{title}</navtitle></topicmeta>'
+        for fn in glob.glob(cf + '_*.xml'):
+            title = getTopicTitle(fn)
+            ditamap += f'\n\t<topicref  type="topic" href="{fn}" navtitle="{title}"><topicmeta><navtitle>{title}</navtitle></topicmeta></topicref>'
+        ditamap += '\n</topicref>'
+
+    ditamap += '\n</map>'
+    with open('_NEW.ditamap', mode='w', encoding='utf-8') as fs:
+        fs.write(ditamap)    
+
+
+def getTopicTitle(fileName:str) -> str:
+
+    with open(fileName, mode='r', encoding='utf-8') as fs:
+        content = fs.read()
+    found = re.search('<title.*?>.+?</title>', content)
+    if found:
+        title = found.group(0)
+        title = re.sub('<indexterm>.+</indexterm>', '', title)
+        title = re.sub('<title.*?>(.+)</title>', '\\1', title)
+    else:
+        title = "NONEXISTENT"
+    return title
+
+
+def groomFilenames() -> None:
+
+    filelist = ''
+    for filename in glob.glob('*.xml'):
+        newname = filename.lower()
+        newname = re.sub('-', '_', newname)
+        newname = re.sub('__', '_', newname)
+        newname = re.sub('_\(if_equipped\)', '', newname)
+        newname = re.sub('_\.', '.', newname)
+        found = re.search('(?<=_\()\w+(?=\)\.)', newname)
+        if found:
+            aim = f"_\({found.group(0)}\)\."
+            substitute = f"_{found.group(0).upper()}."
+            newname = re.sub(aim, substitute, newname)
+        os.rename(filename, newname)
+        filelist += f"{filename}\t{newname}\n"
+
+    with open('renamed.tsv', mode='w', encoding='utf-8') as fs:
+        fs.write(filelist)
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -683,12 +754,24 @@ parser.add_argument(
     dest = 'flag',
     default = '2',
     help = '0: comments, 1: attributes, 2: both')
+# parser.add_argument(
+#     '-M',
+#     dest = 'formatmap',
+#     action = 'store_true',
+#     default = False,
+#     help = 'Format the ditamap file in the current folder.')
 parser.add_argument(
-    '-M',
-    dest = 'formatmap',
+    '-g',
+    dest = 'groom_filenames',
     action = 'store_true',
     default = False,
-    help = 'Format the ditamap file in the current folder.')
+    help = 'Groom XML filenames.')
+parser.add_argument(
+    '-M',
+    dest = 'create_map',
+    action = 'store_true',
+    default = False,
+    help = 'create a ditamap file with the xml files in the current folder.')
 parser.add_argument(
     '-c',
     dest = 'copy_from',
@@ -769,5 +852,9 @@ elif args.reset or args.format or args.insert_css or args.remove_css:
         insertCSS(makeFileList(args.targetFiles))
     if args.remove_css:
         removeCSS(makeFileList(args.targetFiles))
-elif args.formatmap:
-    formatMap()
+# elif args.formatmap:
+#     formatMap()
+elif args.create_map:
+    createMap()
+elif args.groom_filenames:
+    groomFilenames()
