@@ -51,7 +51,7 @@ def formatXml(fileList:list) -> None:
             content = re.sub('\s+', ' ', content)
             with open(fn, mode='w', encoding='utf-8') as fs:
                 fs.write(content)
-        subprocess.run(f'xmlformat.exe --overwrite {fn}', check=False)
+        subprocess.run(f'xmlformat.exe --selfclose --overwrite {fn}', check=False)
 
 
 def formatMap() -> None:
@@ -73,26 +73,29 @@ def createMap() -> None:
 <title>????</title>'''
     
     chapterFiles = [
+            "foreword",
             "information_getting_started_with_your_electric_vehicle",
             "vehicle_information",
             "seats_amp_safety_system",
             "instrument_cluster",
-            "Convenience_Features",
+            "convenience_features",
             "driving_your_vehicle",
             "driver_assistance_system",
             "emergency_situations",
             "maintenance",
+            "appendix",
             "index"
         ]
     
     for cf in chapterFiles:
         fileName = cf + '.xml'
-        title = getTopicTitle(fileName)
-        ditamap += f'\n<topicref  type="topic" href="{fileName}" navtitle="{title}"><topicmeta><navtitle>{title}</navtitle></topicmeta>'
-        for fn in glob.glob(cf + '_*.xml'):
-            title = getTopicTitle(fn)
-            ditamap += f'\n\t<topicref  type="topic" href="{fn}" navtitle="{title}"><topicmeta><navtitle>{title}</navtitle></topicmeta></topicref>'
-        ditamap += '\n</topicref>'
+        if os.path.exists(fileName):
+            title = getTopicTitle(fileName)
+            ditamap += f'\n<topicref  type="topic" href="{fileName}" navtitle="{title}"><topicmeta><navtitle>{title}</navtitle></topicmeta>'
+            for fn in glob.glob(cf + '_*.xml'):
+                title = getTopicTitle(fn)
+                ditamap += f'\n\t<topicref  type="topic" href="{fn}" navtitle="{title}"><topicmeta><navtitle>{title}</navtitle></topicmeta></topicref>'
+            ditamap += '\n</topicref>'
 
     ditamap += '\n</map>'
     with open('_NEW.ditamap', mode='w', encoding='utf-8') as fs:
