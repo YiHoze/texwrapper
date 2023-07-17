@@ -2,7 +2,6 @@
 \bstatus="new"
 rev=".+?"	rev="1.0"
 "fm:Tab Page chapter"	"fm:Tab_Page_chapter"
-```"fm:Tab Page"	"fm:Tab_Page"
  xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
 (<topic(?![^>]*\brev=)[^>]*\b)xml:lang="[^"]*"	\1
 \sid="fig_.+?"
@@ -20,3 +19,4 @@ rev=".+?"	rev="1.0"
 <fig frame="all">	<fig>
 <p outputclass="right_w">	<p>
 <p outputclass="right">	<p>
+<sl otherprops="large">	<sl>

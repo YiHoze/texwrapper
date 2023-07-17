@@ -69,11 +69,12 @@ def createMap() -> None:
     
     ditamap = '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "technicalContent/dtd/map.dtd" []>
-<map xml:lang="??_??" platform="genesis/hyundai" product="????" audience="2024" base="electric/engine" xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" rev="1.0">
+<map base="electric/engine" platform="genesis/hyundai" product="????" audience="2024"  xml:lang="en" xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" rev="1.0">
 <title>????</title>'''
     
     chapterFiles = [
             "foreword",
+            "foreword_starting_your_electric_vehicle",
             "information_getting_started_with_your_electric_vehicle",
             "vehicle_information",
             "seats_amp_safety_system",
@@ -145,15 +146,22 @@ def writeList(fileName:str, imageList:list) -> None:
             fs.write(content)
 
 
-def StrainXML() -> None:
+def StrainXML(mapFile:str) -> None:
     
     if len(glob.glob('*.ditamap')) == 0:
         print('No ditamap is found.')
         sys.exit()
-    
+    ext = os.path.splitext(mapFile)[1]
+    if ext.lower() != '.ditamap':
+        mapFile = '*.ditamap'
+    if os.path.splitext(mapFile)[0] != '*':
+        if not os.path.exists(mapFile):
+            print(f'{mapFile} does not exist.')
+            sys.exit()
+
     # ditamap 파일에서 참조되는 xml 파일들의 목록 만들기
     referredXmlFile = 'xmls_referred.txt'
-    WordDigger(['*.ditamap'], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile, overwrite=True)
+    WordDigger([mapFile], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile, overwrite=True)
     # xml 아닌 것 삭제하기
     WordDigger([referredXmlFile], aim='^.+?\.css$\n', substitute='', overwrite=True)
     
@@ -673,7 +681,7 @@ def deleteDerivativeFiles() -> None:
 
 
 # main ########################################################
-parser = argparse.ArgumentParser(description = 'With no given option, XML files are reset.')
+parser = argparse.ArgumentParser(description = 'Validate DITA files.')
 parser.add_argument(
     'targetFiles',
     nargs = '*',
@@ -757,12 +765,6 @@ parser.add_argument(
     dest = 'flag',
     default = '2',
     help = '0: comments, 1: attributes, 2: both')
-# parser.add_argument(
-#     '-M',
-#     dest = 'formatmap',
-#     action = 'store_true',
-#     default = False,
-#     help = 'Format the ditamap file in the current folder.')
 parser.add_argument(
     '-g',
     dest = 'groom_filenames',
@@ -775,6 +777,12 @@ parser.add_argument(
     action = 'store_true',
     default = False,
     help = 'create a ditamap file with the xml files in the current folder.')
+parser.add_argument(
+    '-m',
+    dest = 'formatmap',
+    action = 'store_true',
+    default = False,
+    help = 'Format the ditamap file in the current folder.')
 parser.add_argument(
     '-c',
     dest = 'copy_from',
@@ -823,7 +831,7 @@ if args.preview_html:
 elif args.DITAOT:
     xsltDITAOT(makeFileList(args.targetFiles), args.VSCode)
 elif args.strainXml:
-    StrainXML()
+    StrainXML(args.targetFiles[0])
 elif args.checkCrossReferences:
     checkCrossReferences()
 elif args.strainImage:
@@ -855,9 +863,9 @@ elif args.reset or args.format or args.insert_css or args.remove_css:
         insertCSS(makeFileList(args.targetFiles))
     if args.remove_css:
         removeCSS(makeFileList(args.targetFiles))
-# elif args.formatmap:
-#     formatMap()
-elif args.create_map:
-    createMap()
 elif args.groom_filenames:
     groomFilenames()
+elif args.formatmap:
+    formatMap()
+elif args.create_map:
+    createMap()
