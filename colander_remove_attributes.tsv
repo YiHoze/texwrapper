@@ -4,6 +4,7 @@ rev=".+?"	rev="1.0"
 "fm:Tab Page chapter"	"fm:Tab_Page_chapter"
  xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
 (<topic(?![^>]*\brev=)[^>]*\b)xml:lang="[^"]*"	\1
+(<xref[^>]+)>[^<]*</xref>	\1 />
 \sid="fig_.+?"
 \sid="image_.+?"
 \sid="ol_.+?"
@@ -20,3 +21,10 @@ rev=".+?"	rev="1.0"
 <p outputclass="right_w">	<p>
 <p outputclass="right">	<p>
 <sl otherprops="large">	<sl>
+‘	'
+’	'
+“	"
+”	"
+<ul>\s*\n\s*</ul>
+<ol>\s*\n\s*</ol>
+<sl>\s*\n\s*</sl>

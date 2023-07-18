@@ -23,6 +23,7 @@ from op import FileOpener
 global RemovedLinebreaks
 RemovedLinebreaks = False
 
+
 def resetXml(fileList:list, flag:str) -> None:
     
     dirCalled = os.path.dirname(__file__)
@@ -30,11 +31,11 @@ def resetXml(fileList:list, flag:str) -> None:
     flag = int(flag)
 
     if flag == 0 or flag == 2:
-        regexFile = os.path.join(dirCalled, 'hmc_remove_comments.tsv')
+        regexFile = os.path.join(dirCalled, 'colander_remove_comments.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
 
     if flag == 1 or flag == 2:
-        regexFile = os.path.join(dirCalled, 'hmc_remove_attributes.tsv')
+        regexFile = os.path.join(dirCalled, 'colander_remove_attributes.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
         removeDeletedLines(fileList=fileList)
 
@@ -61,7 +62,7 @@ def formatMap() -> None:
         sys.exit()
 
     dirCalled = os.path.dirname(__file__)
-    regexFile = os.path.join(dirCalled, 'hmc_format_ditamap.tsv')
+    regexFile = os.path.join(dirCalled, 'colander_format_ditamap.tsv')
     WordDigger(['*.ditamap'], pattern=regexFile, overwrite=True)
 
 
@@ -564,7 +565,7 @@ def deleteFigImage(fileList:list) -> None:
         for p in patterns:
             content = re.sub(p, '', content)
         with open(fn, mode='w', encoding='utf-8') as fs:
-            fs.write(content)    
+            fs.write(content)
 
 
 def extractChanged(fileList:list) -> None:
