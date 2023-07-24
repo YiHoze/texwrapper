@@ -86,7 +86,7 @@ def parse_args() -> argparse.Namespace:
 
 def run_preprocess(target) -> None:
 
-    global args, compile_option
+    global args, preset_option
 
     if not os.path.exists(ini):
         print('i.ini is not found.')
@@ -105,13 +105,12 @@ def run_preprocess(target) -> None:
         for cmd in cmds:
             os.system(cmd)
 
-
     if args.final_bool:
         compiler = conf.get('tex', 'final_compiler', fallback=False)
         if compiler:
             compiler = compiler.split(' ')
             for i in compiler:
-                compile_option.append(i)
+                preset_option.append(i)
 
 
 def run_postprocess() -> None:
@@ -149,7 +148,7 @@ def write_tex(tex)  -> str:
 
 def compile_tex(tex) -> None:
 
-    global args, compile_option
+    global args, preset_option
 
     if not args.run_bool:
         return
@@ -161,7 +160,7 @@ def compile_tex(tex) -> None:
         if compiler:
             compiler = compiler.split(' ')
             for i in compiler:
-                compile_option.append(i)
+                preset_option.append(i)
 
     if type(tex) is list:
         for i in tex:
@@ -172,7 +171,7 @@ def compile_tex(tex) -> None:
 
 def do_compile(tex) -> None:
 
-    global args, compile_option
+    global args, compile_option, preset_option
 
     if args.draft_bool or args.final_bool:
         run_preprocess(tex)
@@ -182,7 +181,7 @@ def do_compile(tex) -> None:
         if pdf:
             tex = 't@x.tex'
 
-    compile_option.reverse()
+    compile_option = compile_option + preset_option
     print('{} {}'.format(tex, compile_option))
     LC = LatexCompiler(tex, compile_option)
     LC.compile()
@@ -342,8 +341,6 @@ def create_ini() -> None:
 
 def determine_tex() -> None:
 
-    global args, compile_option
-
     if args.create_ini_bool:
         create_ini()
     elif args.list_bool:
@@ -360,5 +357,7 @@ def determine_tex() -> None:
                 compile_tex(tex)
 
 global args, compile_option
+global preset_option
+preset_option = []
 args, compile_option = parse_args()
 determine_tex()
