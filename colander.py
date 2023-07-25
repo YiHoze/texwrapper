@@ -614,11 +614,11 @@ def insertCSS(fileList:list) -> None:
     
 
     dirCalled = os.path.dirname(__file__)
-    cssFile = os.path.join(dirCalled, 'preview.css')
+    cssFile = os.path.join(dirCalled, 'colander.css')
     os.chdir(os.path.dirname(os.path.abspath(fileList[0])))
     shutil.copy(cssFile, '..')
 
-    WordDigger(fileList, aim='(<\\?xml.+\\?>)', substitute='\\1\\n<?xml-stylesheet type="text/css" href="../preview.css"?>', overwrite=True)
+    WordDigger(fileList, aim='(<\\?xml.+\\?>)', substitute='\\1\\n<?xml-stylesheet type="text/css" href="../colander.css"?>', overwrite=True)
 
 
 def removeCSS(fileList:list) -> None:
@@ -637,7 +637,7 @@ def xsltDITAOT(fileList:list, VSCode:bool) -> None:
     for fn in fileList:
         filename = os.path.basename(fn)
         htmlFile = os.path.splitext(filename)[0] + '.html'
-        ditacmd = f'dita.bat  --input="{filename}" --format=html5 --output=_html --repeat=1 --propertyfile="C:\\home\\bin\\preview.properties"'
+        ditacmd = f'dita.bat  --input="{filename}" --format=html5 --output=_html --repeat=1 --propertyfile="C:\\home\\bin\\colander.properties"'
         shellcmd = ['powershell.exe', '-Command', ditacmd]
         if VSCode:
             subprocess.run(shellcmd, check=False)
@@ -655,9 +655,9 @@ def xsltColander(fileList:list) -> None:
     xslt = etree.parse(xslFile)
     xslt_transformer = etree.XSLT(xslt)
 
-    cssFile = os.path.join(dirCalled, 'preview.css')
+    cssFile = os.path.join(dirCalled, 'colander.css')
     os.chdir(os.path.dirname(os.path.abspath(fileList[0])))
-    if not os.path.exists('../preview.css'):
+    if not os.path.exists('../colander.css'):
         shutil.copy(cssFile, '..')
 
     opener = FileOpener(as_web=True)
@@ -794,13 +794,13 @@ parser.add_argument(
     dest = 'insert_css',
     action = 'store_true',
     default = False,
-    help = 'Insert preview.css into xml files.')
+    help = 'Insert colander.css into xml files.')
 parser.add_argument(
     '-S',
     dest = 'remove_css',
     action = 'store_true',
     default = False,
-    help = 'Remove preview.css from xml files.')
+    help = 'Remove colander.css from xml files.')
 parser.add_argument(
     '-H',
     dest = 'preview_html',
