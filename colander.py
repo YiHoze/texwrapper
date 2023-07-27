@@ -1,6 +1,6 @@
 # 1> colander -R -F    XML 파일들에서 status 속성과 주석 제거하기
 # 2> colander -g       XML 파일들 이름 바꾸기
-# 3> renamed.tsv       편집하면서 그에 따라 파일들 이름 바꾸기
+# 3> renamed_xml.tsv       편집하면서 그에 따라 파일들 이름 바꾸기
 # 4> colander -M       ditamap 만들기
 # 5> _NEW.ditamap에서 제목 오류 찾아 고치기
 
@@ -133,7 +133,7 @@ def groomFilenames() -> None:
         os.rename(filename, newname)
         filelist += f"{filename}\t{newname}\n"
 
-    with open('renamed.tsv', mode='w', encoding='utf-8') as fs:
+    with open('renamed_xml.tsv', mode='w', encoding='utf-8') as fs:
         fs.write(filelist)
 
 
