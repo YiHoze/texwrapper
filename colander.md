@@ -30,7 +30,7 @@ C:\>Set-ExecutionPolicy RemoteSigned
     ```
     C:\>winget install python
     ```
-    또 다른 방법은 [파이선 설치 프로그램](https://www.python.org/ftp/python/3.11.3/python-3.11.3-amd64.exe)을 이용하는 것이다.
+    또 다른 방법은 [파이선 설치 프로그램](https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe)을 이용하는 것이다.
 1. 파이선 경로를 `Path` 환경 변수에 추가해야 한다.
     ```
     C:\>control.exe sysdm.cpl,System,3
@@ -56,7 +56,8 @@ Colander.py와 다른 파이선 스크립트들을 내려받으라.
 ```
 https://raw.githubusercontent.com/YiHoze/texwrapper/master/colander.py
 https://raw.githubusercontent.com/YiHoze/texwrapper/master/colander.xsl
-https://raw.githubusercontent.com/YiHoze/texwrapper/master/preview.css
+https://raw.githubusercontent.com/YiHoze/texwrapper/master/colander.css
+https://raw.githubusercontent.com/YiHoze/texwrapper/master/colander.properties
 https://raw.githubusercontent.com/YiHoze/texwrapper/master/wordig.py
 https://raw.githubusercontent.com/YiHoze/texwrapper/master/op.py
 https://raw.githubusercontent.com/YiHoze/texwrapper/master/docenv.conf

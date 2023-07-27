@@ -55,15 +55,13 @@ def formatXml(fileList:list) -> None:
         subprocess.run(f'xmlformat.exe --selfclose --overwrite {fn}', check=False)
 
 
-def formatMap() -> None:
+def formatMap(mapFile:str) -> None:
 
-    if len(glob.glob('*.ditamap')) == 0:
-        print('No ditamap is found.')
-        sys.exit()
+    mapFile = getDitaMap(mapFile)
 
     dirCalled = os.path.dirname(__file__)
     regexFile = os.path.join(dirCalled, 'colander_format_ditamap.tsv')
-    WordDigger(['*.ditamap'], pattern=regexFile, overwrite=True)
+    WordDigger([mapFile], pattern=regexFile, overwrite=True)
 
 
 def createMap() -> None:
@@ -147,18 +145,39 @@ def writeList(fileName:str, imageList:list) -> None:
             fs.write(content)
 
 
-def StrainXML(mapFile:str) -> None:
+def getDitaMap(mapFile:str) -> str:
     
-    if len(glob.glob('*.ditamap')) == 0:
-        print('No ditamap is found.')
-        sys.exit()
-    ext = os.path.splitext(mapFile)[1]
-    if ext.lower() != '.ditamap':
-        mapFile = '*.ditamap'
-    if os.path.splitext(mapFile)[0] != '*':
+    if mapFile == '*.xml':
+        maps = glob.glob('*.ditamap')
+        if len(maps) == 0:
+            print('No ditamap is found.')
+            sys.exit()
+        elif len(maps) == 1:
+            mapFile = maps[0]
+        else:
+            for i, v in enumerate(maps):
+                print('{}:{}'.format(i+1, v))
+            selection = input("Select a file by entering its number: ")
+            try:
+                selection = int(selection)
+            except:
+                print("Wrong selection.")
+                sys.exit()
+            if selection > 0 and selection <= len(maps):
+                mapFile = maps[selection -1]
+            else:
+                print("Wrong selection.")
+                sys.exit()
+    else:
         if not os.path.exists(mapFile):
             print(f'{mapFile} does not exist.')
             sys.exit()
+
+    return mapFile
+
+def strainXML(mapFile:str) -> None:
+
+    mapFile = getDitaMap(mapFile)
 
     # ditamap 파일에서 참조되는 xml 파일들의 목록 만들기
     referredXmlFile = 'xmls_referred.txt'
@@ -179,7 +198,7 @@ def StrainXML(mapFile:str) -> None:
 
     # 존재하는 xml 파일들 중에서 참조되지 않는 xml 파일들 가려내기
     referredXmlLower = list(map(str.lower, referredXml))
-    unreferredXml = []    
+    unreferredXml = []
     agreedXml = []
     for i in existingXml:
         if i.lower() in referredXmlLower:
@@ -259,7 +278,7 @@ Misspelled images: {}\n'''.format(len(referredImage), len(existingImage), len(un
     return unreferredImage
 
 
-def StrainImage(removeUnused=False) -> None:
+def strainImage(removeUnused=False) -> None:
     
     unreferredImage = rummageImages()
 
@@ -700,7 +719,7 @@ parser.add_argument(
     dest = 'strainXml',
     action = 'store_true',
     default = False,
-    help = 'Strain XML files.')
+    help = 'Strain XML files from their map file.')
 parser.add_argument(
     '-X',
     dest = 'checkCrossReferences',
@@ -832,14 +851,14 @@ if args.preview_html:
 elif args.DITAOT:
     xsltDITAOT(makeFileList(args.targetFiles), args.VSCode)
 elif args.strainXml:
-    StrainXML(args.targetFiles[0])
+    strainXML(args.targetFiles[0])
 elif args.checkCrossReferences:
     checkCrossReferences()
 elif args.strainImage:
     if args.removeErrors:
-        StrainImage(removeUnused=True)
+        strainImage(removeUnused=True)
     else:
-        StrainImage()
+        strainImage()
 elif args.generateID:
     generateID(prefix=args.IDprefix)
 elif args.obscureID:
@@ -867,6 +886,6 @@ elif args.reset or args.format or args.insert_css or args.remove_css:
 elif args.groom_filenames:
     groomFilenames()
 elif args.formatmap:
-    formatMap()
+    formatMap(args.targetFiles[0])
 elif args.create_map:
     createMap()
