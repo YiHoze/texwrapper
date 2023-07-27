@@ -181,7 +181,7 @@ def do_compile(tex) -> None:
         if pdf:
             tex = 't@x.tex'
 
-    compile_option = compile_option + preset_option
+    compile_option = preset_option + compile_option
     print('{} {}'.format(tex, compile_option))
     LC = LatexCompiler(tex, compile_option)
     LC.compile()
