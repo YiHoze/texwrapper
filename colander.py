@@ -252,7 +252,9 @@ Missing XMLs: {}\n'''.format(len(referredXml), len(existingXml), len(unreferredX
     os.remove(tmpMap)
 
 
-def rummageImages() -> None:
+def rummageImages(case_sensitive=False) -> None:
+
+    identical = False
 
     # xml 파일에서 참조되는 이미지들의 목록 만들기
     referredImageFile = 'images_referred.txt'
@@ -271,43 +273,60 @@ def rummageImages() -> None:
     writeList('images_existing.txt', existingImage)
 
     # 존재하는 이미지들 중에서 참조되지 않는 이미지들 가려내기
-    referredImageLower = list(map(str.lower, referredImage))
     unreferredImage = []
     agreedImage = []
-    for i in existingImage:
-        if i.lower() in referredImageLower:
-            agreedImage.append(i)
-        else:        
-            unreferredImage.append(i)
+    if case_sensitive:
+        for i in existingImage:
+            identical = False
+            for j in referredImage:
+                if i == j:
+                    identical = True
+                    break
+            if identical:
+                agreedImage.append(i)
+            else:
+                unreferredImage.append(i)
+    else:
+        referredImageLower = list(map(str.lower, referredImage))
+        for i in existingImage:
+            if i.lower() in referredImageLower:
+                agreedImage.append(i)
+            else:
+                unreferredImage.append(i)
     writeList('images_unreferred.txt', unreferredImage)
 
     # 참조되지만 존재하지 않는 이미지들 가려내기
-    agreedImageLower = list(map(str.lower, agreedImage))
     missingImage = []
-    misspelledImage = []
-    for i in referredImage:
-        if not i.lower() in agreedImageLower:
-            missingImage.append(i)
-        if not i in agreedImage:
-            misspelledImage.append(i)
+    if case_sensitive:
+        for i in referredImage:
+            identical = False
+            for j in agreedImage:
+                if i == j:
+                    identical = True
+                    break
+            if not identical:
+                missingImage.append(i)
+    else:
+        agreedImageLower = list(map(str.lower, agreedImage))
+        for i in referredImage:
+            if not i.lower() in agreedImageLower:
+                missingImage.append(i)
     writeList('images_missing.txt', missingImage)
-    writeList('images_misspelled.txt', misspelledImage)
 
     output = '''\nReferred images: {}
 Existing images: {}
 Unreferred images: {}
-Missing images: {}
-Misspelled images: {}\n'''.format(len(referredImage), len(existingImage), len(unreferredImage), len(missingImage), len(misspelledImage))
+Missing images: {}\n'''.format(len(referredImage), len(existingImage), len(unreferredImage), len(missingImage))
     print(output)
 
     return unreferredImage
 
 
-def strainImage(removeUnused=False) -> None:
+def strainImage(case_sensitive=False, remove_unused=False) -> None:
     
-    unreferredImage = rummageImages()
+    unreferredImage = rummageImages(case_sensitive)
 
-    if removeUnused:
+    if remove_unused:
         for i in unreferredImage:
             i = os.path.join('image', i)
             os.remove(i)
@@ -441,7 +460,7 @@ def generateID(prefix='title', parts=3, length=3) -> None:
     print(f'"{ID}" is copied to the clipboard')
 
 
-def checkDuplicateIDs(removeDuplicates=False) -> None:
+def checkDuplicateIDs(remove_duplicates=False) -> None:
 
     foundIDs = {}
 
@@ -458,14 +477,14 @@ def checkDuplicateIDs(removeDuplicates=False) -> None:
     content = ''
     duplicateIDFile = 'duplicate_IDs.txt'
 
-    if removeDuplicates:
+    if remove_duplicates:
         createXrefFile()
         with open('xrefs.txt', mode='r', encoding='utf-8') as fs:
             xrefs = fs.read()
 
     for key, value in foundIDs.items():
         if value > 1:
-            if removeDuplicates:
+            if remove_duplicates:
                 id = re.sub('id="(.+)"', '\\1', key)
                 if re.search(id, xrefs):
                     # 참조되는 ID는 삭제되지 않게 한다.
@@ -479,7 +498,7 @@ def checkDuplicateIDs(removeDuplicates=False) -> None:
         with open(duplicateIDFile, mode='w', encoding='utf-8') as fs:
             fs.write(content)
 
-        if removeDuplicates:
+        if remove_duplicates:
             WordDigger(['*.xml'], pattern=duplicateIDFile, overwrite=True)
             print('Except referred ones, duplicate IDs are deleted.')
         else:
@@ -773,7 +792,7 @@ parser.add_argument(
     help = 'Strain image files.')
 parser.add_argument(
     '-r',
-    dest = 'removeErrors',
+    dest = 'remove_bool',
     action = 'store_true',
     default = False,
     help = 'Remove unreferred image files or duplicate IDs.')
@@ -894,19 +913,13 @@ elif args.strainXml:
 elif args.checkCrossReferences:
     checkCrossReferences(args.case_sensitive)
 elif args.strainImage:
-    if args.removeErrors:
-        strainImage(removeUnused=True)
-    else:
-        strainImage()
+    strainImage(case_sensitive=args.case_sensitive, remove_unused=args.remove_bool)
 elif args.generateID:
     generateID(prefix=args.IDprefix)
 elif args.obscureID:
     generateObscureID()
 elif args.duplicateID:
-    if args.removeErrors:
-        checkDuplicateIDs(removeDuplicates=True)
-    else:
-        checkDuplicateIDs()
+    checkDuplicateIDs(remove_duplicates=args.remove_bool)
 elif args.extractChanged:
     extractChanged(makeFileList(args.targetFiles))
 elif args.copy_from is not None:
@@ -914,10 +927,10 @@ elif args.copy_from is not None:
 elif args.deleteDerivative:
     deleteDerivativeFiles()
 elif args.reset or args.format or args.insert_css or args.remove_css:
-    if args.reset:
-        resetXml(makeFileList(args.targetFiles), flag=args.flag)
     if args.format:
         formatXml(makeFileList(args.targetFiles))
+    if args.reset:
+        resetXml(makeFileList(args.targetFiles), flag=args.flag)
     if args.insert_css:
         insertCSS(makeFileList(args.targetFiles))
     if args.remove_css:
