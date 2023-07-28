@@ -178,10 +178,13 @@ def getDitaMap(mapFile:str) -> str:
 def strainXML(mapFile:str) -> None:
 
     mapFile = getDitaMap(mapFile)
+    tmpMap = 't@mp.map'
+    shutil.copy(mapFile, tmpMap)
+    WordDigger([tmpMap], aim='<!--.*?-->', substitute='', overwrite=True)
 
     # ditamap 파일에서 참조되는 xml 파일들의 목록 만들기
     referredXmlFile = 'xmls_referred.txt'
-    WordDigger([mapFile], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile, overwrite=True)
+    WordDigger([tmpMap], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile, overwrite=True)
     # xml 아닌 것 삭제하기
     WordDigger([referredXmlFile], aim='^.+?\.css$\n', substitute='', overwrite=True)
     
@@ -225,6 +228,8 @@ Unreferred XMLs: {}
 Missing XMLs: {}
 Misspelled XMLs: {}\n'''.format(len(referredXml), len(existingXml), len(unreferredXml), len(missingXml), len(misspelledXml))
     print(output)
+
+    os.remove(tmpMap)
 
 
 def rummageImages() -> None:
