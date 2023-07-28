@@ -175,7 +175,9 @@ def getDitaMap(mapFile:str) -> str:
 
     return mapFile
 
-def strainXML(mapFile:str) -> None:
+def strainXML(mapFile:str, case_sensitive=False) -> None:
+
+    identical = False
 
     mapFile = getDitaMap(mapFile)
     tmpMap = 't@mp.map'
@@ -200,33 +202,51 @@ def strainXML(mapFile:str) -> None:
     writeList('xmls_existing.txt', existingXml)
 
     # 존재하는 xml 파일들 중에서 참조되지 않는 xml 파일들 가려내기
-    referredXmlLower = list(map(str.lower, referredXml))
     unreferredXml = []
     agreedXml = []
-    for i in existingXml:
-        if i.lower() in referredXmlLower:
-            agreedXml.append(i)
-        else:
-            unreferredXml.append(i)
+    if case_sensitive:
+        for i in existingXml:
+            identical = False
+            for j in referredXml:
+                if i == j:
+                    identical = True
+                    break
+            if identical:
+                agreedXml.append(i)
+            else:
+                unreferredXml.append(i)
+    else:
+        referredXmlLower = list(map(str.lower, referredXml))
+        for i in existingXml:
+            if i.lower() in referredXmlLower:
+                agreedXml.append(i)
+            else:
+                unreferredXml.append(i)
     writeList('xmls_unreferred.txt', unreferredXml)
 
     # 참조되지만 존재하지 않는 xml 파일들 가려내기
-    agreedXmlLower = list(map(str.lower, agreedXml))
     missingXml = []
-    misspelledXml = []
-    for i in referredXml:
-        if not i.lower() in agreedXmlLower:
-            missingXml.append(i)
-        if not i in agreedXml:
-            misspelledXml.append(i)
+    if case_sensitive:
+        for i in referredXml:
+            identical = False
+            for j in agreedXml:
+                if i == j:
+                    identical = True
+                    break
+            if not identical:
+                missingXml.append(i)
+
+    else:
+        agreedXmlLower = list(map(str.lower, agreedXml))
+        for i in referredXml:
+            if not i.lower() in agreedXmlLower:
+                missingXml.append(i)
     writeList('xmls_missing.txt', missingXml)
-    writeList('xmls_misspelled.txt', misspelledXml)
 
     output = '''\nReferred XMLs: {}
 Existing XMLs: {}
 Unreferred XMLs: {}
-Missing XMLs: {}
-Misspelled XMLs: {}\n'''.format(len(referredXml), len(existingXml), len(unreferredXml), len(missingXml), len(misspelledXml))
+Missing XMLs: {}\n'''.format(len(referredXml), len(existingXml), len(unreferredXml), len(missingXml))
     print(output)
 
     os.remove(tmpMap)
@@ -299,7 +319,7 @@ def getFileTagID(uri:str) -> list:
     fileTagID = []
     tmp = uri.split('#')
     tmp = [item.split('/') for item in tmp]
-    fileTagID.clear()
+    # fileTagID.clear()
     for j in tmp:
         for k in j:
             fileTagID.append(k)
@@ -318,12 +338,19 @@ def getFile(ID:str) -> str:
     return False
 
 # file, id, subid가 존재하는지 확인한다.
-def checkFileTagID(fileTagID:list):
+def checkFileTagID(fileTagID:list, case_sensitive=False):
     
     if len(fileTagID) <= 3 and fileTagID[0] == '':
         fileTagID[0] = getFile(fileTagID[1])
 
     if os.path.exists(fileTagID[0]):
+
+        if case_sensitive:
+            refname = fileTagID[0].replace('.xml', '*.xml')
+            realname = glob.glob(refname)[0]
+            if fileTagID[0] != realname:
+                return False
+
         if len(fileTagID) <= 1: 
             return True
         else:
@@ -357,7 +384,7 @@ def createXrefFile(xrefLinesFile='xrefs.txt') -> None:
     WordDigger([xrefLinesFile], aim='(?<=href=").+?(?=")', gather=True, output=xrefLinesFile, overwrite=True)
 
 
-def checkCrossReferences() -> None:
+def checkCrossReferences(case_sensitive=False) -> None:
     
     # 참고용
     WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='xrefs_xml.txt', overwrite=True)
@@ -372,7 +399,7 @@ def checkCrossReferences() -> None:
     for uri in xrefLines:
         fileTagID = getFileTagID(uri)
         # file, id, subid 중 하나라도 맞지 않으면 목록에 추가한다.
-        if not checkFileTagID(fileTagID):
+        if not checkFileTagID(fileTagID, case_sensitive):
             result.append(uri)
     
     mismatchedXrefFile = 'xrefs_mismatched.txt'
@@ -720,6 +747,13 @@ parser.add_argument(
     help = 'Given files are regarded as lists of target files.'
     )
 parser.add_argument(
+    '-C',
+    dest = 'case_sensitive',
+    action = 'store_true',
+    default = False,
+    help = 'Ignore case with file names.'
+    )
+parser.add_argument(
     '-x',
     dest = 'strainXml',
     action = 'store_true',
@@ -856,9 +890,9 @@ if args.preview_html:
 elif args.DITAOT:
     xsltDITAOT(makeFileList(args.targetFiles), args.VSCode)
 elif args.strainXml:
-    strainXML(args.targetFiles[0])
+    strainXML(args.targetFiles[0], args.case_sensitive)
 elif args.checkCrossReferences:
-    checkCrossReferences()
+    checkCrossReferences(args.case_sensitive)
 elif args.strainImage:
     if args.removeErrors:
         strainImage(removeUnused=True)
