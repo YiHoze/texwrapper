@@ -20,9 +20,10 @@ from wordig import WordDigger
 from op import FileOpener
 
 
-global RemovedLinebreaks
-RemovedLinebreaks = False
-
+global removedLinebreaks
+global formattedXml
+removedLinebreaks = False
+formattedXml = False
 
 def resetXml(fileList:list, flag:str) -> None:
     
@@ -38,14 +39,16 @@ def resetXml(fileList:list, flag:str) -> None:
         regexFile = os.path.join(dirCalled, 'colander_remove_attributes.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
         removeDeletedLines(fileList=fileList)
+        formatXml(fileList)
 
 
 def formatXml(fileList:list) -> None:
 
-    global RemovedLinebreaks
+    global removedLinebreaks
+    global formattedXml
 
     for fn in fileList:
-        if not RemovedLinebreaks:
+        if not removedLinebreaks:
             with open(fn, mode='r', encoding='utf-8') as fs:
                 content = fs.read()
             content = re.sub('\n', ' ', content)
@@ -54,6 +57,7 @@ def formatXml(fileList:list) -> None:
                 fs.write(content)
         subprocess.run(f'xmlformat.exe --selfclose --overwrite {fn}', check=False)
 
+    formattedXml = True
 
 def formatMap(mapFile:str) -> None:
 
@@ -592,7 +596,7 @@ def getTagsHavingStatus(fileList:list, deletedOnly=False) -> list:
 
 def removeDeletedLines(fileList:list) -> None:
 
-    global RemovedLinebreaks
+    global removedLinebreaks
 
     deletedTags = getTagsHavingStatus(fileList=fileList, deletedOnly=True)
     deletedPattern = r'HEAD[^>]*\bstatus="deleted".*?>.*?TAIL'
@@ -618,7 +622,7 @@ def removeDeletedLines(fileList:list) -> None:
         with open(fn, mode='w', encoding='utf-8') as fs:
             fs.write(content)
 
-    RemovedLinebreaks = True
+    removedLinebreaks = True
 
 def deleteFigImage(fileList:list) -> None:
     
@@ -927,10 +931,10 @@ elif args.copy_from is not None:
 elif args.deleteDerivative:
     deleteDerivativeFiles()
 elif args.reset or args.format or args.insert_css or args.remove_css:
-    if args.format:
-        formatXml(makeFileList(args.targetFiles))
     if args.reset:
         resetXml(makeFileList(args.targetFiles), flag=args.flag)
+    if args.format and not formattedXml:
+        formatXml(makeFileList(args.targetFiles))
     if args.insert_css:
         insertCSS(makeFileList(args.targetFiles))
     if args.remove_css:

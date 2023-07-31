@@ -1,5 +1,6 @@
 \bstatus="changed"
 \bstatus="new"
+\[\s*\n\s*\]>	>
 rev=".+?"	rev="1.0"
 "fm:Tab Page chapter"	"fm:Tab_Page_chapter"
  xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
