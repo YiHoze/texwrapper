@@ -685,7 +685,6 @@ def extractChanged(fileList:list) -> None:
 
 
 def insertCSS(fileList:list) -> None:
-    
 
     dirCalled = os.path.dirname(__file__)
     cssFile = os.path.join(dirCalled, 'colander.css')
@@ -706,16 +705,21 @@ def xsltDITAOT(fileList:list, VSCode:bool) -> None:
         currDir = os.path.dirname(os.path.abspath(fileList[0]))
         os.chdir(currDir)
 
+
+    dirCalled = os.path.dirname(__file__)
+    propertiesFile = os.path.join(dirCalled, 'colander.properties')
     opener = FileOpener(as_web=True)
 
     for fn in fileList:
         filename = os.path.basename(fn)
         htmlFile = os.path.splitext(filename)[0] + '.html'
-        ditacmd = f'dita.bat  --input="{filename}" --format=html5 --output=_html --repeat=1 --propertyfile="C:\\home\\bin\\colander.properties"'
-        shellcmd = ['powershell.exe', '-Command', ditacmd]
+        ditacmd = f'dita.bat  --input="{filename}" --format=html5 --output=_html --repeat=1 --propertyfile="{propertiesFile}"'
+        # C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe
+        # shellcmd = ['powershell.exe', '-Command', ditacmd] 
+        # C:\Program Files\PowerShell\7\pwsh.exe
+        shellcmd = ['pwsh.exe', '-Command', ditacmd] 
         if VSCode:
             subprocess.run(shellcmd, check=False)
-            # htmlFile = os.path.join(currDir, '_html', htmlFile)
         else:
             subprocess.run(ditacmd, check=False)
         htmlFile = os.path.join('_html', htmlFile)

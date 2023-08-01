@@ -181,6 +181,11 @@ def do_compile(tex) -> None:
         if pdf:
             tex = 't@x.tex'
 
+    if '-X' in compile_option and '-L' in preset_option:
+        preset_option.remove('-L')
+    elif '-L' in compile_option and '-X' in preset_option:
+        preset_option.remove('-X')
+
     compile_option = preset_option + compile_option
     print('{} {}'.format(tex, compile_option))
     LC = LatexCompiler(tex, compile_option)

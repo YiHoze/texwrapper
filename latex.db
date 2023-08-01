@@ -9,8 +9,7 @@ tex = \documentclass{article}
 [hzbeamer]
 description = The hzbeamer class is available from https://github.com/YiHoze/HzGuide.
 tex_output = mydoc.tex
-tex = 
-	\documentclass[10pt,flier=false,hangul=true]{hzbeamer}
+tex = documentclass[10pt,flier=false,hangul=true]{hzbeamer}
 	
 	\usepackage{csquotes}
 	\MakeOuterQuote{"} %%"
@@ -38,7 +37,7 @@ tex = \documentclass[Noto]{hzguide}
 
 [memoir]
 tex_output = mydoc.tex
-tex = documentclass{memoir}
+tex = \documentclass{memoir}
 	\usepackage{fontspec}
 	
 	\begin{document}
