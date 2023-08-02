@@ -105,6 +105,7 @@ def createMap() -> None:
     with open('_NEW.ditamap', mode='w', encoding='utf-8') as fs:
         fs.write(ditamap)    
 
+    print("_NEW.ditamap is created.")
 
 def getTopicTitle(fileName:str) -> str:
 
@@ -139,6 +140,8 @@ def groomFilenames() -> None:
 
     with open('renamed_xml.tsv', mode='w', encoding='utf-8') as fs:
         fs.write(filelist)
+
+    print("renamed_xml.tsv is created.")
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -247,10 +250,10 @@ def strainXML(mapFile:str, case_sensitive=False) -> None:
                 missingXml.append(i)
     writeList('xmls_missing.txt', missingXml)
 
-    output = '''\nReferred XMLs: {}
+    output = '''Referred XMLs: {}
 Existing XMLs: {}
 Unreferred XMLs: {}
-Missing XMLs: {}\n'''.format(len(referredXml), len(existingXml), len(unreferredXml), len(missingXml))
+Missing XMLs: {}'''.format(len(referredXml), len(existingXml), len(unreferredXml), len(missingXml))
     print(output)
 
     os.remove(tmpMap)
@@ -317,10 +320,10 @@ def rummageImages(case_sensitive=False) -> None:
                 missingImage.append(i)
     writeList('images_missing.txt', missingImage)
 
-    output = '''\nReferred images: {}
+    output = '''Referred images: {}
 Existing images: {}
 Unreferred images: {}
-Missing images: {}\n'''.format(len(referredImage), len(existingImage), len(unreferredImage), len(missingImage))
+Missing images: {}'''.format(len(referredImage), len(existingImage), len(unreferredImage), len(missingImage))
     print(output)
 
     return unreferredImage
@@ -438,16 +441,16 @@ def checkCrossReferences(case_sensitive=False) -> None:
             os.remove(mismatchedXrefFile)
 
 
-def generateObscureID(length=11) -> None:
+# def generateObscureID(length=11) -> None:
 
-    # characters = string.ascii_letters + string.digits
-    characters = string.ascii_lowercase + string.digits
-    available = True
-    while available:
-        obscureID = 'id' + ''.join(random.choice(characters) for i in range(length))    
-        available = getFile(obscureID)
-    pyperclip.copy(obscureID)
-    print(f'"{obscureID}" is copied to the clipboard')
+#     # characters = string.ascii_letters + string.digits
+#     characters = string.ascii_lowercase + string.digits
+#     available = True
+#     while available:
+#         obscureID = 'id' + ''.join(random.choice(characters) for i in range(length))    
+#         available = getFile(obscureID)
+#     pyperclip.copy(obscureID)
+#     print(f'"{obscureID}" is copied to the clipboard')
 
 
 def generateID(prefix='title', parts=3, length=3) -> None:
@@ -816,12 +819,12 @@ parser.add_argument(
     default = 'title',
     help = 'Specify a prefix for ID creation. (Default: title)'
     )
-parser.add_argument(
-    '-o',
-    dest = 'obscureID',
-    action = 'store_true',
-    default = False,
-    help = 'Generate an obscure ID.')
+# parser.add_argument(
+#     '-o',
+#     dest = 'obscureID',
+#     action = 'store_true',
+#     default = False,
+#     help = 'Generate an obscure ID.')
 parser.add_argument(
     '-I',
     dest = 'duplicateID',
@@ -891,7 +894,7 @@ parser.add_argument(
     dest = 'preview_html',
     action = 'store_true',
     default = False,
-    help = 'Make HTML for preview.')
+    help = 'Make HTML for preview. This options is tentative and so should be used only by the developer.')
 parser.add_argument(
     '-D',
     dest = 'DITAOT',
@@ -924,8 +927,8 @@ elif args.strainImage:
     strainImage(case_sensitive=args.case_sensitive, remove_unused=args.remove_bool)
 elif args.generateID:
     generateID(prefix=args.IDprefix)
-elif args.obscureID:
-    generateObscureID()
+# elif args.obscureID:
+#     generateObscureID()
 elif args.duplicateID:
     checkDuplicateIDs(remove_duplicates=args.remove_bool)
 elif args.extractChanged:

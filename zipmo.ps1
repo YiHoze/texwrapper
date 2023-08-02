@@ -35,4 +35,5 @@ if ($modifiedFiles.Length -gt 0) {
     Move-Item -Force $zipFile ..
     $lastZippedTime = get-date -format "yyyy-MM-ddTHH:mm:ss"
     Set-Content -Path $timeFile $lastZippedTime
+    write-output "..\${zipFile} and ${timeFile} are created."
 }
