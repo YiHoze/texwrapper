@@ -771,6 +771,7 @@ parser.add_argument(
     help = 'Specify one or more xml files to format them. If nothing is specified, every file is processed.')
 parser.add_argument(
     '-l',
+    '--as-list',
     dest = 'aslist',
     action = 'store_true',
     default = False,
@@ -778,6 +779,7 @@ parser.add_argument(
     )
 parser.add_argument(
     '-C',
+    '--case-sensitive',
     dest = 'case_sensitive',
     action = 'store_true',
     default = False,
@@ -785,30 +787,35 @@ parser.add_argument(
     )
 parser.add_argument(
     '-x',
+    '--find-discarded-xml',
     dest = 'strainXml',
     action = 'store_true',
     default = False,
     help = 'Strain XML files from their map file.')
 parser.add_argument(
     '-X',
+    '--find-wrong-cross-reference',
     dest = 'checkCrossReferences',
     action = 'store_true',
     default = False,
     help = 'Check if any cross-references are broken.')
 parser.add_argument(
     '-i',
+    '--find-discarded-image',
     dest = 'strainImage',
     action = 'store_true',
     default = False,
     help = 'Strain image files.')
 parser.add_argument(
     '-r',
+    '--remove',
     dest = 'remove_bool',
     action = 'store_true',
     default = False,
     help = 'Remove unreferred image files or duplicate IDs.')
 parser.add_argument(
     '-t',
+    '--generate-id',
     dest = 'generateID',
     action = 'store_true',
     default = False,
@@ -827,28 +834,32 @@ parser.add_argument(
 #     help = 'Generate an obscure ID.')
 parser.add_argument(
     '-I',
+    '--find-duplicate-id',
     dest = 'duplicateID',
     action = 'store_true',
     default = False,
     help = 'Check if there are any identical IDs')
 parser.add_argument(
     '-e',
+    '--extract-by-status',
     dest = 'extractChanged' ,
     action = 'store_true',
     default = False,
     help = 'Extract changed or added lines.')
 parser.add_argument(
     '-F',
+    '--format-xml',
     dest = 'format',
     action = 'store_true',
     default = False,
     help = 'Format xml files.')
 parser.add_argument(
     '-R',
+    '--reset-xml',
     dest = 'reset',
     action = 'store_true',
     default = False,
-    help = 'Reset xml files by deleting unnecessary comments or attributes.')
+    help = 'Reset xml files by deleting unnecessary comments and attributes.')
 parser.add_argument(
     '-f',
     dest = 'flag',
@@ -856,18 +867,21 @@ parser.add_argument(
     help = '0: comments, 1: attributes, 2: both')
 parser.add_argument(
     '-g',
+    '--groom-filename',
     dest = 'groom_filenames',
     action = 'store_true',
     default = False,
     help = 'Groom XML filenames.')
 parser.add_argument(
     '-M',
+    '--create-map',
     dest = 'create_map',
     action = 'store_true',
     default = False,
     help = 'create a ditamap file with the xml files in the current folder.')
 parser.add_argument(
     '-m',
+    '--format-map',
     dest = 'formatmap',
     action = 'store_true',
     default = False,
@@ -879,24 +893,28 @@ parser.add_argument(
     help = 'Specify a folder path from which to copy files contained in a given file.')
 parser.add_argument(
     '-s',
+    '--insert-css',
     dest = 'insert_css',
     action = 'store_true',
     default = False,
     help = 'Insert colander.css into xml files.')
 parser.add_argument(
     '-S',
+    '--remove-css',
     dest = 'remove_css',
     action = 'store_true',
     default = False,
     help = 'Remove colander.css from xml files.')
 parser.add_argument(
     '-H',
+    '--create-html',
     dest = 'preview_html',
     action = 'store_true',
     default = False,
     help = 'Make HTML for preview. This options is tentative and so should be used only by the developer.')
 parser.add_argument(
     '-D',
+    '--call-ditaot',
     dest = 'DITAOT',
     action = 'store_true',
     default = False,
@@ -909,6 +927,7 @@ parser.add_argument(
     help = 'With -D, this option is used only by VS Code.')
 parser.add_argument(
     '-d',
+    '--delete-report',
     dest = 'deleteDerivative',
     action = 'store_true',
     default = False,

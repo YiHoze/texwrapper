@@ -516,7 +516,7 @@ class WordDigger(object):
             for p in range(0, doc.page_count):
                 page = doc.load_page(p)
                 content += page.get_text()
-            output = os.path.splitext(file)[0] + '.txt'
+            output = os.path.splitext(file)[0] + '_from_pdf.txt'
             with open(output, mode='w', encoding='utf-8') as f:
                 f.write(content)
             return output
