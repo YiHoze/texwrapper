@@ -128,6 +128,7 @@ def groomFilenames() -> None:
         newname = filename.lower()
         newname = re.sub('-', '_', newname)
         newname = re.sub('__', '_', newname)
+        newname = re.sub('_if_equipped', '', newname)
         newname = re.sub('_\(if_equipped\)', '', newname)
         newname = re.sub('_\.', '.', newname)
         found = re.search('(?<=_\()\w+(?=\)\.)', newname)
@@ -142,6 +143,34 @@ def groomFilenames() -> None:
         fs.write(filelist)
 
     print("renamed_xml.tsv is created.")
+
+
+def compareFilenames() -> None:
+    
+    if not os.path.exists('renamed_xml.tsv'):
+        print("renamed_xml.tsv does not exist.")
+        return
+    
+    with open('renamed_xml.tsv', mode='r', encoding='utf-8') as fs:
+        content = fs.read()
+    fileList = content.split('\n')
+
+    wrong = 0
+    for f in fileList:
+        changedName = re.sub('^.+\\t', '', f)
+        refName = changedName.replace('.xml', '*.xml')
+        realName = glob.glob(refName)
+        if len(realName) > 0:
+            if changedName != realName[0]:
+                print(f"{realName[0]} | {changedName}")
+                wrong += 1
+        else:
+            print(changedName)
+            wrong += 1
+    
+    if wrong == 0:
+        print("No misnamed files are found.")
+
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -871,7 +900,14 @@ parser.add_argument(
     dest = 'groom_filenames',
     action = 'store_true',
     default = False,
-    help = 'Groom XML filenames.')
+    help = 'Groom XML file names.')
+parser.add_argument(
+    '-G',
+    '--compare-filename',
+    dest = 'compare_filenames',
+    action = 'store_true',
+    default = False,
+    help = 'Make sure changed file names are identical with the real.')
 parser.add_argument(
     '-M',
     '--create-map',
@@ -967,6 +1003,8 @@ elif args.reset or args.format or args.insert_css or args.remove_css:
         removeCSS(makeFileList(args.targetFiles))
 elif args.groom_filenames:
     groomFilenames()
+elif args.compare_filenames:
+    compareFilenames()
 elif args.formatmap:
     formatMap(args.targetFiles[0])
 elif args.create_map:
