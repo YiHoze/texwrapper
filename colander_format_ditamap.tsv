@@ -7,8 +7,10 @@ rev=".+?"	rev="1.0"
 <map	\n<map
 <title>	\n<title>
 </title><topicref	</title>\n\n<topicref
+</topicmeta><topicref	</topicmeta>\n\t<topicref
 </topicmeta></topicref><topicref	</topicmeta></topicref>\n\t<topicref
 </topicref>\s?</topicref>	</topicref>\n</topicref>\n\n
 </map>	\n</map>
+(navtitle=".+?")\s(href=".+?")\s(type=".+?")	\3 \2 \1
+(href=".+?")\s(type=".+?")	\2 \1
 <!-- \n<topicref	\n<!-- <topicref
-(navtitle=".+?")\s(href=".+?")	\2 \1

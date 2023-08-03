@@ -390,7 +390,11 @@ class WordDigger(object):
                             if len(pattern) == 1:
                                 content = re.sub(pattern[0], '', content, flags=re.MULTILINE)
                             else:
-                                content = re.sub(pattern[0], pattern[1], content, flags=re.MULTILINE)
+                                # when replacing with quotation mark (") use \" in TSV
+                                if pattern[1] == '\\"':  
+                                    content = re.sub(pattern[0], '"', content, flags=re.MULTILINE)
+                                else:
+                                    content = re.sub(pattern[0], pattern[1], content, flags=re.MULTILINE)
 
         return content
 

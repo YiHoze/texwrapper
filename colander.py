@@ -1,8 +1,11 @@
 # 1> colander -R -F    XML 파일들에서 status 속성과 주석 제거하기
 # 2> colander -g       XML 파일들 이름 바꾸기
-# 3> renamed_xml.tsv       편집하면서 그에 따라 파일들 이름 바꾸기
-# 4> colander -M       ditamap 만들기
-# 5> _NEW.ditamap에서 제목 오류 찾아 고치기
+# 3> renamed_xml.tsv   편집하면서 그에 따라 파일들 이름 바꾸기
+# 4> colander -G       목록의 바뀐 이름과 실제 이름이 동일한지 확인하기
+# 5> colander -M       ditamap 만들기
+# 6> _NEW.ditamap에서  조직 바꾸고, 틀린 파일 이름과 <title> 찾아 고치기
+# 7> 아래 하기 전에 ()를 \(\)로 바꾸기
+# 8> wordig -P renamed_xml.tsv -v *.xml 바뀐 이름에 맞게 상호참조 고치기
 
 import os
 import sys
@@ -72,8 +75,9 @@ def createMap() -> None:
     
     ditamap = '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "technicalContent/dtd/map.dtd" []>
-<map base="electric/engine" platform="genesis/hyundai" product="????" audience="2024"  xml:lang="en" xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" rev="1.0">
-<title>????</title>'''
+<map base="electric/engine" platform="genesis/hyundai" product="????" audience="202?"  xml:lang="??_??" xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" rev="1.0">
+<title>????</title>
+'''
     
     chapterFiles = [
             "foreword",
@@ -99,7 +103,7 @@ def createMap() -> None:
             for fn in glob.glob(cf + '_*.xml'):
                 title = getTopicTitle(fn)
                 ditamap += f'\n\t<topicref  type="topic" href="{fn}" navtitle="{title}"><topicmeta><navtitle>{title}</navtitle></topicmeta></topicref>'
-            ditamap += '\n</topicref>'
+            ditamap += '\n</topicref>\n'
 
     ditamap += '\n</map>'
     with open('_NEW.ditamap', mode='w', encoding='utf-8') as fs:

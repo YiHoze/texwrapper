@@ -24,8 +24,8 @@ rev=".+?"	rev="1.0"
 <sl otherprops="large">	<sl>
 ‘	'
 ’	'
-“	"
-”	"
+“	\"
+”	\"
 <ul>\s*\n\s*</ul>
 <ol>\s*\n\s*</ol>
 <sl>\s*\n\s*</sl>
