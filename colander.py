@@ -1,11 +1,11 @@
-# 1> colander -R -F    XML 파일들에서 status 속성과 주석 제거하기
-# 2> colander -g       XML 파일들 이름 바꾸기
-# 3> renamed_xml.tsv   편집하면서 그에 따라 파일들 이름 바꾸기
-# 4> colander -G       목록의 바뀐 이름과 실제 이름이 동일한지 확인하기
-# 5> colander -M       ditamap 만들기
-# 6> _NEW.ditamap에서  조직 바꾸고, 틀린 파일 이름과 <title> 찾아 고치기
-# 7> 아래 하기 전에 ()를 \(\)로 바꾸기
-# 8> wordig -P renamed_xml.tsv -v *.xml 바뀐 이름에 맞게 상호참조 고치기
+# 1> colander -R -F     XML 파일들에서 status 속성과 주석 제거하기
+# 2> colander -g -f=0   renaming_xml.tsv 만들기
+# 3> renaming_xml.tsv   새 파일 이름들 점검하기
+# 4> colander -g -f=1   renaming_xml.tsv대로 파일들 이름 바꾸기
+# 5> colander -g -f=2   목록의 바뀐 이름과 실제 이름이 동일한지 확인하기
+# 6> colander -M        ditamap 만들기
+# 7> _NEW.ditamap에서   조직 바꾸고, 틀린 파일 이름과 <title> 찾아 고치기
+# 8> colander -g -f=3   모든 XML 파일들에서 바뀐 파일 이름에 맞게 상호참조 고치기
 
 import os
 import sys
@@ -22,23 +22,21 @@ from lxml import etree
 from wordig import WordDigger
 from op import FileOpener
 
-
 global removedLinebreaks
 global formattedXml
 removedLinebreaks = False
 formattedXml = False
 
+
 def resetXml(fileList:list, flag:str) -> None:
     
     dirCalled = os.path.dirname(__file__)
 
-    flag = int(flag)
-
-    if flag == 0 or flag == 2:
+    if flag == '0' or flag == '2':
         regexFile = os.path.join(dirCalled, 'colander_remove_comments.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
 
-    if flag == 1 or flag == 2:
+    if flag == '1' or flag == '2':
         regexFile = os.path.join(dirCalled, 'colander_remove_attributes.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
         removeDeletedLines(fileList=fileList)
@@ -125,38 +123,78 @@ def getTopicTitle(fileName:str) -> str:
     return title
 
 
-def groomFilenames() -> None:
+def groomFilenames(flag:str) -> None:
+
+    xmlListFile = 'renaming_xml.tsv'
+
+    if flag == '0':
+        groom_create_filelist(xmlListFile)
+    elif flag == '1':
+        groom_rename_files(xmlListFile)
+    elif flag == '2':
+        groom_check_filenames(xmlListFile)
+    elif flag == '3':
+        groom_change_xrefs(xmlListFile)
+    else:
+        print(f"-f=0: create {xmlListFile}, a list of xml files.\n\
+-f=1: rename xml files using {xmlListFile}.\n\
+-f=2: check if changed file names are identical with the real.\n\
+-f=3: change cross-references according to the changed file names.")
+
+def groom_create_filelist(xmlListFile:str) -> None:
 
     filelist = ''
-    for filename in glob.glob('*.xml'):
-        newname = filename.lower()
+    for oldname in glob.glob('*.xml'):
+        newname = oldname.lower()
         newname = re.sub('-', '_', newname)
         newname = re.sub('__', '_', newname)
         newname = re.sub('_if_equipped', '', newname)
         newname = re.sub('_\(if_equipped\)', '', newname)
         newname = re.sub('_\.', '.', newname)
+        # foo_(xxx).xml -> foo_XXX.xml
         found = re.search('(?<=_\()\w+(?=\)\.)', newname)
         if found:
             aim = f"_\({found.group(0)}\)\."
             substitute = f"_{found.group(0).upper()}."
             newname = re.sub(aim, substitute, newname)
-        os.rename(filename, newname)
-        filelist += f"{filename}\t{newname}\n"
+        found = re.search('(?<=_)\w{2,4}(?=\.)', newname)
+        if found:
+            aim = f"_{found.group(0)}\."
+            substitute = f"_{found.group(0).upper()}."
+            newname = re.sub(aim, substitute, newname)
+        filelist += f"{oldname}\t{newname}\n"
 
-    with open('renamed_xml.tsv', mode='w', encoding='utf-8') as fs:
+    with open(xmlListFile, mode='w', encoding='utf-8') as fs:
         fs.write(filelist)
 
-    print("renamed_xml.tsv is created.")
+    print(f"{xmlListFile} is created.")
 
 
-def compareFilenames() -> None:
-    
-    if not os.path.exists('renamed_xml.tsv'):
-        print("renamed_xml.tsv does not exist.")
+def groom_rename_files(xmlListFile:str) -> None:
+
+    if not os.path.exists(xmlListFile):
+        print(f"{xmlListFile} does not exist.")
+        return
+
+    with open(xmlListFile, mode='r', encoding='utf-8') as fs:
+        content = fs.read()
+    content = content.strip()
+    fileList = content.split('\n')
+
+    for i in fileList:
+        names = i.split('\t')
+        os.rename(names[0], names[1])
+
+
+def groom_check_filenames(xmlListFile:str) -> None:
+
+    if not os.path.exists(xmlListFile):
+        print(f"{xmlListFile} does not exist.")
         return
     
-    with open('renamed_xml.tsv', mode='r', encoding='utf-8') as fs:
+    with open(xmlListFile, mode='r', encoding='utf-8') as fs:
         content = fs.read()
+    content = content.strip()
     fileList = content.split('\n')
 
     wrong = 0
@@ -171,10 +209,16 @@ def compareFilenames() -> None:
         else:
             print(changedName)
             wrong += 1
-    
+
     if wrong == 0:
         print("No misnamed files are found.")
 
+
+def groom_change_xrefs(xmlListFile:str) -> None:
+
+    WordDigger([xmlListFile], aim='\\(', substitute='\\(', overwrite=True)
+    WordDigger([xmlListFile], aim='\\)', substitute='\\)', overwrite=True)
+    WordDigger(['*.xml'], pattern=xmlListFile, overwrite=True)
 
 
 def writeList(fileName:str, imageList:list) -> None:
@@ -597,7 +641,7 @@ def findStatusAttribute(fileName:str) -> dict:
     with open(fileName, mode='r', encoding='utf-8') as fs:
         content = fs.readlines()
     for num, line in enumerate(content):
-        matched = re.search('\bstatus="changed|new"', line)
+        matched = re.search('\bstatus="(changed|new)"', line)
         if matched:
             foundLines[num] = line.strip()
 
@@ -626,8 +670,8 @@ def getTagsHavingStatus(fileList:list, deletedOnly=False) -> list:
                 else:
                     tag += '>'
                 tags_having_status_attribute.append(tag)
-        
-    return list(set(tags_having_status_attribute))   
+
+    return list(set(tags_having_status_attribute))
 
 
 def removeDeletedLines(fileList:list) -> None:
@@ -715,9 +759,49 @@ def extractChanged(fileList:list) -> None:
         fs.write(content)
     resetXml(['extracted_status_lines.txt'], flag='0')
     
-    shutil.copy('extracted_status_lines.txt', 'extracted_for_translation.txt')
-    resetXml(['extracted_for_translation.txt'])
-    deleteFigImage(['extracted_for_translation.txt'])
+    # shutil.copy('extracted_status_lines.txt', 'extracted_for_translation.txt')
+    # resetXml(['extracted_for_translation.txt'], flag='1')
+    # deleteFigImage(['extracted_for_translation.txt'])
+
+
+def typesetIcons(flag:str) -> None:
+    
+    iconGlyphFile = 'replace_icon_userinput.tsv'
+    
+    if flag == '0':
+        typeset_icon_find(iconGlyphFile)
+    elif flag == '1':
+        typeset_icon_replace(iconGlyphFile)
+    else:
+        print(f"-f=0: create {iconGlyphFile}, a list of icon image files.\n\
+-f=1: replace icon images in xml files with glyphs using {iconGlyphFile}.")
+
+def typeset_icon_find(iconGlyphFile:str) -> None:
+
+    dirCalled = os.path.dirname(__file__)
+    regexFile = os.path.join(dirCalled, 'colander_find_icons.tsv')
+
+    WordDigger(['*.xml'], aim_pattern=regexFile, gather=True, output=iconGlyphFile, overwrite=True)
+
+    with open(iconGlyphFile, mode='r', encoding='utf-8') as fs:
+        content = fs.read()
+    iconList = content.split('\n')
+
+    regexs = []
+    for i in iconList:
+        regexs.append(i + ".*?(/>|></image>)\t<userinput></userinput>")
+    content = '\n'.join(regexs)
+
+    with open(iconGlyphFile, mode='w', encoding='utf-8') as fs:
+        fs.write(content)
+
+def typeset_icon_replace(iconGlyphFile:str) -> None:
+    
+    if not os.path.exists(iconGlyphFile):
+        print(f"{iconGlyphFile} does not exist.")
+        return
+
+    WordDigger(['*.xml'], pattern=iconGlyphFile, overwrite=True)
 
 
 def insertCSS(fileList:list) -> None:
@@ -785,6 +869,34 @@ def xsltColander(fileList:list) -> None:
             fs.write(html)
         opener.open_with_browser(htmlFile)
 
+def compareLists(fileList:list) -> None:
+    
+    if len(fileList) < 2:
+        print("Specify two files.")
+        return
+    
+    refFile = fileList[0]
+    compFile = fileList[1]
+
+    with open(fileList[0], mode='r', encoding='utf-8') as fs:
+        referenceList = fs.read()
+    referenceList = referenceList.split('\n')
+    with open(fileList[1], mode='r', encoding='utf-8') as fs:
+        targetList = fs.read()
+    targetList = targetList.split('\n')
+
+    commonList = []
+    for i in referenceList:
+        if i in targetList:
+            commonList.append(f'REFERECE/{i}')
+            commonList.append(f'TARGET/{i}')
+
+    if len(commonList) > 0:
+        with open('common_list.txt', mode='w', encoding='utf-8') as fs:
+            fs.write('\n'.join(commonList))
+        print("common_list.txt is created.")
+        
+
 
 def deleteDerivativeFiles() -> None:
 
@@ -820,21 +932,21 @@ parser.add_argument(
     )
 parser.add_argument(
     '-x',
-    '--find-discarded-xml',
+    '--find-discarded-xmls',
     dest = 'strainXml',
     action = 'store_true',
     default = False,
     help = 'Strain XML files from their map file.')
 parser.add_argument(
     '-X',
-    '--find-wrong-cross-reference',
+    '--find-wrong-cross-references',
     dest = 'checkCrossReferences',
     action = 'store_true',
     default = False,
     help = 'Check if any cross-references are broken.')
 parser.add_argument(
     '-i',
-    '--find-discarded-image',
+    '--find-discarded-images',
     dest = 'strainImage',
     action = 'store_true',
     default = False,
@@ -867,7 +979,7 @@ parser.add_argument(
 #     help = 'Generate an obscure ID.')
 parser.add_argument(
     '-I',
-    '--find-duplicate-id',
+    '--find-duplicate-ids',
     dest = 'duplicateID',
     action = 'store_true',
     default = False,
@@ -881,14 +993,14 @@ parser.add_argument(
     help = 'Extract changed or added lines.')
 parser.add_argument(
     '-F',
-    '--format-xml',
+    '--format-xmls',
     dest = 'format',
     action = 'store_true',
     default = False,
     help = 'Format xml files.')
 parser.add_argument(
     '-R',
-    '--reset-xml',
+    '--reset-xmls',
     dest = 'reset',
     action = 'store_true',
     default = False,
@@ -896,22 +1008,15 @@ parser.add_argument(
 parser.add_argument(
     '-f',
     dest = 'flag',
-    default = '2',
-    help = '0: comments, 1: attributes, 2: both')
+    default = '0',
+    help = "-R: 0-2, -g: 0-3, -W: 0-1")
 parser.add_argument(
     '-g',
-    '--groom-filename',
+    '--groom-filenames',
     dest = 'groom_filenames',
     action = 'store_true',
     default = False,
     help = 'Groom XML file names.')
-parser.add_argument(
-    '-G',
-    '--compare-filename',
-    dest = 'compare_filenames',
-    action = 'store_true',
-    default = False,
-    help = 'Make sure changed file names are identical with the real.')
 parser.add_argument(
     '-M',
     '--create-map',
@@ -926,6 +1031,13 @@ parser.add_argument(
     action = 'store_true',
     default = False,
     help = 'Format the ditamap file in the current folder.')
+parser.add_argument(
+    '-T',
+    '--typeset-icons',
+    dest = 'typeset_icons',
+    action = 'store_true',
+    default = False,
+    help = "Find icon images to replace them with glyphs.")
 parser.add_argument(
     '-c',
     dest = 'copy_from',
@@ -966,12 +1078,19 @@ parser.add_argument(
     default = False,
     help = 'With -D, this option is used only by VS Code.')
 parser.add_argument(
+    '-L',
+    '--compare-lists',
+    dest = 'compareLists',
+    action = 'store_true',
+    default = False,
+    help = "Specify two files to compare and extract common lines.")
+parser.add_argument(
     '-d',
-    '--delete-report',
+    '--delete-reports',
     dest = 'deleteDerivative',
     action = 'store_true',
     default = False,
-    help = 'Delete derivative files.')
+    help = 'Delete derivative report files.')
 args = parser.parse_args()
 
 if args.preview_html:
@@ -992,8 +1111,12 @@ elif args.duplicateID:
     checkDuplicateIDs(remove_duplicates=args.remove_bool)
 elif args.extractChanged:
     extractChanged(makeFileList(args.targetFiles))
+elif args.typeset_icons:
+    typesetIcons(args.flag)
 elif args.copy_from is not None:
     copyFrom(makeFileList(args.targetFiles, useGlob=False), sourceFolder=args.copy_from)
+elif args.compareLists:
+    compareLists(makeFileList(args.targetFiles))
 elif args.deleteDerivative:
     deleteDerivativeFiles()
 elif args.reset or args.format or args.insert_css or args.remove_css:
@@ -1006,9 +1129,7 @@ elif args.reset or args.format or args.insert_css or args.remove_css:
     if args.remove_css:
         removeCSS(makeFileList(args.targetFiles))
 elif args.groom_filenames:
-    groomFilenames()
-elif args.compare_filenames:
-    compareFilenames()
+    groomFilenames(args.flag)
 elif args.formatmap:
     formatMap(args.targetFiles[0])
 elif args.create_map:

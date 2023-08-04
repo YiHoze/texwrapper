@@ -4,4 +4,5 @@
 <\?oxy_delete.+?\?>	
 <\?oxy_insert_start.+?\?>	
 <\?oxy_insert_end.*?\?>	
+<\?oxy_attributes.*?\?>	
 <!--.*?-->
