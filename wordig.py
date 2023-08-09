@@ -213,7 +213,7 @@ class WordDigger(object):
         output = self.determine_output('', output=self.options['output'])
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
-
+        print(f"{output} is created or overwritten.")
 
     def extract(self, file:str) -> None:
 

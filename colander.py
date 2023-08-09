@@ -32,22 +32,27 @@ def resetXml(fileList:list, flag:str) -> None:
 
     dirCalled = os.path.dirname(__file__)
 
-    if flag >= '0':
+    if flag >= '0' and flag <= '2':
         print("Comments are being removed.")
         regexFile = os.path.join(dirCalled, 'colander_remove_comments.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
 
-    if flag >= '1':
+    if flag >= '1' and flag <= '2':
         print("Attributes are being removed.")
         removeDeletedLines(fileList=fileList)
         regexFile = os.path.join(dirCalled, 'colander_remove_attributes.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
         formatXml(fileList)
 
-    if flag >= '2':
+    if flag == '2':
         print("IDs are being removed.")
         regexFile = os.path.join(dirCalled, 'colander_remove_ids.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
+
+    if flag != '0' and flag != '1' and flag != '2':
+        print(f"-f=0: remove comments.\n\
+-f=1: remove comments and unnecessary attributes.\n\
+-f=2: remove comments, unnecessary attributes, and superfluous IDs.")
 
 
 def formatXml(fileList:list) -> None:
@@ -711,8 +716,9 @@ def removeDeletedLines(fileList:list) -> None:
 
     removedLinebreaks = True
 
+
 def deleteFigImage(fileList:list) -> None:
-    
+
     patterns = [
         r'<fig.*?>.+?</fig>',
         r'<image.+?>'
@@ -765,10 +771,6 @@ def extractChanged(fileList:list) -> None:
     with open('extracted_status_lines.txt', mode='w', encoding='utf-8') as fs:
         fs.write(content)
     resetXml(['extracted_status_lines.txt'], flag='0')
-    
-    # shutil.copy('extracted_status_lines.txt', 'extracted_for_translation.txt')
-    # resetXml(['extracted_for_translation.txt'], flag='1')
-    # deleteFigImage(['extracted_for_translation.txt'])
 
 
 def typesetIcons(flag:str) -> None:
@@ -879,42 +881,68 @@ def xsltColander(fileList:list) -> None:
             fs.write(html)
         opener.open_with_browser(htmlFile)
 
-def compareLists(fileList:list) -> None:
-    
-    if len(fileList) < 2:
-        print("Specify two files.")
-        return
-    
-    refFile = fileList[0]
-    compFile = fileList[1]
 
-    with open(fileList[0], mode='r', encoding='utf-8') as fs:
+def compareImageLists(folders:list) -> None:
+
+    if len(folders) != 2:
+        print("Specify two folders.")
+        return
+
+    for i in range(len(folders)):
+        folders[i] = folders[i].replace('.\\', '')
+        folders[i] = folders[i].replace('\\', '')
+
+    imageLists = []
+    images = []
+
+    for folder in folders:
+        images.clear()
+        target = os.path.join(folder, '*.jpg')
+        for imageFile in glob.glob(target):
+            imageFile = os.path.basename(imageFile)
+            images.append(imageFile)
+        imageList = f"{folder}_images.txt"
+        imageLists.append(imageList)
+        content = '\n'.join(images)
+        with open(imageList, mode='w', encoding='utf-8') as fs:
+            fs.write(content)
+
+    with open(imageLists[0], mode='r', encoding='utf-8') as fs:
         referenceList = fs.read()
     referenceList = referenceList.split('\n')
-    with open(fileList[1], mode='r', encoding='utf-8') as fs:
+    with open(imageLists[1], mode='r', encoding='utf-8') as fs:
         targetList = fs.read()
     targetList = targetList.split('\n')
 
     commonList = []
     for i in referenceList:
         if i in targetList:
-            commonList.append(f'REFERECE/{i}')
-            commonList.append(f'TARGET/{i}')
+            commonList.append(f"{folders[0]}/{i}")
+            commonList.append(f"{folders[1]}/{i}")
 
     if len(commonList) > 0:
-        with open('common_list.txt', mode='w', encoding='utf-8') as fs:
+        with open('common_images.txt', mode='w', encoding='utf-8') as fs:
             fs.write('\n'.join(commonList))
-        print("common_list.txt is created.")
-        
+        print("common_images.txt is created.")
 
 
-def deleteDerivativeFiles() -> None:
+def deleteDerivativeFiles(flag:str) -> None:
 
-    derivatives = ['images*.txt', 'xmls*.txt', 'xrefs*.txt', 'duplicate*.txt', '*.html']
+    if flag >= '0' and flag <= '1':
+        print('Every .txt file is deleted.')
+        for i in glob.glob('*.txt'):
+            os.remove(i)
+        print('Every .html file is deleted.')
+        for i in glob.glob('*.html'):
+            os.remove(i)
+    if flag == '1':
+        print('Every .tsv file is deleted.')
+        for i in glob.glob('*.tsv'):
+            os.remove(i)
 
-    for i in derivatives:
-        for fn in glob.glob(i):
-            os.remove(fn)
+    if flag != '0' and flag != '1':
+        print(f"-f=0: delete every .txt and .html file. \n\
+-f=1: remove every .txt, .html, and .tsv file.")
 
 
 # main ########################################################
@@ -1089,18 +1117,18 @@ parser.add_argument(
     help = 'With -D, this option is used only by VS Code.')
 parser.add_argument(
     '-L',
-    '--compare-lists',
-    dest = 'compareLists',
+    '--compare-image-lists',
+    dest = 'compareImageLists',
     action = 'store_true',
     default = False,
     help = "Specify two files to compare and extract common lines.")
 parser.add_argument(
     '-d',
-    '--delete-reports',
+    '--delete-derivatives',
     dest = 'deleteDerivative',
     action = 'store_true',
     default = False,
-    help = 'Delete derivative report files.')
+    help = 'Delete derivative files.')
 args = parser.parse_args()
 
 if args.preview_html:
@@ -1125,10 +1153,10 @@ elif args.typeset_icons:
     typesetIcons(args.flag)
 elif args.copy_from is not None:
     copyFrom(makeFileList(args.targetFiles, useGlob=False), sourceFolder=args.copy_from)
-elif args.compareLists:
-    compareLists(makeFileList(args.targetFiles))
+elif args.compareImageLists:
+    compareImageLists(makeFileList(args.targetFiles))
 elif args.deleteDerivative:
-    deleteDerivativeFiles()
+    deleteDerivativeFiles(args.flag)
 elif args.reset or args.format or args.insert_css or args.remove_css:
     if args.reset:
         resetXml(makeFileList(args.targetFiles), flag=args.flag)
