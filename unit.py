@@ -24,9 +24,10 @@ class ConvertUnit(object):
             'impgallon': ['Imperial gallons', 'liters', 0.219969],
             'hp': ['hp', 'kW', 0.7457],
             'inch': ['inches', 'mm', 25.4],
-            'km/h': ['km/h', 'm/s', 0.277778],
+            # 'km/h': ['km/h', 'm/s', 0.277778],
             'knot': ['knots', 'km/h', 1.852],
             'mile': ['miles', 'km', 1.609344],
+            'mph': ['mph', 'km/h', 1.609344],
             'm/s': ['m/s', 'km/h', 3.6],
             'newtonmeter': ['N·m', 'kgf·m', 0.10197],
             'ounce': ['oz', 'g', 28.3495],
@@ -48,6 +49,7 @@ class ConvertUnit(object):
             self.unit_types.append(i)
         self.unit_types = sorted(self.unit_types, key=str.lower)
 
+        self.interval = 1
         self.numerals = numerals
         for key in self.options.keys():
             if key in kwargs:
@@ -68,8 +70,11 @@ class ConvertUnit(object):
                 else:
                     self.numeral = float(self.numerals[0].replace(',', ''))
                     self.unit_type = self.numerals[1]
-                    if len(self.numerals) == 3:
+                    if len(self.numerals) >= 3:
                         self.until = float(self.numerals[2].replace(',', ''))
+                        if len(self.numerals) == 4:
+                            # self.interval = float(self.numerals[3].replace(',', ''))
+                            self.interval = int(self.numerals[3].replace(',', ''))
                     else:
                         self.until = None
                     self.convert()
@@ -157,12 +162,12 @@ class ConvertUnit(object):
         else:
             self.coefficient_bool = False
         if self.until is not None:
-            self.convert_until(self.numeral, self.until)
+            self.convert_until(self.numeral, self.until, self.interval)
         else:
             self.calculate(self.numeral)
 
 
-    def convert_until(self, lower, upper) -> None:
+    def convert_until(self, lower, upper, interval) -> None:
 
         if lower > upper:
             print('Specify a higher value for the upper limit.')
@@ -173,12 +178,12 @@ class ConvertUnit(object):
         # to get the length of the lognest between the results of the first calculation
         while tmp <= upper:
             length = self.calculate(tmp, padding=-1)
-            tmp += 1
+            tmp += interval
             if longest < length:
                 longest = length
         while lower <= upper:
             length = self.calculate(lower, padding=longest)
-            lower += 1
+            lower += interval
 
 
     def check_decimal(self, num) -> str:
