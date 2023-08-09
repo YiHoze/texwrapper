@@ -29,18 +29,25 @@ formattedXml = False
 
 
 def resetXml(fileList:list, flag:str) -> None:
-    
+
     dirCalled = os.path.dirname(__file__)
 
-    if flag == '0' or flag == '2':
+    if flag >= '0':
+        print("Comments are being removed.")
         regexFile = os.path.join(dirCalled, 'colander_remove_comments.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
 
-    if flag == '1' or flag == '2':
+    if flag >= '1':
+        print("Attributes are being removed.")
+        removeDeletedLines(fileList=fileList)
         regexFile = os.path.join(dirCalled, 'colander_remove_attributes.tsv')
         WordDigger(fileList, pattern=regexFile, overwrite=True)
-        removeDeletedLines(fileList=fileList)
         formatXml(fileList)
+
+    if flag >= '2':
+        print("IDs are being removed.")
+        regexFile = os.path.join(dirCalled, 'colander_remove_ids.tsv')
+        WordDigger(fileList, pattern=regexFile, overwrite=True)
 
 
 def formatXml(fileList:list) -> None:
@@ -776,6 +783,7 @@ def typesetIcons(flag:str) -> None:
         print(f"-f=0: create {iconGlyphFile}, a list of icon image files.\n\
 -f=1: replace icon images in xml files with glyphs using {iconGlyphFile}.")
 
+
 def typeset_icon_find(iconGlyphFile:str) -> None:
 
     dirCalled = os.path.dirname(__file__)
@@ -789,14 +797,16 @@ def typeset_icon_find(iconGlyphFile:str) -> None:
 
     regexs = []
     for i in iconList:
+        # regexs.append(i)
         regexs.append(i + ".*?(/>|></image>)\t<userinput></userinput>")
     content = '\n'.join(regexs)
 
     with open(iconGlyphFile, mode='w', encoding='utf-8') as fs:
         fs.write(content)
 
+
 def typeset_icon_replace(iconGlyphFile:str) -> None:
-    
+
     if not os.path.exists(iconGlyphFile):
         print(f"{iconGlyphFile} does not exist.")
         return

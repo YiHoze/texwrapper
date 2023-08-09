@@ -581,6 +581,7 @@ class WordDigger(object):
         output = self.determine_output('', output='gathered_strings.txt')
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
+        print(f"{output} is created.")
 
 
     def convert_encoding(self, file:str) -> None:
