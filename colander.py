@@ -615,6 +615,7 @@ def makeFileList(targetFiles:list, useGlob=True) -> list:
             if os.path.exists(fn):
                 with open(fn, mode='r', encoding='utf-8') as fs:
                     content = fs.read()
+                content = content.strip()
                 fileList += content.split('\n')
     else:
         if useGlob:

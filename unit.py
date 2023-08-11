@@ -16,7 +16,7 @@ class ConvertUnit(object):
 
         self.units = {
             'acre': ['acres', 'm²', 4046.86],
-            'cubic foot': ['cubic feet', 'liters', 28.3168],
+            'cubicfeet': ['cubic feet', 'liters', 28.3168],
             'degree': ['°', '%', 'self.gradient'],
             'fahrenheit': ['F°', 'C°', 'self.temperature'],
             'feet': ['feet', 'm', 0.3048],
@@ -36,8 +36,8 @@ class ConvertUnit(object):
             'point': ['points', 'mm', 0.352778],
             'pound': ['lb.', 'kg', 0.453592],
             'poundforce': ['lbf·ft', 'kgf·m', 0.13825],
-            'ppi': ['ppi', 'pixel/cm', 0.393701],
-            'psi': ['psi', 'kPa', 6.89476],
+            'ppi': ['PPI', 'pixel/cm', 0.393701],
+            'psi': ['PSI', 'kPa', 6.89476],
             'pyeong': ['pyeong', 'm²', 3.305785],
             'quart': ['US quarts', 'liters', 0.95],
             'impquart': ['Imperial quarts', 'liters', 0.87987],
@@ -330,7 +330,8 @@ class ColorModel(object):
         # FFFFFF
         RGBh = self.RGB_hex(R, G, B)
 
-        result = '{} ({} / {}) = {:1.2f}, {:1.2f}, {:1.2f}, {:1.2f}'.format(RGBd, RGBp, RGBh, C, M, Y, K)
+        # result = '{} ({} / {}) = {:1.2f}, {:1.2f}, {:1.2f}, {:1.2f}'.format(RGBd, RGBp, RGBh, C, M, Y, K)
+        result = '{} ({}) = {:1.2f}, {:1.2f}, {:1.2f}, {:1.2f}'.format(RGBd, RGBh, C, M, Y, K)
         print(result)
 
 
@@ -350,7 +351,8 @@ class ColorModel(object):
         # FFFFFF
         RGBh = self.RGB_hex(R, G, B)
 
-        result = '{} = {:3.0f}, {:3.0f}, {:3.0f} ({} / {})'.format(CMYK, R, G, B, RGBp, RGBh)
+        # result = '{} = {:3.0f}, {:3.0f}, {:3.0f} ({} / {})'.format(CMYK, R, G, B, RGBp, RGBh)
+        result = '{} = {:3.0f}, {:3.0f}, {:3.0f} ({})'.format(CMYK, R, G, B, RGBh)
         print(result)
 
 
