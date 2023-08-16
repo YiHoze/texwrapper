@@ -84,7 +84,7 @@ def formatMap(mapFile:str) -> None:
 def createMap() -> None:
     
     ditamap = '''<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "technicalContent/dtd/map.dtd" []>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "technicalContent/dtd/map.dtd">
 <map base="electric/engine" platform="genesis/hyundai" product="????" audience="202?"  xml:lang="??_??" xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" rev="1.0">
 <title>????</title>
 '''

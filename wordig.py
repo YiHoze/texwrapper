@@ -145,6 +145,7 @@ class WordDigger(object):
 
         return count
 
+
     def find_txt_entire(self, file:str, pattern:str) -> int:
 
         count = 0
@@ -215,7 +216,11 @@ class WordDigger(object):
             f.write(content)
         print(f"{output} is created or overwritten.")
 
+
     def extract(self, file:str) -> None:
+
+        if os.path.splitext(file)[1].lower() == '.pdf':
+            return
 
         if self.options['aim_pattern'] is not None:
             with open(self.options['aim_pattern'], mode='r', encoding='utf-8') as f:
@@ -574,6 +579,10 @@ class WordDigger(object):
 
 
     def write_gathered(self) -> None:
+        
+        if len(self.found) < 1:
+            print("There is nothing to write.")
+            return
 
         # remove duplicates and sort
         self.found = list(set(self.found))
@@ -617,7 +626,7 @@ class WordDigger(object):
         print("{} -> {}".format(file, output))
 
 
-    def columns_to_remove(self, columns_to_extract:int, max_col:int) -> list:
+    def columns_to_remove(self, columns_to_extract:str, max_col:int) -> list:
 
         entire_columns = list(range(1,max_col+1))
         include_columns = []
@@ -625,7 +634,6 @@ class WordDigger(object):
         exclude_column_ranges = []
 
         # 1, 3-5 -> 1, 3, 4, 5
-        incol = columns_to_extract.replace(',', '')
         incol = columns_to_extract.split(',')
         for v in incol:
             if '-' in v:
@@ -656,6 +664,7 @@ class WordDigger(object):
         exclude_column_ranges += [[lower, upper]]
         exclude_column_ranges = exclude_column_ranges[::-1]
 
+        print(exclude_column_ranges)
         return exclude_column_ranges
 
 

@@ -18,7 +18,7 @@ class ConvertUnit(object):
             'acre': ['acres', 'm²', 4046.86],
             'cubicfeet': ['cubic feet', 'liters', 28.3168],
             'degree': ['°', '%', 'self.gradient'],
-            'fahrenheit': ['F°', 'C°', 'self.temperature'],
+            'fahrenheit': ['°F', '°C', 'self.temperature'],
             'feet': ['feet', 'm', 0.3048],
             'gallon': ['gallons', 'liters', 0.26417],
             'impgallon': ['Imperial gallons', 'liters', 0.219969],
