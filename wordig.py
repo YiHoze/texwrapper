@@ -1089,7 +1089,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         '-q',
         '--quietly',
-        dest = 'tsv',
+        dest = 'quietly',
         action = 'store_true',
         default = False,
         help = 'Display no result message.'
