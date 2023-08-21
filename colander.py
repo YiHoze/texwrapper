@@ -119,7 +119,7 @@ def createMap() -> None:
     with open('_NEW.ditamap', mode='w', encoding='utf-8') as fs:
         fs.write(ditamap)    
 
-    print("_NEW.ditamap is created.")
+    print("_NEW.ditamap has been created.")
 
 def getTopicTitle(fileName:str) -> str:
 
@@ -179,7 +179,7 @@ def groom_create_filelist(xmlListFile:str) -> None:
     with open(xmlListFile, mode='w', encoding='utf-8') as fs:
         fs.write(filelist)
 
-    print(f"{xmlListFile} is created.")
+    print(f"{xmlListFile} has been created.")
 
 
 def groom_rename_files(xmlListFile:str) -> None:
@@ -282,7 +282,7 @@ def strainXML(mapFile:str, case_sensitive=False) -> None:
 
     # ditamap 파일에서 참조되는 xml 파일들의 목록 만들기
     referredXmlFile = 'xmls_referred.txt'
-    WordDigger([tmpMap], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile, overwrite=True)
+    WordDigger([tmpMap], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile, overwrite=True, quietly=True)
     # xml 아닌 것 삭제하기
     WordDigger([referredXmlFile], aim='^.+?\.css$\n', substitute='', overwrite=True)
     
@@ -354,7 +354,7 @@ def rummageImages(case_sensitive=False) -> None:
 
     # xml 파일에서 참조되는 이미지들의 목록 만들기
     referredImageFile = 'images_referred.txt'
-    WordDigger(['*.xml'], aim='(?<=href="image/).+?(?=")', gather=True, output=referredImageFile, overwrite=True)
+    WordDigger(['*.xml'], aim='(?<=href="image/).+?(?=")', gather=True, output=referredImageFile, overwrite=True, quietly=True)
     with open(referredImageFile, mode='r', encoding='utf-8') as fs:
         content = fs.read()
     referredImage = content.split('\n')
@@ -495,14 +495,14 @@ def checkFileTagID(fileTagID:list, case_sensitive=False):
 
 def createXrefFile(xrefLinesFile='xrefs.txt') -> None:
     
-    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, gather=True, output=xrefLinesFile, overwrite=True)
-    WordDigger([xrefLinesFile], aim='(?<=href=").+?(?=")', gather=True, output=xrefLinesFile, overwrite=True)
+    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, gather=True, output=xrefLinesFile, overwrite=True, quietly=True)
+    WordDigger([xrefLinesFile], aim='(?<=href=").+?(?=")', gather=True, output=xrefLinesFile, overwrite=True, quietly=True)
 
 
 def checkCrossReferences(case_sensitive=False) -> None:
     
     # 참고용
-    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='xrefs_xml.txt', overwrite=True)
+    WordDigger(['*.xml'], aim='<xref.+?>', dotall=True, output='xrefs_xml.txt', overwrite=True, quietly=True)
 
     # 모든 <xref>에서 URI를 추출하여 xrefs.txt에 저장한다.
     createXrefFile() 
@@ -523,7 +523,7 @@ def checkCrossReferences(case_sensitive=False) -> None:
         print(content)
         with open(mismatchedXrefFile, mode='w', encoding='utf-8') as fs:
             fs.write(content)
-        print(f'{mismatchedXrefFile} which contains mismatched cross-references is created.')
+        WordDigger(['*.xml'], aim_pattern=mismatchedXrefFile, output='xrefs_mismatched_xmls.txt', overwrite=True)
     else:
         print('No mismatched cross-reference is found.')
         if os.path.exists(mismatchedXrefFile):
@@ -599,7 +599,7 @@ def checkDuplicateIDs(remove_duplicates=False) -> None:
             print('Except referred ones, duplicate IDs are deleted.')
         else:
             print(content)
-            print(f'{duplicateIDFile} which contains duplicate IDs is created.')
+            print(f'{duplicateIDFile} which contains duplicate IDs has been created.')
     else:
         print('No duplicate ID is found.')
         if os.path.exists(duplicateIDFile):
@@ -924,7 +924,7 @@ def compareImageLists(folders:list) -> None:
     if len(commonList) > 0:
         with open('common_images.txt', mode='w', encoding='utf-8') as fs:
             fs.write('\n'.join(commonList))
-        print("common_images.txt is created.")
+        print("common_images.txt has been created.")
 
 
 def deleteDerivativeFiles(flag:str) -> None:
