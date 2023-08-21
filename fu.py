@@ -9,10 +9,14 @@ import exifread
 
 def parse_args() ->argparse.Namespace:
 
-    details = r'''flags for backuping up:
+    details = r'''flags for backing up:
 0, file-today: _bak/foo_yyyy-mm-dd.ext
 1, directory-today: _bak/yyyy-mm-dd/foo.ext
 2, directory-file-today: _bak/yyyy-mm-dd/foo_yyyy-mm-dd.ext
+
+flags for listing:
+0, current-folder: search the current folder.
+1, subfolders: search the current folder and subfolders.
 
 flags for renaming:
 0, append-letters: append today's date or other letters.
@@ -97,14 +101,13 @@ flags for gathering:
         '-e',
         '--exclude',
         dest = 'exclude',
-        default = 'album.pdf',
-        help = 'Specify files or filename patters to be excluded. (default: album.pdf)'
+        help = 'Specify filenames or filename patterns to be excluded.'
     )
     parser.add_argument(
         '-o',
         '--output',
         dest = 'output',
-        default = 'images.lst',
+        default = None,
         help = 'Enter filename for output. (default: images.lst)'
     )
     parser.add_argument(
@@ -138,54 +141,54 @@ class Duplicator(object):
 
     def __init__(self, files:list, **kwargs):
 
-        self.options = {
+        options = {
             'destination':'',
-            'flag':0
+            'flag':'0'
         }
-        self.flags = {
+        flags = {
             '0':'file-today',
             '1':'directory-today',
             '2':'directory-file-today'
         }
 
         # pass arguments to variables
-        for key in self.options.keys():
+        for key in options.keys():
             if key in kwargs:
-                self.options[key] = kwargs.get(key)
+                options[key] = kwargs.get(key)
         
         # initialize variables using default
-        if self.options['destination'] is None:
-            self.options['destination'] = '_bak'
+        if options['destination'] is None:
+            options['destination'] = '_bak'
 
         # validate flag
-        for key in self.flags.keys():
-            if self.options['flag'] == key:
-                self.options['flag'] = self.flags.get(key)
-        if self.options['flag'] not in self.flags.values():
-            self.options['flag'] = self.flags.get('0')
+        for key in flags.keys():
+            if options['flag'] == key:
+                options['flag'] = flags.get(key)
+        if options['flag'] not in flags.values():
+            options['flag'] = flags.get('0')
 
         today = datetime.strftime(date.today(), '%Y-%m-%d')
 
         # create backup directory
-        if not os.path.exists(self.options['destination']):
-            os.mkdir(self.options['destination'])
-            print('A new directory named "{}" has been created'.format(self.options['destination']))
+        if not os.path.exists(options['destination']):
+            os.mkdir(options['destination'])
+            print('A new directory named "{}" has been created'.format(options['destination']))
 
-        if self.options['flag'] == 'directory-today' or self.options['flag'] == 'directory-file-today':
-            destination_directory = os.path.join(self.options['destination'], today)
+        if options['flag'] == 'directory-today' or options['flag'] == 'directory-file-today':
+            destination_directory = os.path.join(options['destination'], today)
             if os.path.exists(destination_directory):
                 counter = 0
                 while os.path.exists(destination_directory):
                     counter += 1
                     subdir = '{}_{}'.format(today, counter)
-                    destination_directory = os.path.join(self.options['destination'], subdir)
+                    destination_directory = os.path.join(options['destination'], subdir)
             os.mkdir(destination_directory)
             print('A new directory named "{}" has been created'.format(destination_directory))
         else:
-            destination_directory = self.options['destination']
+            destination_directory = options['destination']
 
         # copy files
-        if self.options['flag'] == 'directory-today':
+        if options['flag'] == 'directory-today':
             for f in files:
                 for i in glob.glob(f):
                     shutil.copy(i, destination_directory)
@@ -195,7 +198,7 @@ class Duplicator(object):
                     name, ext = os.path.splitext(os.path.basename(i))
                     destination_file = '{}_{}{}'.format(name, today, ext)
                     destination = os.path.join(destination_directory, destination_file)
-                    if self.options['flag'] != 'directory-today':
+                    if options['flag'] != 'directory-today':
                         if os.path.exists(destination):
                             counter = 0
                             while os.path.exists(destination):
@@ -248,35 +251,35 @@ class Gatherer(object):
 
     def __init__(self, files:list, **kwargs) -> None:
 
-        self.options = {
+        options = {
             'destination':'',
-            'flag':0
+            'flag':'0'
         }
-        self.flags = {
+        flags = {
             '0':'overwrite',
             '1':'append-number'
         }
 
         # pass arguments to variables
-        for key in self.options.keys():
+        for key in options.keys():
             if key in kwargs:
-                self.options[key] = kwargs.get(key)
+                options[key] = kwargs.get(key)
 
         # initialize variables using default
-        if self.options['destination'] is None:
-            self.options['destination'] = '.'
+        if options['destination'] is None:
+            options['destination'] = '.'
         
         # validate flag
-        for key in self.flags.keys():
-            if self.options['flag'] == key:
-                self.options['flag'] = self.flags.get(key)
-        if self.options['flag'] not in self.flags.values():
-            self.options['flag'] = self.flags.get('0')
+        for key in flags.keys():
+            if options['flag'] == key:
+                options['flag'] = flags.get(key)
+        if options['flag'] not in flags.values():
+            options['flag'] = flags.get('0')
 
         # create destination directory
-        if self.options['destination'] != '.':
-            if not os.path.exists(self.options['destination']):
-                os.mkdir(self.options['destination'])
+        if options['destination'] != '.':
+            if not os.path.exists(options['destination']):
+                os.mkdir(options['destination'])
 
         for target in files:
             dir = os.path.dirname(target)
@@ -287,17 +290,17 @@ class Gatherer(object):
             for subdir in subdirs:
                 fnpattern = os.path.join(subdir, files)
                 for file in glob.glob(fnpattern):
-                    if self.options['flag'] == 'overwrite':
-                        shutil.copy(file, self.options['destination'])
+                    if options['flag'] == 'overwrite':
+                        shutil.copy(file, options['destination'])
                     else:
-                        destination = os.path.join(self.options['destination'], os.path.basename(file))
+                        destination = os.path.join(options['destination'], os.path.basename(file))
                         if os.path.exists(destination):
                             counter = 0
                             filename, ext = os.path.splitext(os.path.basename(file))
                             while os.path.exists(destination):
                                 counter += 1
                                 destination = '{}_{}{}'.format(filename, counter, ext)
-                                destination = os.path.join(self.options['destination'], destination)
+                                destination = os.path.join(options['destination'], destination)
                         shutil.copy(file, destination)
 
 
@@ -308,9 +311,9 @@ class Renamer(object):
         self.options = {
             'affix':None,
             'substitute':None,
-            'flag':0
+            'flag':'0'
         }
-        self.flags = {
+        flags = {
             '0':'append-letters',
             '1':'prepend-letters',
             '2':'remove-letters',
@@ -333,11 +336,11 @@ class Renamer(object):
             self.options['affix'] = datetime.strftime(date.today(), '%Y-%m-%d')        
 
         # validate flag
-        for key in self.flags.keys():
+        for key in flags.keys():
             if self.options['flag'] == key:
-                self.options['flag'] = self.flags.get(key)
-        if self.options['flag'] not in self.flags.values():
-            self.options['flag'] = self.flags.get('0')
+                self.options['flag'] = flags.get(key)
+        if self.options['flag'] not in flags.values():
+            self.options['flag'] = flags.get('0')
 
         if self.options['flag'] == 'append-letters':
             if not self.options['affix'].startswith('_'):
@@ -491,34 +494,77 @@ class Renamer(object):
 
 class FileCataloger(object):
 
-    def __init__(self, filename_patterns:list, exclude_patterns:str, output):
+    def __init__(self, filename_patterns:list, **kwargs):
+
+        options = {
+            'exclude_patterns':'',
+            'output':None,
+            'flag':'0'
+        }
+
+        flags = {
+            '0':'current-folder',
+            '1':'subfolders'
+        }
+
+        # pass arguments to variables
+        for key in options.keys():
+            if key in kwargs:
+                options[key] = kwargs.get(key)
+
+        # validate flag
+        for key in flags.keys():
+            if options['flag'] == key:
+                options['flag'] = flags.get(key)
+        if options['flag'] not in flags.values():
+            options['flag'] = flags.get('0')
 
         files = []
-        except_files = self.list_except_files(exclude_patterns)
+        except_files = self.list_except_files(options['exclude_patterns'])
 
         if len(filename_patterns) == 0:
             filename_patterns = ['*.pdf', '*.jpg', '*.png']
-        
-        for fp in filename_patterns:
-            for file in glob.glob(fp):
-                if not file in except_files:
-                    files.append(file)
 
-        files = self.natural_sort(files)
-        files = '\n'.join(files)
-        with open(output, mode='w', encoding='utf-8') as f:
-            f.write(files)
+        if options['flag'] == 'subfolders':
+            subdirs = self.get_subdirs()
+            for subdir in subdirs:
+                for fp in filename_patterns:
+                    for file in glob.glob(f"{subdir}/{fp}"):
+                        if not file in except_files:
+                            files.append(file)
+        else:
+            for fp in filename_patterns:
+                for file in glob.glob(fp):
+                    if not file in except_files:
+                        files.append(file)
+
+        if len(files) > 0:
+            files = self.natural_sort(files)
+            files = '\n'.join(files)
+            if options['output'] is None:
+                print(files)
+            else:
+                with open(options['output'], mode='w', encoding='utf-8') as f:
+                    f.write(files)
+                print(f"{options['output']} has been created.")
+        else:
+            print("No files have been found.")
 
 
     def list_except_files(self, exclude_patterns:str):
 
         except_files = []
-        exclude_patterns = exclude_patterns.split(' ')
+        exclude_patterns = 'exclude_patterns'.split(' ')
         for fp in exclude_patterns:
             for file in glob.glob(fp):
                 except_files.append(file)
 
         return except_files
+
+
+    def get_subdirs(self) -> list:
+
+        return [x[0] for x in os.walk('.')]
 
 
     def natural_sort(self, listing:list): 
@@ -531,7 +577,7 @@ class FileCataloger(object):
 if __name__ == '__main__':
     args = parse_args()
     if args.list_files:
-        FileCataloger(args.files, exclude_patterns=args.exclude, output=args.output)
+        FileCataloger(args.files, exclude_patterns=args.exclude, output=args.output, flag=args.flag)
     elif args.total_size:
         FileMeasurer(args.files)
     elif args.gather_files:
