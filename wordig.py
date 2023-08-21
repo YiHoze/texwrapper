@@ -38,7 +38,8 @@ class WordDigger(object):
             'unicode_decimal': False,
             'encoding': None,
             'xlsx': False,
-            'tsv': False
+            'tsv': False,
+            'quietly': False
         }
 
         self.files = 0
@@ -214,7 +215,8 @@ class WordDigger(object):
         output = self.determine_output('', output=self.options['output'])
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
-        print(f"{output} is created or overwritten.")
+        if not self.options['quietly']:
+            print(f"{output} has been created or updated.")
 
 
     def extract(self, file:str) -> None:
@@ -590,7 +592,8 @@ class WordDigger(object):
         output = self.determine_output('', output='gathered_strings.txt')
         with open(output, mode='w', encoding='utf-8') as f:
             f.write(content)
-        print(f"{output} is created.")
+        if not self.options['quietly']:
+            print(f"{output} has been created or updated.")
 
 
     def convert_encoding(self, file:str) -> None:
@@ -623,7 +626,8 @@ class WordDigger(object):
             for column, text in enumerate(line):
                 ws.cell(row=row+1, column=column+1, value=text)
         wb.save(output)
-        print("{} -> {}".format(file, output))
+        if not self.options['quietly']:
+            print("{} -> {}".format(file, output))
 
 
     def columns_to_remove(self, columns_to_extract:str, max_col:int) -> list:
@@ -664,7 +668,8 @@ class WordDigger(object):
         exclude_column_ranges += [[lower, upper]]
         exclude_column_ranges = exclude_column_ranges[::-1]
 
-        print(exclude_column_ranges)
+        if not self.options['quietly']:
+            print(exclude_column_ranges)
         return exclude_column_ranges
 
 
@@ -684,7 +689,8 @@ class WordDigger(object):
 
         if os.path.splitext(output)[1].lower() == '.xlsx':
             wb.save(filename=output)
-            print("{} -> {}".format(file, output))
+            if not self.options['quietly']:
+                print("{} -> {}".format(file, output))
             return
         else:
             line = []
@@ -703,7 +709,8 @@ class WordDigger(object):
 
             with open(output, mode='w', encoding='utf-8') as f:
                 f.write(content)
-            print("{} -> {}".format(file, output))
+            if not self.options['quietly']:
+                print("{} -> {}".format(file, output))
 
 
     def escape_tex(self, string: str) -> str:
@@ -1079,6 +1086,14 @@ def parse_args() -> argparse.Namespace:
         default = False,
         help = 'Specify a XLSX file or more from which to convert to TSV or XLSX.'
     )
+    parser.add_argument(
+        '-q',
+        '--quietly',
+        dest = 'tsv',
+        action = 'store_true',
+        default = False,
+        help = 'Display no result message.'
+    )
 
     return parser.parse_args()
 
@@ -1107,5 +1122,6 @@ if __name__ == '__main__':
         unicode_decimal = args.unicode_decimal,
         encoding = args.encoding,
         xlsx = args.xlsx,
-        tsv = args.tsv
+        tsv = args.tsv,
+        quietly = args.quietly
     )
