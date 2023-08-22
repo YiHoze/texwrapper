@@ -9,39 +9,6 @@ import shutil
 
 def parse_args() -> argparse.Namespace:
 
-#     example = '''With this script you can:
-# 1) view a bitmap image's information;
-# 2) resize bitmap images by changing their resolution or scale;
-# 3) convert bitmap images to another format;
-# 4) convert vector images to another vector or bitmap format.
-# examples:
-# iu.py
-#     Supported image formats are enumerated.
-# iu.py foo.eps
-#     foo.pdf is created from foo.eps.
-# iu.py foo.ai
-#     foo.pdf and pdf.eps are crated from foo.ai
-# iu -t png -R *.eps
-#     Every EPS file, including those in all subdirectories, is converted to PNG.
-# iu.py -t png *.jpg
-#     Every JPG file is converted to PNG.
-# iu.py -i foo.jpg
-#     foo.jpg's details are displayed, including pixel size.
-# iu.py -r foo.jpg
-#     foo.jpg is resized to 100 PPC by default.
-# iu.py -r -d 150 foo.jpg
-#     foo.jpg is resized to 150 PPC.
-# iu.py -r -s 75 foo.jpg
-#     foo.jpg is resized to 75%.
-# iu.py -r -m 800 *.jpg
-#     JPG files wider than 800 pixels are resized to a width 800.
-# '''
-
-    # parser = argparse.ArgumentParser(
-    #     epilog = example,
-    #     formatter_class = argparse.RawDescriptionHelpFormatter,
-    #     description = "Convert image files to other formats using TeX Live, ImageMagick and Inkscape."
-    # )
     parser = argparse.ArgumentParser(
         description = "Convert image files to other formats using TeX Live, ImageMagick and Inkscape."
     )
