@@ -5,6 +5,7 @@ import argparse
 import configparser
 import subprocess
 import fitz #pymupdf
+import shutil
 
 def parse_args() -> argparse.Namespace:
 
@@ -135,6 +136,7 @@ class ImageUtility(object):
             'scale': 100,
             'recursive': False,
             'Inkscape': False,
+            'Texlive': False,
             'crop': False,
             'exract': False
         }
@@ -149,25 +151,28 @@ class ImageUtility(object):
         self.images = images
         self.reconfigure(kwargs)
 
-        inipath = os.path.dirname(__file__)
-        ini = os.path.join(inipath, 'docenv.conf')
-        if os.path.exists(ini):
-            config = configparser.ConfigParser()
-            config.read(ini)
+        # inipath = os.path.dirname(__file__)
+        # ini = os.path.join(inipath, 'docenv.conf')
+        # if os.path.exists(ini):
+        #     config = configparser.ConfigParser()
+        #     config.read(ini)
 
-            self.Magick = config.get('ImageMagick', 'path', fallback=False)
-            if not self.Magick:
-                print('Make sure to have docenv.conf set properly with ImageMagick.')
-                self.Magick = 'magick.exe'
+        #     self.Magick = config.get('ImageMagick', 'path', fallback=False)
+        #     if not self.Magick:
+        #         print('Make sure to have docenv.conf set properly with ImageMagick.')
+        #         self.Magick = 'magick.exe'
 
-            self.Inkscape = config.get('Inkscape', 'path', fallback=False)
-            if not self.Inkscape:
-                print('Make sure to have docenv.conf set properly with Inkscape.')
-                self.Inkscape = 'inkscape.com'
-        else:
-            print('Docenv.conf is not found in {}.'.format(inipath))
-            self.Magick = 'magick.exe'
-            self.Inkscape = 'inkscape.com'
+        #     self.Inkscape = config.get('Inkscape', 'path', fallback=False)
+        #     if not self.Inkscape:
+        #         print('Make sure to have docenv.conf set properly with Inkscape.')
+        #         self.Inkscape = 'inkscapecom.com'
+        # else:
+        #     print('Docenv.conf is not found in {}.'.format(inipath))
+        #     self.Magick = 'magick.exe'
+        #     self.Inkscape = 'inkscapecom.com'
+        self.Magick = 'magick.exe'
+        self.Inkscape = 'inkscapecom.com'
+        self.Ghostscript = 'gswin64c.exe'
 
 
     def reconfigure(self, options) -> None:
@@ -179,6 +184,14 @@ class ImageUtility(object):
         self.options['target_format'] = self.options['target_format'].lower()
         if not self.options['target_format'].startswith('.'):
             self.options['target_format'] = '.' + self.options['target_format']
+
+        if shutil.which('epstopdf'):
+            self.options['Texlive'] = True
+        else:
+            if shutil.which('inkscape'):
+                self.options['Inkscape'] = True
+            else:
+                self.options['Inkscape'] = False
 
 
     def check_format(self, img) -> str or False:
@@ -390,8 +403,10 @@ class ImageUtility(object):
         if len(options) > 0:
             self.reconfigure(options)
 
-        trg = self.options['target_format'].replace('.', '')
-        cmd = '"{}" --export-type={} "{}"'.format(self.Inkscape, trg, img)
+        # trg = self.options['target_format'].replace('.', '')
+        # cmd = '"{}" --export-type={} --pages=1 "{}"'.format(self.Inkscape, trg, img)
+        trg = self.name_target(img, trgext=self.options['target_format'])
+        cmd = '"{}" --export-filename={} --pages=1 "{}"'.format(self.Inkscape, trg, img)
         self.run_cmd(cmd)
 
 
@@ -399,7 +414,6 @@ class ImageUtility(object):
 
         cmd = 'epstopdf.exe "{}"'.format(img)
         self.run_cmd(cmd)
-
 
     def pdf_to_eps(self, img) -> None:
 
@@ -409,9 +423,11 @@ class ImageUtility(object):
 
     def ai_to_pdf(self, img) -> None:
 
-        trg = self.name_target(img, trgext='.pdf') # for ai_to_eps()
-        cmd = f"gswin64c -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile={trg} {img}"
+        trg = self.name_target(img, trgext='.pdf') 
+        cmd = f"{self.Ghostscript} -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile={trg} {img}"
         self.run_cmd(cmd)
+        if self.options['Texlive']:
+            self.crop_pdf(trg)
 
 
     def ai_to_eps(self, img) -> None:
@@ -471,14 +487,15 @@ class ImageUtility(object):
             else:
                 if recipe['source format'] == '.svg' or recipe['target format'] == '.svg' or self.options['Inkscape']: 
                     self.run_recursive(self.from_or_to_svg)
-                elif recipe['source format'] == '.eps' and recipe['target format'] == '.pdf':
-                    self.run_recursive(self.eps_to_pdf)
-                elif recipe['source format'] == '.pdf' and recipe['target format'] == '.eps':
-                    self.run_recursive(self.pdf_to_eps)
-                elif recipe['source format'] == '.ai' and recipe['target format'] == '.pdf':
-                    self.run_recursive(self.ai_to_pdf)
-                elif recipe['source format'] == '.ai' and recipe['target format'] == '.eps':
-                    self.run_recursive(self.ai_to_eps)
+                elif self.options['Texlive']:
+                    if recipe['source format'] == '.eps' and recipe['target format'] == '.pdf':
+                        self.run_recursive(self.eps_to_pdf)
+                    elif recipe['source format'] == '.pdf' and recipe['target format'] == '.eps':
+                        self.run_recursive(self.pdf_to_eps)
+                    elif recipe['source format'] == '.ai' and recipe['target format'] == '.pdf':
+                        self.run_recursive(self.ai_to_pdf)
+                    elif recipe['source format'] == '.ai' and recipe['target format'] == '.eps':
+                        self.run_recursive(self.ai_to_eps)
 
 
     def count(self) -> None:
@@ -504,7 +521,7 @@ class ImageUtility(object):
         else:
             if self.options['info']:
                 self.run_recursive(self.get_info)
-            elif self.options['crop']:
+            elif self.options['crop'] and self.options['Texlive']:
                 self.run_recursive(self.crop_pdf)
             elif self.options['resize']:
                 self.run_recursive(self.resize_bitmap)

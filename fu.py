@@ -333,7 +333,7 @@ class Renamer(object):
 
         # initialize variables using default
         if self.options['affix'] is None:
-            self.options['affix'] = datetime.strftime(date.today(), '%Y-%m-%d')        
+            self.options['affix'] = datetime.strftime(date.today(), '%Y-%m-%d')
 
         # validate flag
         for key in flags.keys():
