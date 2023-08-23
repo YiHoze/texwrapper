@@ -3976,8 +3976,10 @@ code = ```import argparse
 	```
 	```    def determine_task(self, words) -> None:
 	```
+	```        p = re.compile('[a-zA-Z]')
 	```        output = []
-	```        if self.options['hiragana']:
+	```
+	```        if self.options['hiragana'] or p.match(words[0]):
 	```            for word in words:
 	```                output.append(self.get_hiragana(word))
 	```        elif self.options['katagana']:
@@ -4470,7 +4472,7 @@ code = ```[CmdletBinding()]
 	```    }
 	```    $content += "`t)`n}"
 	```
-	```    $dirpath = Split-Path $Output 
+	```    $dirpath = Split-Path $Output
 	```    $Output = [System.IO.Path]::GetFileNameWithoutExtension($Output) + '.psd1'
 	```    if ($dirpath) {
 	```        $Output = Join-Path $dirpath -ChildPath $Output
