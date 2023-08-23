@@ -284,7 +284,7 @@ class EnglishToHangul(object):
         self.phonetic_syllabic = re.sub('(?<=[əo])ʊ$', '', self.phonetic_syllabic)
         self.phonetic_syllabic = re.sub('/l$', 'l', self.phonetic_syllabic)
         self.phonetic_syllabic = re.sub('ʊ/ə', 'wə', self.phonetic_syllabic)
-        self.phonetic_syllabic = re.sub('ɪr', 'i/ə', self.phonetic_syllabic)
+        self.phonetic_syllabic = re.sub('[iɪ]r', 'i/ə', self.phonetic_syllabic)
         # 받침
         self.phonetic_syllabic = re.sub('(?<=[iɪyeøɛœæaɑʌɔoəɚu])/l/', 'l/', self.phonetic_syllabic) 
 
