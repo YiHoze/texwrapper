@@ -30,14 +30,14 @@ class FileOpener(object):
         if os.path.exists(ini):
             config = configparser.ConfigParser()
             config.read(ini)
-            self.editor = config.get('Text Editor', 'path', fallback=False)
+            self.editor = config.get('Text Editor', 'path', fallback="code.exe")
             self.txt_associations = config.get('Text Editor', 'associations', fallback=[])
             self.pdf_viewer = config.get('Sumatra PDF', 'path', fallback=False)
             self.pdf_associations = config.get('Sumatra PDF', 'associations', fallback=[])
             self.AdobeReader = config.get('Adobe Reader', 'path', fallback=False)
             self.WebBrowser = config.get('Web Browser', 'path', fallback=False)
         else:
-            self.editor =False
+            self.editor = "code.exe"
             self.txt_associations = []
             self.pdf_viewer = False
             self.pdf_associations = []
