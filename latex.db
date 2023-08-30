@@ -4442,7 +4442,7 @@ tex = ```\documentclass{article}
 	```″\textsubscript{double prime for inch}
 	```⌀\textsubscript{diameter} ø\textsubscript{o with stroke}
 	```
-    ``` ` ' `` ''
+	``` ` ' `` ''
 	```• · 『 』「 」≪ ≫ …  ⧵
 	```± ÷ × ≤ ≥ ² ³ ₂ ₃
 	```◯ ✓ ✔ ✗ ✘ □ ☐ ☑
@@ -5779,3 +5779,46 @@ tex = ```%% description =  An example of how to use \ReadTSV of the HzGuide clas
 	```\begin{document}
 	```\ReadTSV{\1}
 	```\end{document}
+
+[tex_units]
+tex_output = tex_units.tex
+tex = ```\documentclass[a4paper]{article}
+	```
+	```\usepackage{array}
+	```\usepackage[hmargin=2cm]{geometry}
+	```
+	```\makeatletter
+	```\def\convertto#1#2{\strip@pt\dimexpr #2*65536/\number\dimexpr 1#1}
+	```\def\ConvertTo#1#2{#1\,=\,\strip@pt\dimexpr #1*65536/\number\dimexpr 1#2\relax#2}
+	```\makeatother
+	```
+	```\begin{document}
+	```
+	```\begin{center}\begin{tabular}
+	```  {>{\def\colunit{pt}}l<{\convertto{\rowunit}{1\colunit}}
+	```   >{\def\colunit{mm}}l<{\convertto{\rowunit}{1\colunit}}
+	```   >{\def\colunit{cm}}l<{\convertto{\rowunit}{1\colunit}}
+	```   >{\def\colunit{ex}}l<{\convertto{\rowunit}{1\colunit}}
+	```   >{\def\colunit{em}}l<{\convertto{\rowunit}{1\colunit}}
+	```   >{\def\colunit{bp}}l<{\convertto{\rowunit}{1\colunit}}
+	```   >{\def\colunit{dd}}l<{\convertto{\rowunit}{1\colunit}}
+	```   >{\def\colunit{pc}}l<{\convertto{\rowunit}{1\colunit}}
+	```   >{\def\colunit{in}}l<{\convertto{\rowunit}{1\colunit}}
+	```   >{\bfseries}l}
+	```\multicolumn{1}{l}{\bfseries 1pt} & \multicolumn{1}{l}{\bfseries 1mm} & \multicolumn{1}{l}{\bfseries 1cm} & \multicolumn{1}{l}{\bfseries 1ex} & \multicolumn{1}{l}{\bfseries 1em} & \multicolumn{1}{l}{\bfseries 1bp} & \multicolumn{1}{l}{\bfseries 1dd} & \multicolumn{1}{l}{\bfseries 1pc} & \multicolumn{1}{l}{\bfseries 1in} & \\
+	```\gdef\rowunit{pt} & & & & & & & & & \rowunit\\
+	```\gdef\rowunit{mm} & & & & & & & & & \rowunit\\
+	```\gdef\rowunit{cm} & & & & & & & & & \rowunit\\
+	```\gdef\rowunit{ex} & & & & & & & & & \rowunit\\
+	```\gdef\rowunit{em} & & & & & & & & & \rowunit\\
+	```\gdef\rowunit{bp} & & & & & & & & & \rowunit\\
+	```\gdef\rowunit{dd} & & & & & & & & & \rowunit\\
+	```\gdef\rowunit{pc} & & & & & & & & & \rowunit\\
+	```\gdef\rowunit{in} & & & & & & & & & \rowunit\\
+	```\end{tabular}\end{center}
+	```
+	```\ConvertTo{0.5ex}{pt}
+	```\ConvertTo{0.5ex}{mm}
+	```
+	```\end{document}
+
