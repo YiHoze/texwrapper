@@ -108,7 +108,7 @@ flags for gathering:
         '--output',
         dest = 'output',
         default = None,
-        help = 'Enter filename for output. (default: images.lst)'
+        help = 'Enter filename for output.' 
     )
     parser.add_argument(
         '-g',
