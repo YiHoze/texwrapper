@@ -58,7 +58,7 @@ class KoreanToRoman(object):
         self.transcribed= re.sub('k/m', 'ng/m', self.transcribed) # 백마
         self.transcribed= re.sub('k/n', 'ng/n', self.transcribed) 
         self.transcribed= re.sub('(?<!n)g/y', 'ng/ny', self.transcribed) # 학여울
-        self.transcribed= re.sub('n/r(?=a|yeo)', 'l/l', self.transcribed) # 대관령, 신라
+        self.transcribed= re.sub('n/r(?=a|i|yeo)', 'l/l', self.transcribed) # 대관령, 신라, 건립
         self.transcribed= re.sub('n/r', 'n/n', self.transcribed) # 신문로
         self.transcribed= re.sub('p/r', 'm/n', self.transcribed) # 왕십리
         self.transcribed= re.sub('l/n', 'l/l', self.transcribed) # 별내
