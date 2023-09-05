@@ -278,6 +278,7 @@ class EnglishToHangul(object):
         self.phonetic_syllabic = re.sub('(?<=[dln])jə', 'i/ə', self.phonetic_syllabic)
         # 장음
         self.phonetic_syllabic = re.sub('ur$', 'u/ə', self.phonetic_syllabic)
+        self.phonetic_syllabic = re.sub('ɛr$', 'ɛ/ə', self.phonetic_syllabic)
         self.phonetic_syllabic = re.sub('(?<=[aɑəɔo])r/(?=n)', '', self.phonetic_syllabic)
         self.phonetic_syllabic = re.sub('(?<=[aɑəɔo])r', '', self.phonetic_syllabic)
         self.phonetic_syllabic = re.sub('(?<=o)/ʊ', '/', self.phonetic_syllabic)
@@ -285,6 +286,7 @@ class EnglishToHangul(object):
         self.phonetic_syllabic = re.sub('/l$', 'l', self.phonetic_syllabic)
         self.phonetic_syllabic = re.sub('ʊ/ə', 'wə', self.phonetic_syllabic)
         self.phonetic_syllabic = re.sub('[iɪ]r', 'i/ə', self.phonetic_syllabic)
+
         # 받침
         self.phonetic_syllabic = re.sub('(?<=[iɪyeøɛœæaɑʌɔoəɚu])/l/', 'l/', self.phonetic_syllabic) 
 
