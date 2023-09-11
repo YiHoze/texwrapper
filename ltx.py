@@ -435,7 +435,7 @@ class LatexCompiler(object):
 
     def pythontex(self) -> None:
 
-        os.system('pythontex.exe --runall=true {}'.format(self.py))
+        os.system('pythontex.exe --runall=true "{}"'.format(self.py))
 
 
     def compile(self, **options) -> None:
