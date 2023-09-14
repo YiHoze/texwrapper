@@ -1,18 +1,19 @@
 [gencode]
 description = [Python] Generate barcodes or QR codes in PNG. The last check digit of barcode will be automatically corrected if it is wrong.
 code_output = gencode.py
-code = ```
-	```# pip python-barcode
+code = ```# pip "install python-barcode"
+	```# pip "install python-barcode[images]"
 	```# pip install qrcode[pil]
 	```import os
 	```import argparse
 	```import re
 	```import webbrowser
+	```from io import BytesIO
 	```import barcode
+	```from barcode import EAN13
+	```from barcode.writer import ImageWriter
 	```import qrcode
 	```import qrcode.image.svg as qrSVG
-	```from barcode import generate
-	```from barcode.writer import ImageWriter
 	```from PIL import Image
 	```from pyzbar.pyzbar import decode as qrDecode
 	```from pylibdmtx.pylibdmtx import decode as dmDecode
@@ -75,12 +76,18 @@ code = ```
 	```            self.options['output'] = 'barcode'
 	```        EAN = barcode.get_barcode_class('ean13')
 	```        counter = 1
+	```
+	```
+	```        if self.options['svg']:
+	```            rv = BytesIO()
+	```
 	```        for code in codes:
 	```            filename = self.name_file(len(codes), counter)
 	```            ean = EAN(code, writer=ImageWriter())
 	```            ean.save(filename)
 	```            if self.options['svg']:
-	```                generate('EAN13', code, output=filename)
+	```                ean = EAN(code)
+	```                ean.save(filename)
 	```            counter += 1
 	```
 	```
