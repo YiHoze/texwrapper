@@ -56,8 +56,4 @@ address\s?=
 subtitle\s?=
 title\s?=
 \\([가-힣])	\1
-\n\n\n\n\n\n\n	\n\n
-\n\n\n\n\n\n	\n\n
-\n\n\n\n\n	\n\n
-\n\n\n\n	\n\n
-\n\n\n	\n\n
+\n{3,}	\n\n

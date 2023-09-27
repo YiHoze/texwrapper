@@ -138,7 +138,7 @@ class ImageUtility(object):
         #     self.Magick = 'magick.exe'
         #     self.Inkscape = 'inkscapecom.com'
         self.Magick = 'magick.exe'
-        self.Inkscape = 'inkscape.exe'
+        self.Inkscape = 'inkscapecom.com'
         self.Ghostscript = 'gswin64c.exe'
 
 
