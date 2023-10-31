@@ -1631,7 +1631,7 @@ code = ```
 	```        # 1200만 원 초과 ~ 4600만 원 이하: 15%%
 	```        self.unit = 10000
 	```        self.last_section = 1000000001
-	```        self.rate_sections = {12000000:6, 46000000:15, 88000000:24, 150000000:35, 300000000:38, 500000000:40, 1000000000:42, self.last_section:45}
+	```        self.rate_sections = {14000000:6, 50000000:15, 88000000:24, 150000000:35, 300000000:38, 500000000:40, 1000000000:42, self.last_section:45}
 	```        self.rate_sections = OrderedDict(sorted(self.rate_sections.items()))
 	```        self.progressive_sections = {}
 	```        self.deduction_sections = {}
@@ -1783,8 +1783,8 @@ code = ```
 	```        monthly_tax = tax / 12
 	```
 	```        state_pension = monthly_pay * 0.045
-	```        health_care = monthly_pay * 0.0343 + monthly_pay * 0.0343 * 0.1152 # 장기요양보험 포함
-	```        employment_insurance = monthly_pay * 0.008
+	```        health_care = monthly_pay * 0.03545 + monthly_pay * 0.03545 * 0.1281 # 장기요양보험 포함
+	```        employment_insurance = monthly_pay * 0.009
 	```        deduction = health_care + state_pension + employment_insurance
 	```
 	```        monthly_tax = monthly_tax - deduction
