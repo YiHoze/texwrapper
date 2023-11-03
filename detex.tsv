@@ -1,59 +1,27 @@
-(?<!\\)%.*?$
-\\documentclass.+$
+\\Menu\{(?:[^{}]+|\{(?:[^{}]+|\{[^{}]*\})*\})*\}
+\\menu\{(?:[^{}]+|\{(?:[^{}]+|\{[^{}]*\})*\})*\}
+\\colorbox\{.+?\}
 \\input.+$
-\\include.+$
-FrontLogoImage\s?=.+$
-BackLogoImage\s?=.+$
-ProductImage\s?=.+$
-FrontImage\s?=.+$
-BackImage\s?=.+$
-\\ifdoc[*|^]{0,2}\{.+\}\[.+\]
-\\ifdoc[*|^]{0,2}\{.+\}
-\\image[*|^]{0,2}\{.+\}
-\\image[*|^]{0,2}\[.+\]\{.+\}
-\\img.+?\}
-\\listimg.+?\}
-\\cellimg.+?\}
-\\fullimage.+?\}
-\\illustimage[*|^]{0,2}\{.+?\}
-\\illustimage[*|^]{0,2}\[.+\]\{.+?\}
-\{IllustImage\}[*|^]{0,2}\{.+?\}
-\{IllustImage\}[*|^]{0,2}\[.+\]\{.+?\}
-\{IllustEnum\}[*|^]{0,2}\{.+?\}
-\{IllustEnum\}[*|^]{0,2}\[.+\]\{.+?\}
-\\begin\{FullImage\}\{.+?\}
-\{Table\}[*|^]{0,2}\[.+\]
-\{SpecTable\}[*]\[.+\]
-\{SpecTable\}[*]
-\{tblr\}.+$
-\\SetCell\[.+\]\{.+?\}
 \\label.+?\}
-\\pageref.+?\}
-\\titleref.+?\}
-\\fref.+?\}
-\\cirnum.+\}
-\\mi.+\}
-\\textsb.+\}
-\\end\{.+\}
-\\begin\{.+\}.+$
-\\begin\{.+\}$
-\\[a-zA-Z*]{1,25}
-(?<!\\)\{
-(?<!\\)\}
+\\\w*ref.+?\}
+\\textsb.+?\}
+\\[mu]item.+?\]
+\\[mu]i.+?\}
+\\cellimg.+?\}
+\\image[^\(]+(?=\(|$)
+\\begin.+$
+\\end.+$
 (?<!\\)&
-\\&	&
-\\%	%
-\\\{	{
-\\\}	}
-\\#	#
+\\[%#]
 \\\\
-\\\s
-\\,
-DocumentType\s?=
-note\s?=
-manufacturer\s?=
-address\s?=
-subtitle\s?=
-title\s?=
-\\([가-힣])	\1
-\n{3,}	\n\n
+\\[\w*]+\b
+[\{\}\[\]]
+``
+''
+title=
+DocumentType=
+revision=
+note=
+address=
+```--
+```\&
