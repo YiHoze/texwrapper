@@ -32,7 +32,7 @@ def parse_args():
             help='Specify a regex file in TSV format to remove markup.'
         )
     parser.add_argument(
-            '-I',
+            '-i',
             dest='ignore',
             default='ignore_words.txt',
             help='Specify a file that contains words to be ignored.'
