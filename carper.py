@@ -59,7 +59,12 @@ def find_misspelt(filename:str):
 
     misspelt = []
     for line in content:
-        text = re.sub('[\.\,\:\`\'\"\(\)\-\/]', ' ', line)
+        text = re.sub("\'s\s", ' ', line)
+        text = re.sub("\`\`", '', text)
+        text = re.sub("\'\'", '', text)
+        text = re.sub("\s[\`\"\(\[]", ' ', text)
+        text = re.sub("[\'\"\)\]]\s", ' ', text)
+        text = re.sub("[\.\,\:\;\-\/]", ' ', text)
         words = text.split()
         found = list(spell.unknown(words))
         if len(found) > 0:
@@ -74,10 +79,8 @@ args = parse_args()
 spell = SpellChecker(language='en')
 
 if os.path.exists(args.ignore):
-    with open(args.ignore, mode='r', encoding='utf-8') as fs:
-        content = fs.read()
-        words = content.split()
-        spell.word_frequency.load_words(words)
+    # spell.word_frequency.load_dictionary('foo.json')
+    spell.word_frequency.load_text_file(args.ignore)
 
 if args.strip:
     if not os.path.exists(args.regex):
