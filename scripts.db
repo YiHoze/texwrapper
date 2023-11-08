@@ -3823,7 +3823,6 @@ code = ```import argparse
 	```
 	```        self.options = {
 	```            'capital': False,
-	```            'hiragana': False,
 	```            'katagana': False
 	```        }
 	```
@@ -3986,12 +3985,13 @@ code = ```import argparse
 	```        p = re.compile('[a-zA-Z]')
 	```        output = []
 	```
-	```        if self.options['hiragana'] or p.match(words[0]):
-	```            for word in words:
-	```                output.append(self.get_hiragana(word))
-	```        elif self.options['katagana']:
-	```            for word in words:
-	```                output.append(self.get_katagana(word))
+	```        if p.match(words[0]):
+	```            if self.options['katagana']:
+	```                for word in words:
+	```                    output.append(self.get_katagana(word))
+	```            else:
+	```                for word in words:
+	```                    output.append(self.get_hiragana(word))
 	```        else:
 	```            for word in words:
 	```                output.append(self.transliterate(word))
@@ -4017,13 +4017,6 @@ code = ```import argparse
 	```        help = 'Capitalize the output when transliterating into Roman.'
 	```    )
 	```    parser.add_argument(
-	```        '-g',
-	```        dest = 'hiragana',
-	```        action = 'store_true',
-	```        default = False,
-	```        help = 'Show Hiragana characters for given sounds.'
-	```    )
-	```    parser.add_argument(
 	```        '-k',
 	```        dest = 'katagana',
 	```        action = 'store_true',
@@ -4038,7 +4031,7 @@ code = ```import argparse
 	```if __name__ == '__main__':
 	```
 	```    args = parse_args()
-	```    GTR = GanaToRoman(capital=args.capital, hiragana=args.hiragana, katagana=args.katagana)
+	```    GTR = GanaToRoman(capital=args.capital, katagana=args.katagana)
 	```    GTR.determine_task(args.words)
 	```
 
