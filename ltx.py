@@ -285,8 +285,8 @@ class LatexCompiler(object):
             'fre': '-u -c hz -l fr',
             'ger': '-u -c hz -l de',
             'ita': '-u -c hz -l it',
-            'jap': '-u -c hz -l jp',
-            'kor': '-u -c hz-ko -l ko',
+            'jap': '-c hz -l jp',
+            'kor': '-c hz-ko -l ko',
             'nor': '-u -c hz -l no',
             'swe': '-u -c hz -l sv'
         }
