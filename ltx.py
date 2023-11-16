@@ -279,17 +279,19 @@ class LatexCompiler(object):
 
         # language by which to sort index
         xindex_languages = {
-            'cze': '-c hz -l cs',
-            'dan': '-c hz -l da',
-            'eng': '-c hz -l en',
-            'fre': '-c hz -l fr',
-            'ger': '-c hz -l de',
-            'ita': '-c hz -l it',
-            'jap': '-c hz -l jp',
-            'kor': '-c hz-ko -l ko',
-            'nor': '-c hz -l no'
+            'cze': '-u -c hz -l cs',
+            'dan': '-u -c hz -l da',
+            'eng': '-u -c hz -l en',
+            'fre': '-u -c hz -l fr',
+            'ger': '-u -c hz -l de',
+            'ita': '-u -c hz -l it',
+            'jap': '-u -c hz -l jp',
+            'kor': '-u -c hz-ko -l ko',
+            'nor': '-u -c hz -l no',
+            'swe': '-u -c hz -l sv'
         }
         xindy_modules = {
+            # 'eng': '-M lang/english/utf8-lang',
             'rus': '-M lang/russian/utf8-lang',
             'spa': '-M lang/spanish/modern-utf8-lang'
         }
