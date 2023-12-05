@@ -339,77 +339,93 @@ compiler = -L -c
 tex_output = lotto.tex
 placeholders = 2
 defaults = 8, 5
-tex = 
-	```\documentclass[12pt, twocolumn]{article}
-	```\usepackage[a5paper,margin=1.5cm]{geometry}
+tex = ```
+	```\documentclass[10pt, twocolumn]{article}
+	```\usepackage[a5paper,margin=2cm]{geometry}
 	```\usepackage{luacode}
 	```\usepackage{tikz}
-	```\newcommand\DrawBalls{
-	```	\luaexec{
-	```		local m, n = 6, 45
-	```		local balls = {}
-	```		local tmps = {}
-	```		for i = n-m+1, n do
-	```			local drawn = math.random(i)
-	```			if not tmps[drawn] then
-	```				tmps[drawn] = drawn
-	```			else
-	```				tmps[i] = i
-	```				drawn = i
-	```			end
-	```			balls[\#balls+1] = drawn
-	```		end
-	```		table.sort(balls)
-	```		for i=1,\#balls do
-	```			tex.print("\\LottoBall{", balls[i], "}")
-	```		end
-	```	}
-	```}
-	```\newcommand*\LottoBall[1]{%%
-	```	\GetBallColor
-	```	\tikz\node[
-	```			circle,shade,draw=white,thin,inner sep=1pt,
-	```			ball color=ball,
-	```			text width=1em,
-	```			font=\sffamily,text badly centered,white
+	```
+	```\NewDocumentCommand{\lottoBall}{m}{%%
+	```    \luaexec{
+	```        tex.print(string.format("\\definecolor{ball}{RGB}{\%%d, \%%d, \%%d}", 
+	```            math.random(0, 255), 
+	```            math.random(0, 255), 
+	```            math.random(0, 255))
+	```        )
+	```    }%%
+	```    \tikz\node[
+	```        circle,shade,draw=white,thin,inner sep=1pt,
+	```        ball color=ball,
+	```        text width=1em,
+	```        font=\sffamily,text badly centered,white
 	```	]{#1};%%
 	```}
-	```\ExplSyntaxOn
-	```\tl_new:N \l_R_tl
-	```\tl_new:N \l_G_tl
-	```\tl_new:N \l_B_tl
-	```\NewDocumentCommand \GetBallColor { }
-	```{
-	```	\tl_set:Nx \l_R_tl { \int_rand:nn {0}{255} }
-	```	\tl_set:Nx \l_G_tl { \int_rand:nn {0}{255} }
-	```	\tl_set:Nx \l_B_tl { \int_rand:nn {0}{255} }
-	```	\definecolor{ball}{RGB}{\l_R_tl, \l_G_tl, \l_B_tl}
-	```}
-	```\NewDocumentCommand \DrawWeek { m }
-	```{
-	```	\int_step_inline:nn {#1}
-	```	{
-	```		\DrawBalls\\
-	```	}
-	```}
-	```\ExplSyntaxOff
-	```\newcommand*\lotto[2]{
-	```	\luaexec{
-	```		today = os.time{year=os.date("\%%Y"), month=os.date("\%%m"), day=os.date("\%%d")}
-	```		saturday_index = 6 - (os.date("\%%w"))
-	```		for i=1, #1 do
-	```			next_saturday = today + (saturday_index * 86400)
-	```			date = os.date("\%%Y-\%%m-\%%d", next_saturday)
-	```			tex.print("\\par\\textbf{",date,"}\\par\\nopagebreak")
-	```			tex.print("\\DrawWeek{#2}")
-	```			saturday_index = saturday_index + 7
-	```		end
-	```	}
-	```}
+	```
+	```\begin{luacode}
+	```function drawLotto()
+	```    local m, n = 6, 45
+	```    local balls, tmps = {}, {}
+	```
+	```    for i = n-m+1, n do
+	```        local drawn = math.random(i)
+	```        if not tmps[drawn] then
+	```            tmps[drawn] = drawn
+	```        else
+	```            tmps[i] = i
+	```            drawn = i
+	```        end
+	```        balls[\#balls+1] = drawn
+	```    end
+	```    table.sort(balls)
+	```    return balls
+	```end
+	```
+	```function getNextSaturday(date)
+	```    local fiducialTimeStamp, daysUntilSaturday, nextSaturdayStamp 
+	```    local dateTable = {}
+	```    if date ~= nil then
+	```        for i in date:gmatch("[^-]+") do
+	```            table.insert(dateTable, tonumber(i))
+	```        end
+	```    end
+	```    if date == nil or \#dateTable < 3 then
+	```        fiducialTimeStamp = os.time()
+	```    else
+	```        fiducialTimeStamp = os.time{year=dateTable[1], month=dateTable[2], day=dateTable[3]}
+	```    end
+	```    daysUntilSaturday = (6 - os.date("\%%w", fiducialTimeStamp) + 7) \%% 7
+	```    nextSaturdayStamp = fiducialTimeStamp + 86400 * daysUntilSaturday
+	```    return nextSaturdayStamp
+	```end
+	```
+	```function lottoPlan(tickets, weeks, fromWhatDate)
+	```    local tickets = tickets or 5
+	```    local weeks = weeks or 8
+	```    local fromWhatDate = fromWhatDate
+	```
+	```    local nextSaturdayStamp = getNextSaturday(fromWhatDate)
+	```    for i=1, weeks do
+	```        local nextSaturday = os.date("\%%Y-\%%m-\%%d", (nextSaturdayStamp + 86400 * (i-0) * 7))
+	```        tex.print("\\subsubsection*{", nextSaturday, "}")
+	```        for j=1, tickets do 
+	```            local lotto = drawLotto()
+	```            for _, v in ipairs(lotto) do
+	```                tex.print("\\lottoBall{", v, "}")
+	```            end
+	```            if j < tickets then
+	```                tex.print("\\newline")
+	```            end
+	```        end
+	```    end
+	```end
+	```\end{luacode}
+	```
 	```\setlength\parindent{0pt}
-	```\setlength\parskip{.5ex}
+	```\raggedbottom
+	```
 	```\begin{document}
-	```\lotto{\1}{\2}
+	```\luaexec{lottoPlan()}
+	```%% \luaexec{lottoPlan(5, 52, "2024-01-01")}
 	```\end{document}
 
 [tys]
