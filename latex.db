@@ -347,9 +347,9 @@ tex = ```
 	```
 	```\NewDocumentCommand{\lottoBall}{m}{%%
 	```    \luaexec{
-	```        tex.print(string.format("\\definecolor{ball}{RGB}{\%%d, \%%d, \%%d}", 
-	```            math.random(0, 255), 
-	```            math.random(0, 255), 
+	```        tex.print(string.format("\\definecolor{ball}{RGB}{\%%d, \%%d, \%%d}",
+	```            math.random(0, 255),
+	```            math.random(0, 255),
 	```            math.random(0, 255))
 	```        )
 	```    }%%
@@ -381,7 +381,7 @@ tex = ```
 	```end
 	```
 	```function getNextSaturday(date)
-	```    local fiducialTimeStamp, daysUntilSaturday, nextSaturdayStamp 
+	```    local fiducialTimeStamp, daysUntilSaturday, nextSaturdayStamp
 	```    local dateTable = {}
 	```    if date ~= nil then
 	```        for i in date:gmatch("[^-]+") do
@@ -405,9 +405,9 @@ tex = ```
 	```
 	```    local nextSaturdayStamp = getNextSaturday(fromWhatDate)
 	```    for i=1, weeks do
-	```        local nextSaturday = os.date("\%%Y-\%%m-\%%d", (nextSaturdayStamp + 86400 * (i-0) * 7))
+	```        local nextSaturday = os.date("\%%Y-\%%m-\%%d", (nextSaturdayStamp + 86400 * (i-1) * 7))
 	```        tex.print("\\subsubsection*{", nextSaturday, "}")
-	```        for j=1, tickets do 
+	```        for j=1, tickets do
 	```            local lotto = drawLotto()
 	```            for _, v in ipairs(lotto) do
 	```                tex.print("\\lottoBall{", v, "}")
@@ -424,8 +424,8 @@ tex = ```
 	```\raggedbottom
 	```
 	```\begin{document}
-	```\luaexec{lottoPlan()}
-	```%% \luaexec{lottoPlan(5, 52, "2024-01-01")}
+	```%% \luaexec{lottoPlan()}
+	```\luaexec{lottoPlan(5, 52, "2024-01-01")}
 	```\end{document}
 
 [tys]
