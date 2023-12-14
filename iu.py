@@ -118,27 +118,8 @@ class ImageUtility(object):
         self.images = images
         self.reconfigure(kwargs)
 
-        # inipath = os.path.dirname(__file__)
-        # ini = os.path.join(inipath, 'docenv.conf')
-        # if os.path.exists(ini):
-        #     config = configparser.ConfigParser()
-        #     config.read(ini)
-
-        #     self.Magick = config.get('ImageMagick', 'path', fallback=False)
-        #     if not self.Magick:
-        #         print('Make sure to have docenv.conf set properly with ImageMagick.')
-        #         self.Magick = 'magick.exe'
-
-        #     self.Inkscape = config.get('Inkscape', 'path', fallback=False)
-        #     if not self.Inkscape:
-        #         print('Make sure to have docenv.conf set properly with Inkscape.')
-        #         self.Inkscape = 'inkscapecom.com'
-        # else:
-        #     print('Docenv.conf is not found in {}.'.format(inipath))
-        #     self.Magick = 'magick.exe'
-        #     self.Inkscape = 'inkscapecom.com'
         self.Magick = 'magick.exe'
-        self.Inkscape = 'inkscapecom.com'
+        self.Inkscape = 'inkscape.com'
         self.Ghostscript = 'gswin64c.exe'
 
 

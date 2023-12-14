@@ -389,8 +389,14 @@ class Renamer(object):
                 else: # remove spaces
                     newname = re.sub(' ', '', file)
                 if not os.path.exists(newname):
-                    print(f'{file} chagned to {newname}.')
                     os.rename(file, newname)
+                    print(f'{file} chagned to {newname}.')
+                else:
+                    if file.lower() == newname.lower() and file != newname:
+                        os.rename(file, "@@@___@@@.___@@@___")
+                        os.rename("@@@___@@@.___@@@___", newname)
+                        print(f'{file} chagned to {newname}.')
+                    
 
 
     def rename_uppercase(self, files) -> None:
