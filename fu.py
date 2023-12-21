@@ -390,12 +390,12 @@ class Renamer(object):
                     newname = re.sub(' ', '', file)
                 if not os.path.exists(newname):
                     os.rename(file, newname)
-                    print(f'{file} chagned to {newname}.')
+                    print(f'{file} is changed to {newname}.')
                 else:
                     if file.lower() == newname.lower() and file != newname:
                         os.rename(file, "@@@___@@@.___@@@___")
                         os.rename("@@@___@@@.___@@@___", newname)
-                        print(f'{file} chagned to {newname}.')
+                        print(f'{file} is changed to {newname}.')
                     
 
 
