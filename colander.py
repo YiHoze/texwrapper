@@ -88,25 +88,34 @@ def createMap() -> None:
 <map base="electric/engine" platform="genesis/hyundai" product="????" audience="202?"  xml:lang="??_??" xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" rev="1.0">
 <title>????</title>
 '''
-    
-    chapterFiles = [
-            "foreword",
-            "foreword_starting_your_electric_vehicle",
-            "information_getting_started_with_your_electric_vehicle",
-            "safety_precautions",
-            "safety_system",
-            "vehicle_information",
-            "seats_amp_safety_system",
-            "instrument_cluster",
-            "convenience_features",
-            "convenience_device",
-            "driving_your_vehicle",
-            "driver_assistance_system",
-            "emergency_situations",
-            "maintenance",
-            "appendix",
-            "index"
-        ]
+    # chapterFiles = [
+    #         "foreword",
+    #         "foreword_starting_your_electric_vehicle",
+    #         "information_getting_started_with_your_electric_vehicle",
+    #         "safety_precautions",
+    #         "safety_system",
+    #         "vehicle_information",
+    #         "seats_amp_safety_system",
+    #         "instrument_cluster",
+    #         "convenience_features",
+    #         "convenience_device",
+    #         "driving_your_vehicle",
+    #         "driver_assistance_system",
+    #         "emergency_situations",
+    #         "maintenance",
+    #         "appendix",
+    #         "index"
+    #     ]
+    filename = "colander_chapter_headings.txt"
+    filepath = os.path.join("..", filename)
+    if not os.path.exists(filepath):
+        filepath = os.path.join(os.path.dirname(__file__), filename)
+        if not os.path.exists(filepath):
+            print(f"{filename} is not found.")
+            sys.exit()
+    with open(filepath, mode="r", encoding="utf-8") as fs:
+        content = fs.read()
+    chapterFiles = content.split('\n')
     
     for cf in chapterFiles:
         fileName = cf + '.xml'
