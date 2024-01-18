@@ -59,12 +59,13 @@ def find_misspelt(filename:str):
 
     misspelt = []
     for line in content:
-        text = re.sub("\'s\s", ' ', line)           # 'sSPACE
-        text = re.sub("\`\`", '', text)             # ``
-        text = re.sub("\'\'", '', text)             # ''
-        text = re.sub("\s[\`\"\(\[]", ' ', text)    # SPACE`"([
-        text = re.sub("[\'\"\)\]]\s", ' ', text)    # '")]SPACE
-        text = re.sub("[\.\,\?\:\;\-\/]", ' ', text)  # .,:;-/
+        text = re.sub("[°©]", '', line)
+        text = re.sub("\`\`", '', text)                 # ``
+        text = re.sub("\'\'", '', text)                 # ''
+        text = re.sub("\'s\s", ' ', text)               # 'sSPACE
+        text = re.sub("[\.\,\?\:\;\-\/]", ' ', text)    # .,:;-/
+        text = re.sub("\s[\`\"\(\[]", ' ', text)        # SPACE`"([
+        text = re.sub("[\'\"\)\]]\s", ' ', text)        # '")]SPACE
         words = text.split()
         found = list(spell.unknown(words))
         if len(found) > 0:
