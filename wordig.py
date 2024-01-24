@@ -503,7 +503,7 @@ class WordDigger(object):
                     output = os.path.join(oDir, oFile).replace('/','\\')
 
         return output
-        
+
 
     def determine_output(self, file:str, output=None) -> str:
 
@@ -612,11 +612,7 @@ class WordDigger(object):
 
     def tsv_to_xlsx(self, file:str) -> None:
 
-        if self.options['output'] is None:
-            self.options['output'] = '.xlsx'
-        else:
-            self.options['output'] = os.path.splitext(self.options['output'])[0] + '.xlsx'
-        output = self.determine_output(file)
+        output = self.determine_output_indefinite(file=file, output='.xlsx')
 
         content = []
         with open(file, mode='r', encoding='utf-8') as f:
@@ -680,9 +676,7 @@ class WordDigger(object):
     # C:\>wordig -t -a "1,3-5" -o goo.tsv foo.xlsx
     def xlsx_to_tsv(self, file:str) -> None:
 
-        if self.options['output'] is None:
-            self.options['output'] = '.tsv'
-        output = self.determine_output(file)
+        output = self.determine_output_indefinite(file=file, output='.tsv')
 
         wb = openpyxl.load_workbook(file)
         ws = wb.active
@@ -706,9 +700,11 @@ class WordDigger(object):
                         line.append(cell.value)
                     elif (isinstance(cell.value, int) or isinstance(cell.value, float)):
                         line.append(str(cell.value))
+                    else:
+                        line.append(' ')
                 if len(line) > 0 :
                     tmp = ''.join(line)
-                    if tmp.strip() != '':
+                    if tmp.strip() != '': # 공백을 제거한 뒤에 빈 줄이 아니라면
                         content += self.escape_tex('\t'.join(line))
 
             with open(output, mode='w', encoding='utf-8') as f:

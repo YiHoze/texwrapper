@@ -149,7 +149,7 @@ class FileOpener(object):
     def open_app(self, file, **options) -> None:
 
         self.reconfigure(options)
-        subprocess.Popen([self.options['app'], self.options['app_option'], file], stdout=subprocess.PIPE)
+        subprocess.Popen([self.options['app'], self.options['app_option'],  os.path.abspath(file)], stdout=subprocess.PIPE)
 
 
     def open_txt(self, file, **options) -> None:
