@@ -48,7 +48,6 @@ p {
     text-align: center;
 }
 
-
 .framed {
     margin-top: 10px;
     margin-bottom: 10px;
@@ -177,6 +176,15 @@ pre{
     white-space: pre-wrap; 
     text-indent: 0px;
     font-family: monospace;
+}
+
+.lyrics{ 
+    background-color: white;
+    padding: 10px;
+    overflow: auto;
+    white-space: pre-wrap; 
+    text-indent: 0px;
+    font-family: serif;
 }
 
 code{

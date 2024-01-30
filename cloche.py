@@ -72,7 +72,7 @@ def create_index(xhtml_files:list, indexer:str, outdir:str) -> None:
             while True:
                 line = f.readline()
                 if not line: break
-                entries = re.findall('\\\\IndexEntry\{(.+?)\}', line)
+                entries = re.findall('\\\\IndexEntry\\{(.+?)\\}', line)
                 if entries:
                     for i in entries:
                         index_num += 1
@@ -203,7 +203,7 @@ def create_endnote(xhtml_files:list, outdir:str) -> None:
 
 def get_tex_label(line:str, heading:str, id:int) -> str:
 
-    line = re.sub('\\\\(.+)\*', '\\\\\\1', line)
+    line = re.sub('\\\\(.+)\\*', '\\\\\\1', line)
     title = re.search('\\\\{}\\{{(.+?)\\}}'.format(heading), line)
     
     if title is None:

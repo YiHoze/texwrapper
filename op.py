@@ -4,7 +4,7 @@ import argparse
 import configparser
 import subprocess
 import pyperclip
-import win32clipboard
+import win32clipboard # pip install pywin32
 
 
 class FileOpener(object):
