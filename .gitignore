@@ -1,8 +1,7 @@
 .vscode/
 __pycache__/
 private/
-pythontex*/
-buildwordig.ps1
+colander/
 *.aux
 *.cmd
 *.csv

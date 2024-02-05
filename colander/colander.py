@@ -54,6 +54,11 @@ def resetXml(fileList:list, flag:str) -> None:
 -f=1: remove comments and unnecessary attributes.\n\
 -f=2: remove comments, unnecessary attributes, and superfluous IDs.")
 
+def collapseLines(lines:str) -> str:
+
+    lines = re.sub(r'\n', ' ', lines)
+    lines = re.sub(r'\s+', ' ', lines)
+    return lines
 
 def formatXml(fileList:list) -> None:
 
@@ -64,8 +69,7 @@ def formatXml(fileList:list) -> None:
         if not removedLinebreaks:
             with open(fn, mode='r', encoding='utf-8') as fs:
                 content = fs.read()
-            content = re.sub('\n', ' ', content)
-            content = re.sub('\s+', ' ', content)
+            content = collapseLines(content)
             with open(fn, mode='w', encoding='utf-8') as fs:
                 fs.write(content)
         subprocess.run(f'xmlformat.exe --selfclose --overwrite {fn}', check=False)
@@ -173,17 +177,17 @@ def groom_create_filelist(xmlListFile:str) -> None:
         newname = re.sub('-', '_', newname)
         newname = re.sub('__', '_', newname)
         newname = re.sub('_if_equipped', '', newname)
-        newname = re.sub('_\(if_equipped\)', '', newname)
-        newname = re.sub('_\.', '.', newname)
+        newname = re.sub(r'_\(if_equipped\)', '', newname)
+        newname = re.sub(r'_\.', '.', newname)
         # foo_(xxx).xml -> foo_XXX.xml
-        found = re.search('(?<=_\()\w+(?=\)\.)', newname)
+        found = re.search(r'(?<=_\()\w+(?=\)\.)', newname)
         if found:
-            aim = f"_\({found.group(0)}\)\."
+            aim = f"_\\({found.group(0)}\\)\\."
             substitute = f"_{found.group(0).upper()}."
             newname = re.sub(aim, substitute, newname)
-        found = re.search('(?<=_)\w{2,4}(?=\.)', newname)
+        found = re.search(r'(?<=_)\w{2,4}(?=\.)', newname)
         if found:
-            aim = f"_{found.group(0)}\."
+            aim = f"_{found.group(0)}\\."
             substitute = f"_{found.group(0).upper()}."
             newname = re.sub(aim, substitute, newname)
         filelist += f"{oldname}\t{newname}\n"
@@ -223,7 +227,7 @@ def groom_check_filenames(xmlListFile:str) -> None:
 
     wrong = 0
     for f in fileList:
-        changedName = re.sub('^.+\\t', '', f)
+        changedName = re.sub(r'^.+\t', '', f)
         refName = changedName.replace('.xml', '*.xml')
         realName = glob.glob(refName)
         if len(realName) > 0:
@@ -296,7 +300,7 @@ def strainXML(mapFile:str, case_sensitive=False) -> None:
     referredXmlFile = 'xmls_referred.txt'
     WordDigger([tmpMap], aim='(?<=href=").+?(?=")', gather=True, output=referredXmlFile, overwrite=True, quietly=True)
     # xml 아닌 것 삭제하기
-    WordDigger([referredXmlFile], aim='^.+?\.css$\n', substitute='', overwrite=True)
+    WordDigger([referredXmlFile], aim='^.+?\\.css$\\n', substitute='', overwrite=True)
     
     with open(referredXmlFile, mode='r', encoding='utf-8') as fs:
         content = fs.read()
@@ -680,8 +684,7 @@ def getTagsHavingStatus(fileList:list, deletedOnly=False) -> list:
     for fn in fileList:
         with open(fn, mode='r', encoding='utf-8') as fs:
             content = fs.read()
-        content = re.sub('\n', ' ', content)
-        content = re.sub('\s+', ' ', content)
+        content = collapseLines(content)
         if deletedOnly:
             statusPattern = r'<[^>]+\bstatus="deleted"[^>]*>'
         else:
@@ -709,8 +712,7 @@ def removeDeletedLines(fileList:list) -> None:
     for fn in fileList:
         with open(fn, mode='r', encoding='utf-8') as fs:
             content = fs.read()
-        content = re.sub('\n', ' ', content)
-        content = re.sub('\s+', ' ', content)
+        content = collapseLines(content)
         for i in deletedTags:
             if i[-2:] == '/>':
                 head = i[:-2]
@@ -740,8 +742,7 @@ def deleteFigImage(fileList:list) -> None:
     for fn in fileList:
         with open(fn, mode='r', encoding='utf-8') as fs:
             content = fs.read()
-        content = re.sub('\n', '', content)
-        content = re.sub('\s+', ' ', content)
+        content = collapseLines(content)
         for p in patterns:
             content = re.sub(p, '', content)
         with open(fn, mode='w', encoding='utf-8') as fs:
@@ -760,8 +761,7 @@ def extractChanged(fileList:list) -> None:
         tmpLines.clear()
         with open(fn, mode='r', encoding='utf-8') as fs:
             content = fs.read()
-        content = re.sub('\n', '', content)
-        content = re.sub('\s+', ' ', content)
+        content = collapseLines(content)
         for i in tags_having_status_attribute:
             if i[-2:] == '/>':
                 head = i[:-2]
@@ -778,7 +778,6 @@ def extractChanged(fileList:list) -> None:
         if len(tmpLines) > 0:
             extractedLines.append(f'<!-- {fn} -->')
             extractedLines += tmpLines
-            
 
     content = '\n'.join(extractedLines)
     with open('extracted_status_lines.txt', mode='w', encoding='utf-8') as fs:

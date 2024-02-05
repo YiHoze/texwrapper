@@ -10,9 +10,16 @@ $foundFiles = @()
 function Open-Found {
     param ( [string]$filePath )
 
+    $binaryFormats = @(".pdf", ".eps")
+
     Set-Clipboard $filePath
-    # 디폴트 앱으로 열기
-    Start-Process -PassThru -FilePath $filePath  
+    $ext = (get-item $filePath).Extension
+    # 바이너리 형식이면 디폴트 앱으로 열기
+    if ($binaryFormats -contains $ext) {
+        Start-Process -PassThru -FilePath $filePath  
+    } else {
+        Start-Process -WindowStyle Hidden code.cmd $filePath
+    }
 }
 
 function Confirm-Found {
