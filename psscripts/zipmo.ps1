@@ -31,7 +31,8 @@ if (Test-Path $zipFile) {
 $modifiedFiles = @(Get-ChildItem $filePattern -File | Where-Object {$_.LastWriteTime -gt $fiducial} | Select-Object -ExpandProperty Name)
 
 if ($modifiedFiles.Length -gt 0) {
-    zip.exe $zipFile $modifiedFiles
+    # zip.exe $zipFile $modifiedFiles
+    Compress-Archive -DestinationPath $zipFile -Path $modifiedFiles
     Move-Item -Force $zipFile ..
     $lastZippedTime = get-date -format "yyyy-MM-ddTHH:mm:ss"
     Set-Content -Path $timeFile $lastZippedTime

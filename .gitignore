@@ -1,11 +1,5 @@
 .vscode/
 __pycache__/
-_bak/
-_iss/
-_minted-*/
-build/
-dist/
-misc/
 private/
 pythontex*/
 buildwordig.ps1

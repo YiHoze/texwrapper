@@ -1,0 +1,38 @@
+~~~ DOTALL
+<\?xml.+<body>
+~~~
+</body>\n</html>
+<h1 id=.+?>(.+?)</h1>	\\chapter{\1}
+<h2 id=.+?>(.+?)</h2>	\\section{\1}
+<h3 id=.+?>(.+?)</h3>	\\subsection{\1}
+<p.*?>
+</p>
+<br />
+ 
+&#160;
+<blockquote>	\\begin{quote}
+</blockquote>	\\end{quote}
+<sup><a.+?</sup>
+<sup>	\\annotate{
+</sup>	}
+<ul>	\\begin{itemize}
+</ul>	\\end{itemize}
+<ol>	\\begin{enumerate}
+</ol>	\\end{enumerate}
+<li>	\\item 
+</li>
+<dl>	\\begin{description}
+</dl>	\\end{description}
+<dt>(.+?)</dt>\n<dd>	\\item[\1]
+</dd>
+<img src="images/(.+?)".+?/>	\\image{\1}
+<table>\n\n	\\begin{Table}\n\\begin{tblr}
+<table><caption>(.+?)</caption>\n\n	\\begin{Table}(\1)\n\\begin{tblr}
+\n\n</table>	\\end{tblr}\n\\end{Table}
+</td> <td>	&
+\n</tr>\n<tr>	\\\\
+</?tr>
+</?td>
+\n\n\n\n\n	\n\n
+\n\n\n\n	\n\n
+\n\n\n	\n\n

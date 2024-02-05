@@ -1,0 +1,9 @@
+\\IndexEntry{(.+?)}\\macro{(.+?)}	\\IndexEntry{\1@\2}\\verb{\2}
+\\macro\{(.+?)\}	\\IndexEntry{\1}\\macro{\1}
+\\term\{(.+?)\}	\\IndexEntry{\1}\\term{\1}
+\\annotate\{(.+?)\}	\\IndexEntry{\1}\\annotate{\1}
+\\anota\{(.+?)\}	\\IndexEntry{\1}\\annotate{\1}
+\\annotate\*	\\annotate
+\\anota\*	\\annotate
+\\index\{(.+?)\}	\\IndexEntry{\1}\\index{\1}
+\\item\[(.+?)\]	\\item[\1]\\IndexEntry{\1}

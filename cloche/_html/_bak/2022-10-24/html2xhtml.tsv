@@ -1,0 +1,7 @@
+<!DOCTYPE html>	<?xml version="1.0" encoding="utf-8"?>
+<html.+?>	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg" xml:lang="ko-KR">
+<br>	<br />
+~~~DOTALL
+~~~<!--.*?-->
+<img(.*?)>	<img\1 />
+.*<\?xml	<?xml

@@ -1,0 +1,13 @@
+<	&#x3C;
+>	&#x3E;
+%!	&#x24;!
+&#x5c;	&#x26;#x5c;
+\\macro\*?\[.+?\]\{(.+?)\}	\\macro{\1}
+\\macro\*?\{(.+?)\}	\\macro{\1}
+\\macro\{(.+?)\}	\\	&#x5c;	\macro{	}	\verb{	}
+\\verb\{(.+?)\}	\\	&#x5c;	\verb{	}
+\\begin\{verbatim\}	\\	&#x5c;	\\end\{verbatim\}
+\\begin\{code\}	\\	&#x5c;	\\end\{code\}
+
+# (?<!>)\n^$\n(?!<)	\n<br />\n&#x2003;
+(?<!>)\n\n ^	^$\n(?!<)	\n<br />\n&#x2003;

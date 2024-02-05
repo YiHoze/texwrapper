@@ -1,0 +1,143 @@
+~~~ DOTALL
+\\documentclass.*(?=\\begin\{document\})
+~~~ NECESSARY
+~~~(?<!\\)%.+?$
+\\htmlbegin	<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<link rel="stylesheet" type="text/css" href="basic.css"/>\n<title></title>\n</head>\n<body>
+\\htmlend	</body>\n</html>
+\\chapterline\{(.+)\}\{(.+)\}	<h1 id="heading_\2">\1</h1>\n
+\\sectionline\{(.+)\}\{(.+)\}	<h2 id="heading_\2">\1</h2>\n
+\\subsectionline\{(.+)\}\{(.+)\}	<h3 id="heading_\2">\1</h3>\n
+\\headingref\{(.+?)\}\{(.+?)\}\{(.+?)\}	<a href="\1#heading_\2">\3</a>
+\\endnoteline\{(.+)\}\{(.+)\}\{(.+)\}	<p><sup><a id="endnote_text_\1" href="\2#endnote_number_\1">\1</a></sup> \3</p>
+~~~ \footnote, \footnotemark, \footnotetext replaced by Cloche
+~~~ BASIC CONTROL
+\\begin\{document\}
+\\end\{document\}
+\\title.+$
+\\author.+$
+\\date.+$
+\\maketitle
+\\frontmatter.?
+\\tableofcontents.?
+\\mainmatter.?
+\\newpage
+\\vfill	
+\\noindent\s?	
+\\cftinsert.+$
+\\hyphenation.*	
+\\printindex
+\\appendix
+\\newcommand.+$	
+\\include.+$
+\\endinput
+\\index\{.+?\}
+~~~ \\input.+$
+~~~ images
+\\includegraphics.*\{(.+)\}	<img src="images/\1" alt="\1"/>
+\\begin\{wrapfigure\}.*$
+\\end\{wrapfigure\}
+~~~ paragraphs
+\\begin\{quote\}	<blockquote>
+\\end\{quote\}	</blockquote>
+\\begin\{verbatim\}\n	<pre>
+\\end\{verbatim\}	</pre>
+~~~ lists
+\\begin\{enumerate\}.?	<ol>
+\\end\{enumerate\}	</li></ol>
+\\begin\{itemize\}.?	<ul>
+\\end\{itemize\}	</li></ul>
+\\item\s	</li>\n<li>
+<ol>\n</li>	<ol>
+<ul>\n</li>	<ul>
+\n\n</li>	</li>\n
+~~~ table
+\\begin\{tblr\}.+$	
+\\end\{tblr\}
+\\SetCell.+?\}
+\\hline
+~~~^(.+)&(.+)&(.+)&(.+)&(.+)&(.+)&(.+)&(.+)&(.+)$	<tr>\n<td>\1</td> <td>\2</td> <td>\3</td> <td>\4</td> <td>\5</td> <td>\6</td> <td>\7</td> <td>\8</td> <td>\9</td>\n</tr>
+~~~^(.+)&(.+)&(.+)&(.+)&(.+)$	<tr>\n<td>\1</td> <td>\2</td> <td>\3</td> <td>\4</td> <td>\5</td>\n</tr>
+~~~^(.+)&(.+)&(.+)&(.+)$	<tr>\n<td>\1</td> <td>\2</td> <td>\3</td> <td>\4</td>\n</tr>
+~~~^(.+)&(.+)&(.+)$	<tr>\n<td>\1</td> <td>\2</td> <td>\3</td>\n</tr>
+\\\\</td>	</td>
+~~~ character styles
+\\textit\{(.+?)\}	<em>\1</em>
+\\texttt\{(.+?)\}	<code>\1</code>
+\\emph\{(.+?)\}	<b>\1</b>
+\\dotemph\{(.+?)\}	<b>\1</b>
+\\textsc\{(.+?)\}	<span class="smallcaps">\1</span>
+\\textsuperscript\{(.+?)\}	<sup>\1</sup>
+\\textsubscript\{(.+?)\}	<sub>\1</sub>
+\\verb\{(.+?)\}	<code>\1</code>
+\\url\{(.+?)\}	<a href="\1">\1</a>
+~~~ linebreak
+\\par	<br />
+\\\\	<br />
+~~~ spaces and symbols
+---	—
+--	–
+\\,	&#x20;
+\\\s	&#x20; 
+``	&#x22;
+`	&#x27;
+\\@	&#x40;
+\\#	&#x24;
+\\$	&#x24;
+\\%	&#x25;
+\\&	&#x26;
+\\_	&#x5F;
+\\{	&#x7B;
+\\}	&#x7D;
+\\ldots	… 
+\\LaTeX	LaTeX
+~~~ HzGuide
+\\FrontCover
+\\BackCover
+\\TableOfContents.?
+\\CodeSetup.+\}
+\\EnlargePage
+\\skiplines\[.+?\]
+\\skiplines
+\\image[*|^]{0,2}\{(.+).pdf\}\((.+)\)	<figure><a href="\1"><img src="images/\1.png" alt="\1"/></a><figcaption>\2</figcaption></figure>
+\\image[*|^]{0,2}\{(.+)\}\((.+)\)	<figure><a href="\1"><img src="images/\1" alt="\1"/></a><figcaption>\2</figcaption></figure>
+\\image[*|^]{0,2}\{(.+)\}\[(.+)\]\((.+)\)	<figure><a href="\1"><img src="images/\1" alt="\1"/><img src="images/\2" alt="\2"/></a><figcaption>\3</figcaption></figure>
+\\image[*|^]{0,2}\{(.+)\}\[(.+)\]	<figure><a href="\1"><img src="images/\1" alt="\1"/><img src="images/\2" alt="\2"/></a></figure>
+\\image[*|^]{0,2}\{(.+).pdf\}	<figure><img src="images/\1.png" alt="\1"/></figure>
+\\image[*|^]{0,2}\{(.+)\}	<figure><img src="images/\1" alt="\1"/></figure>
+\\begin\{IllustImage\}.?\{(.+).pdf\}	<figure><img src="images/\1.png" alt="\1"/></figure>\n<p>
+\\begin\{IllustImage\}.?\{(.+)\}	<figure><img src="images/\1" alt="\1"/></figure>\n<p>
+\\end\{IllustImage\}	</p>
+\\begin\{code\}\n	<pre>
+\\end\{code\}	</pre>
+\\begin\{lyrics\}\n	<pre>
+\\end\{lyrics\}	</pre>
+\\begin\{callout\}	<ol>
+\\end\{callout\}	</ol>
+\\begin\{note\}	<p class="framed">
+\\end\{note\}	</p>
+\\begin\{caution\}	<p class="framed">
+\\end\{caution\}	</p>
+\\begin\{macros\}	<dl class="macros">
+\\end\{macros\}	</dd>\n</dl>
+\\item\[(.+)\]	</dd>\n<dt>\1</dt>\n<dd>
+<dl class="macros">\n</dd>	<dl class="macros">
+\\begin\{Table\}\((.+)\)	<table><caption>\1</caption>
+\\begin\{Table\}	<table>
+\\end\{Table\}	</table>
+\\annotate\*?\{(.+?)\}	<sup>\1</sup>
+\\anota\*?\{(.+?)\}	<sup>\1</sup>
+\\term\{(.+?)\}	\1
+\\pending\{(.+?)\}	\1
+\\macro\{(.+?)\}	<code>\1</code>
+~~~ paragraph break 
+\n\n\n\n\n	\n\n
+\n\n\n\n	\n\n
+\n\n\n	\n\n
+[ \t]+$
+\n\n(?=[a-zA-Z가-힣"'&])	\n\n<p>
+\n\n(?=<code>)	\n\n<p>
+(?<=[a-zA-Z가-힣"'.?:;])\n\n	</p>\n\n
+(?<=</a>)\n\n	</p>\n\n
+(?<=</sup>)\n\n	</p>\n\n
+~~~ The line below should be at the last! DOTALL
+.*<\?xml	<?xml
