@@ -12,7 +12,6 @@ for ($i = 0; $i -lt $exclusions.Length; $i++) {
     $exclusions[$i] = $exclusions[$i].Trim()
 }
 $foundFiles = @()
-Write-Output $exclusions
 
 function Open-Found {
     param ( [string]$filePath )
