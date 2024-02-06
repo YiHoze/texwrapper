@@ -1,16 +1,23 @@
+# C:\>fo.ps1 [-e "*\foo\*, *\goo\*"] *.md
+
 [CmdletBinding()]
 param (
-	[string] $fileName="*.md",
+	[string] $FileName="*.md",
     # 무시할 파일 경로
-    [Alias("e")][array] $exclusions=@("*\jre\*")
+    [Alias("e")][string] $ExcludePath="*\jre\*"
 )
 
+$exclusions = $ExcludePath -split ","
+for ($i = 0; $i -lt $exclusions.Length; $i++) {
+    $exclusions[$i] = $exclusions[$i].Trim()
+}
 $foundFiles = @()
+Write-Output $exclusions
 
 function Open-Found {
     param ( [string]$filePath )
 
-    $binaryFormats = @(".pdf", ".eps")
+    $binaryFormats = @(".ai". ".docx", ".eps", ".html", ".pdf", "pptx", ".xhtml", ".xlsx")
 
     Set-Clipboard $filePath
     $ext = (get-item $filePath).Extension
@@ -69,7 +76,7 @@ function Select-Found {
     } 
 }
 
-$foundFiles = (Get-ChildItem -Recurse $fileName).FullName
+$foundFiles = (Get-ChildItem -Recurse $FileName).FullName
 if ( (-not [string]::IsNullOrEmpty($exclusions)) -and ($foundFiles.Count -gt 0)) {
     $foundFiles = Limit-Found
 }

@@ -52,17 +52,19 @@ function set-fromClipboard {
 
 try {
     $locationNo = [int]$No
-    if ($locationNo -eq 0) {
-        set-fromClipboard
-    } elseif ($locationNo -gt 0) {
-        if ($locationNo -le $locations.Count) {
-            Set-Location $locations[$locationNo]
-        } else {
-            Show-locations
-        }
+} catch {
+    Show-locations
+}
+
+if ($locationNo -eq 0) {
+    set-fromClipboard
+} elseif ($locationNo -gt 0) {
+    $locationNo = $locationNo - 1
+    if ($locationNo -le $locations.Count) {
+        Set-Location $locations[$locationNo]
     } else {
         Show-locations
     }
-} catch {
+} else {
     Show-locations
 }
