@@ -2,9 +2,15 @@ altgraph==0.17.4
 barcode==1.0.4
 colorama==0.4.6
 comtypes==1.2.1
+contourpy==1.2.0
+cycler==0.12.1
 et-xmlfile==1.1.0
 ExifRead==3.0.0
+fonttools==4.48.1
+kiwisolver==1.4.5
 Levenshtein==0.24.0
+lxml==5.1.0
+matplotlib==3.8.2
 numpy==1.26.3
 openpyxl==3.1.2
 packaging==23.2
@@ -17,6 +23,7 @@ pyinstaller-hooks-contrib==2024.0
 pylibdmtx==0.1.10
 PyMuPDF==1.23.18
 PyMuPDFb==1.23.9
+pyparsing==3.1.1
 pyperclip==1.8.2
 pypng==0.20220715.0
 python-barcode==0.15.1
