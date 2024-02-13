@@ -487,17 +487,17 @@ class LatexTemplate(object):
         with open(file, mode='r', encoding='utf-8') as f:
             tex_content = f.read()
 
-        found = re.search('(?<=^\% description = ).*$', tex_content)
+        found = re.search('(?<=^\\% description = ).*$', tex_content)
         if found:
             description = found.group(0)
             found = found.replace('\\n', '\n')
-        found = re.search('(?<=^\% compiler = ).*$', tex_content)
+        found = re.search('(?<=^\\% compiler = ).*$', tex_content)
         if found:
             compiler = found.group(0)
-        found = re.search('(?<=^\% placeholders = ).*$', tex_content)
+        found = re.search('(?<=^\\% placeholders = ).*$', tex_content)
         if found:
             placeholders = found.group(0)
-        found = re.search('(?<=^\% defaults = ).*$', tex_content)
+        found = re.search('(?<=^\\% defaults = ).*$', tex_content)
         if found:
             defaults = found.group(0)
 
