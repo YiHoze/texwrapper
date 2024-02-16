@@ -238,7 +238,7 @@ def count_tex_files() -> list:
     return len(files), files
 
 
-def get_target() -> str or False:
+def get_target() -> str:
 
     count, existing_files = count_tex_files()
 
@@ -263,7 +263,7 @@ def get_target() -> str or False:
             return False
 
 
-def enumerate_list(files) -> str or False:
+def enumerate_list(files) -> str:
 
     global args
 
@@ -312,7 +312,7 @@ def enumerate_list(files) -> str or False:
         return False
 
 
-def determine_from_list() -> str or False:
+def determine_from_list() -> str:
 
     count, files = count_tex_files()
 

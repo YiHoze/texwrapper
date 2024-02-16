@@ -171,7 +171,7 @@ Bu kılavuzu daha sonra kullanmak üzere saklayın.
         opener.open_txt(self.args.fonts_list)
 
 
-    def find_path(self, fonts) -> str or False:
+    def find_path(self, fonts) -> str:
 
         p = '.*' + self.args.font
         font = re.search(p, fonts)

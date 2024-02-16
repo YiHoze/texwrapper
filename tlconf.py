@@ -247,7 +247,7 @@ def set_repository() -> None:
     os.system('tlmgr.bat repository list')
 
 
-def get_repository(kind) -> str or False:
+def get_repository(kind) -> str:
 
     print('\n[Setting the {} repository]'.format(kind))
     option = 'repository_{}'.format(kind)

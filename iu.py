@@ -142,7 +142,7 @@ class ImageUtility(object):
                 self.options['Inkscape'] = False
 
 
-    def check_format(self, img) -> str or False:
+    def check_format(self, img) -> str:
 
         basename = os.path.basename(img)
         ext = os.path.splitext(basename)[1]
