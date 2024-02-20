@@ -6,7 +6,6 @@ import configparser
 import re
 # companions of i.py
 from ltx import LatexCompiler
-from op import FileOpener
 
 ini = 'i.ini'
 ini_template = '''[tex]
@@ -340,8 +339,7 @@ def create_ini() -> None:
 
     with open(ini, mode='w', encoding='utf-8') as f:
         f.write(ini_template)
-    opener = FileOpener()
-    opener.open_txt(ini)
+    os.startfile(ini)
 
 
 def determine_tex() -> None:

@@ -5,7 +5,6 @@ import argparse
 import subprocess
 # companions of fontinfo.py
 from ltx import LatexCompiler
-from op import FileOpener
 
 class FontInfo(object):
 
@@ -19,9 +18,9 @@ class FontInfo(object):
 
     #     example = '''examples:
     # fontinfo.py
-    #     A list of all installed fonts is written in fonts_list.txt.
+    #     A list of all installed fonts is written in fontsList.txt.
     # fontinfo.py -o foo.txt
-    #     "foo.txt" is used instead of "fonts_list.txt".
+    #     "foo.txt" is used instead of "fontsList.txt".
     # fontinfo.py "Noto Serif"
     #     "NotoSerif.pdf" is created, which contains multilingual texts.
     # fontinfo.py -i NotoSerif-Regular.ttf
@@ -52,7 +51,7 @@ class FontInfo(object):
         parser.add_argument(
             '-o',
             dest = 'fonts_list',
-            default = 'fonts_list.txt',
+            default = 'fontsList.txt',
             help = "Specify a file name for the output."
         )
         self.args = parser.parse_args()
@@ -70,15 +69,15 @@ class FontInfo(object):
         output = fontname.replace(' ', '')
         output = "{}.tex".format(os.path.splitext(output)[0])
         
-        content = '''
-\\documentclass{{article}}
-\\usepackage[paper=a4paper,vmargin={{20mm,20mm}}]{{geometry}}
-\\usepackage{{unicodefonttable}}
-\\usepackage{{color}}
-\\setmainfont{{{0}}}
-\\setlength\parskip{{1.25\\baselineskip}}
-\\setlength\parindent{{0pt}}
-\\begin{{document}}
+        content = r'''
+\documentclass{{article}}
+\usepackage[paper=a4paper,vmargin={{20mm,20mm}}]{{geometry}}
+\usepackage{{unicodefonttable}}
+\usepackage{{color}}
+\setmainfont{{{0}}}
+\setlength\parskip{{1.25\\baselineskip}}
+\setlength\parindent{{0pt}}
+\begin{{document}}
 0 1 2 3 4 5 6 7 8 9
 
 english:
@@ -144,8 +143,8 @@ thai ไทย:
 turkish TÜRKÇE:
 Bu kılavuzu daha sonra kullanmak üzere saklayın.
 
-\\newpage
-\\displayfonttable[range-start=0020, range-end=FFFF]{{{0}}}
+\newpage
+\displayfonttable[range-start=0020, range-end=FFFF]{{{0}}}
 \end{{document}}'''.format(fontname)
         
         with open(output, mode='w', encoding='utf-8') as f:
@@ -167,8 +166,8 @@ Bu kılavuzu daha sonra kullanmak üzere saklayın.
         content = ''.join(sorted(content, key=str.lower))
         with open(self.args.fonts_list, mode='w', encoding='utf-8') as f:
             f.write(content)
-        opener = FileOpener()
-        opener.open_txt(self.args.fonts_list)
+        os.startfile(self.args.fonts_list)
+        
 
 
     def find_path(self, fonts) -> str:

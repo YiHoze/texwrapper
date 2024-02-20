@@ -5,8 +5,7 @@ import argparse
 import configparser
 import re
 import shutil
-# companion of ltx.py
-from op import FileOpener
+
 
 # LC = LatexCompiler('foo', ['-v', ...])
 # LC.compile(clear=True, ...)
@@ -468,8 +467,7 @@ class LatexCompiler(object):
 
         if self.options['view']:
             if os.path.exists(self.pdf):
-                opener = FileOpener()
-                opener.open_pdf(self.pdf)
+                os.startfile(self.pdf)
 
 
 if __name__ == "__main__":

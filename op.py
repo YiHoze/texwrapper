@@ -106,6 +106,7 @@ class FileOpener(object):
     def open_here(self, files, **options) -> None:
 
         self.reconfigure(options)
+        found_files = []
 
         if self.options['recursive']:
             for fnpattern in files:
@@ -117,7 +118,10 @@ class FileOpener(object):
                 for subdir in subdirs:
                     target_files = os.path.join(subdir, filename).replace('/','\\')
                     for file in glob.glob(target_files):
-                        self.open_by_type(file)
+                        # self.open_by_type(file)
+                        # if filename.lower() in file.lower():
+                        found_files.append(file)
+            self.open_selected(found_files)
         else:
             for fnpattern in files:
                 target_files = glob.glob(fnpattern)
@@ -132,7 +136,6 @@ class FileOpener(object):
                     filename = os.path.basename(fnpattern) 
                     if os.path.exists(dir):
                         filelist = os.listdir(dir)
-                        found_files = []
                         for file in filelist:
                             if filename.lower() in file.lower():
                                 found_files.append(os.path.join(dir, file))

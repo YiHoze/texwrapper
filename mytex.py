@@ -6,7 +6,6 @@ import configparser
 import re
 import base64
 # companions of mytex.py
-from op import FileOpener
 from ltx import LatexCompiler
 
 
@@ -381,8 +380,7 @@ class LatexTemplate(object):
             return
 
         if not self.options["delete"] and not self.options["force"]:
-            opener = FileOpener()
-            opener.open_txt(self.tex)
+            os.startfile(self.tex)
 
         if not self.options["defy"]:
             self.compile()
