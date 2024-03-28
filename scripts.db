@@ -1329,11 +1329,11 @@ code = ```
 	```    def calcurate(self):
 	```        self.currency = self.currency.upper()
 	```        try:
-	```            exchange_rate = self.soup.find('option', text=self.currencies[self.currency]).attrs['value']
+	```            exchange_rate = self.soup.find('option', string=self.currencies[self.currency]).attrs['value']
 	```        except:
 	```            print('Make sure the currency abbreviation is correct.')
 	```            return
-	```        basis = self.soup.find('option', text=self.currencies[self.currency]).attrs['label']
+	```        basis = self.soup.find('option', string=self.currencies[self.currency]).attrs['label']
 	```
 	```        # foreign : KRW for the basis
 	```        exchange_rate = float(exchange_rate)

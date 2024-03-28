@@ -13,7 +13,7 @@ class WordDigger(object):
 
     # flag: ONCE, EXPAND
 
-    def __init__(self, targets, **kwargs):    
+    def __init__(self, targets, **kwargs):
 
         self.targets = targets
         self.options = {
@@ -407,7 +407,7 @@ class WordDigger(object):
 
 
     def replace(self, file:str) -> None:
-
+        
         if self.options['flag'] == 'EXPAND':
             content = self.replace_expand(file)
         else:
