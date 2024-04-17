@@ -21,10 +21,10 @@ class ConvertUnit(object):
             'fahrenheit': ['°F', '°C', 'self.temperature'],
             'feet': ['feet', 'm', 0.3048],
             'gallon': ['gallons', 'liters', 0.26417],
-            'impgallon': ['Imperial gallons', 'liters', 0.219969],
             'hp': ['hp', 'kW', 0.7457],
+            'impgallon': ['Imperial gallons', 'liters', 0.219969],
+            'impquart': ['Imperial quarts', 'liters', 0.87987],
             'inch': ['inches', 'mm', 25.4],
-            # 'km/h': ['km/h', 'm/s', 0.277778],
             'knot': ['knots', 'km/h', 1.852],
             'mile': ['miles', 'km', 1.609344],
             'mph': ['mph', 'km/h', 1.609344],
@@ -40,7 +40,7 @@ class ConvertUnit(object):
             'psi': ['psi', 'kPa', 6.89476],
             'pyeong': ['pyeong', 'm²', 3.305785],
             'quart': ['US quarts', 'liters', 0.95],
-            'impquart': ['Imperial quarts', 'liters', 0.87987],
+            'squaremile': ['mi²', 'km²', 2.58999],
             'yard': ['yards', 'm', 0.9144]
         }
 
@@ -259,7 +259,7 @@ class ColorModel(object):
                     self.RGB_to_CMYK(R, G, B)
 
 
-    def parse_CMYK(self, color: str) -> tuple[float, float, float, float] or tuple[False, False, False, False]:
+    def parse_CMYK(self, color: str) -> tuple:
 
         color = color.split(',')
         if len(color) == 4:
@@ -276,7 +276,7 @@ class ColorModel(object):
         return C, M, Y, K
 
 
-    def parse_RGB(self, color: str) -> tuple[int, int, int] or tuple[False, False, False]:
+    def parse_RGB(self, color: str) -> tuple:
 
         if color.count(',') == 0:
             if len(color) == 6:

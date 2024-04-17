@@ -73,13 +73,6 @@ def parse_args() -> argparse.Namespace:
         help = 'Process ones in all subdirectories.'
     )
     parser.add_argument(
-        '-I',
-        dest = 'Inkscape',
-        action = 'store_true',
-        default = False,
-        help = 'Use Inkscape to convert eps to pdf or vice versa.'
-    )
-    parser.add_argument(
         '-c',
         dest = 'crop',
         action = 'store_true',
@@ -135,11 +128,8 @@ class ImageUtility(object):
 
         if shutil.which('epstopdf'):
             self.options['Texlive'] = True
-        else:
-            if shutil.which('inkscape'):
-                self.options['Inkscape'] = True
-            else:
-                self.options['Inkscape'] = False
+        if shutil.which('inkscape'):
+            self.options['Inkscape'] = True
 
 
     def check_format(self, img) -> str:
@@ -346,7 +336,7 @@ class ImageUtility(object):
         self.cnt += 1
 
 
-    def from_or_to_svg(self, img, **options) -> None:
+    def from_svg(self, img, **options) -> None:
 
         if len(options) > 0:
             self.reconfigure(options)
@@ -354,7 +344,7 @@ class ImageUtility(object):
         # trg = self.options['target_format'].replace('.', '')
         # cmd = '"{}" --export-type={} --pages=1 "{}"'.format(self.Inkscape, trg, img)
         trg = self.name_target(img, trgext=self.options['target_format'])
-        cmd = '"{}" --export-filename={} --pages=1 "{}"'.format(self.Inkscape, trg, img)
+        cmd = '"{}" --export-filename={} "{}"'.format(self.Inkscape, trg, img)
         self.run_cmd(cmd)
 
 
@@ -426,15 +416,15 @@ class ImageUtility(object):
                 self.run_recursive(self.bitmap_to_bitmap)
         else:
             if recipe['target type'] == 'bitmap':
-                if recipe['target format'] == '.png' and self.options['Inkscape']: 
-                    self.run_recursive(self.from_or_to_svg)
+                if recipe['source format'] == '.svg' and self.options['Inkscape']: 
+                    self.run_recursive(self.from_svg)
                 else:
                     if self.options['density'] == 100:
                         self.options['density'] = 254
                     self.run_recursive(self.vector_to_bitmap)
             else:
-                if recipe['source format'] == '.svg' or recipe['target format'] == '.svg' or self.options['Inkscape']: 
-                    self.run_recursive(self.from_or_to_svg)
+                if recipe['source format'] == '.svg' and self.options['Inkscape']: 
+                    self.run_recursive(self.from_svg)
                 elif self.options['Texlive']:
                     if recipe['source format'] == '.eps' and recipe['target format'] == '.pdf':
                         self.run_recursive(self.eps_to_pdf)
@@ -491,6 +481,5 @@ if __name__ == '__main__':
         maxwidth = args.maxwidth,
         scale = args.scale,
         recursive = args.recursive,
-        Inkscape = args.Inkscape,
         crop = args.crop)
     IU.determine_task()
