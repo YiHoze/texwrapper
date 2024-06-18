@@ -4,6 +4,7 @@ import argparse
 import glob
 import re
 # pip install pyspellchecker
+# Python <= 3.11
 from spellchecker import SpellChecker
 from wordig import WordDigger
 

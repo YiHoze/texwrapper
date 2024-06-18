@@ -32,13 +32,13 @@ class WordDigger(object):
             'recursive': False,
             'page_count': False,
             'unicode': False,
-            'unicode': False,
             'unicode_bits': False,
             'unicode_hexadecimal': False,
             'unicode_decimal': False,
             'encoding': None,
             'xlsx': False,
             'tsv': False,
+            'escape_tex': False,
             'quietly': False
         }
 
@@ -618,7 +618,10 @@ class WordDigger(object):
         with open(file, mode='r', encoding='utf-8') as f:
             reader = csv.reader(f, delimiter='\t')
             for row in reader:
-                content.append(self.remove_tex(row))
+                if self.options['escape_tex']: 
+                    content.append(self.remove_tex(row))
+                else:
+                    content.append(row)
 
         wb = openpyxl.Workbook()
         ws = wb.active
@@ -715,9 +718,10 @@ class WordDigger(object):
 
     def escape_tex(self, string: str) -> str:
 
-        string = re.sub(r'\\', '\\\\textbackslash', string)
-        string = re.sub('([&%$#_])', '\\\\\\1', string)
-        string = re.sub('\n', '\\\\linebreak{}', string)
+        if self.options['escape_tex']: 
+            string = re.sub(r'\\', '\\\\textbackslash', string)
+            string = re.sub('([&%$#_])', '\\\\\\1', string)
+            string = re.sub('\n', '\\\\linebreak{}', string)
         string += '\n'
         return string
 
@@ -889,7 +893,9 @@ class UnicodeDigger(object):
         for i in codepoints:
             if hex:
                 try:
-                    print(chr(int(i, 16)), end=' ')
+                    char = chr(int(i, 16))
+                    charname = unicodedata.name(char).lower()
+                    print(char, charname, end=' ')
                 except:
                     print('Enter hexadecimal numbers.')
             else:
@@ -897,6 +903,7 @@ class UnicodeDigger(object):
                     print(chr(int(i)), end=' ')
                 except:
                     print('Enter decimal numbers.')
+
 
 def parse_args() -> argparse.Namespace:
 
@@ -1087,6 +1094,14 @@ def parse_args() -> argparse.Namespace:
         help = 'Specify a XLSX file or more from which to convert to TSV or XLSX.'
     )
     parser.add_argument(
+        '-T',
+        '--escape-tex',
+        dest = 'escape_tex',
+        action = 'store_true',
+        default = False,
+        help = 'Escape TeX macros when converting between XLSX and TSV.'
+    )
+    parser.add_argument(
         '-q',
         '--quietly',
         dest = 'quietly',
@@ -1123,5 +1138,6 @@ if __name__ == '__main__':
         encoding = args.encoding,
         xlsx = args.xlsx,
         tsv = args.tsv,
+        escape_tex = args.escape_tex,
         quietly = args.quietly
     )

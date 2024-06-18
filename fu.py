@@ -1,3 +1,6 @@
+# author: 이 호재
+# version: 1.0
+
 import os
 import argparse
 import glob
@@ -7,142 +10,12 @@ import re
 import exifread
 
 
-def parse_args() ->argparse.Namespace:
+class FileDuplicator(object):
 
-    details = r'''flags for backing up:
-0, file-today: _bak/foo_yyyy-mm-dd.ext
-1, directory-today: _bak/yyyy-mm-dd/foo.ext
-2, directory-file-today: _bak/yyyy-mm-dd/foo_yyyy-mm-dd.ext
-
-flags for listing:
-0, current-folder: search the current folder.
-1, subfolders: search the current folder and subfolders.
-
-flags for renaming:
-0, append-letters: append today's date or other letters.
-1, prepend-letters: prepend letters.
-2, remove-letters: remove letters.
-3, replace-letters: replace letters.
-4, remove-spaces: remove spaces.
-5, uppercase: change to uppercase.
-6, lowercase: change to lowercase.
-7, ext-lowercase: change extension to lowercase.
-8, date-created: with photos, change to the date when they were created or last modified.
-
-flags for gathering:
-0, overwrite: overwrite files of the same name.
-1, append-number: append a number if a file of the same name exists.'''
-
-# Copy for backup:
-#     fu.py *.pdf 
-#         The default destination directory is _bak.
-# Rename files:
-#     fu.py -r *.pdf
-#         foo.pdf changes to foo_yyyy-mm-dd.pdf.
-#     fu.py -r -f=replace-letters -a="-" -s="_" *.pdf
-#         foo-goo.pdf changes to foo_goo.pdf
-# Copy for gathering:
-#     fu.py -g -f=append-number -d=c:\foo *.pdf
-#         The default destination is the current directory.
-# Getting the total size of all the files:
-#     fu.py -t c:\foo d:\goo
-#         The default is the current directory.
-# Getting a list of files except album.pdf and others:
-#     fu.py -l -e "album.pdf ..." *.pdf *.jpg
-
-    parser = argparse.ArgumentParser(
-        epilog=details,
-        formatter_class = argparse.RawDescriptionHelpFormatter,
-        description = "Copy files for backup or gathering, get the total size of files, or rename files."
-    )
-    parser.add_argument(
-        'files',
-        nargs = '*',
-        help = 'Enter a file or more.'
-    )
-    parser.add_argument(
-        '-d',
-        '--destination',
-        dest = 'destination',
-        default = None,
-        help = 'Specify a directory name into which to copy.'
-    )
-    parser.add_argument(
-        '-r',
-        '--rename-files',
-        dest = 'rename_files',
-        action = 'store_true',
-        default = False,
-        help = 'Rename files by appending or removing letters.'
-    )
-    parser.add_argument(
-        '-a',
-        '--affix',
-        dest = 'affix',
-        default = None,
-        help = 'Enter a date or a string of letters to be used as affix.'
-    )
-    parser.add_argument(
-        '-s',
-        '--substitute',
-        dest = 'substitute',
-        default = None,
-        help = 'Enter a string of letters with which to replace the affix.'
-    )
-    parser.add_argument(
-        '-l',
-        '--list-files',
-        dest = 'list_files',
-        action = 'store_true',
-        default = False,
-        help ='Make a file list.'
-    )
-    parser.add_argument(
-        '-e',
-        '--exclude',
-        dest = 'exclude',
-        help = 'Specify filenames or filename patterns to be excluded.'
-    )
-    parser.add_argument(
-        '-o',
-        '--output',
-        dest = 'output',
-        default = None,
-        help = 'Enter filename for output.' 
-    )
-    parser.add_argument(
-        '-g',
-        '--gather-files',
-        dest = 'gather_files',
-        action = 'store_true',
-        default = False,
-        help = 'Go through subdirectories to gather files by copying them into a directory.'
-    )
-    parser.add_argument(
-        '-t',
-        '--total-size',
-        dest = 'total_size',
-        action = 'store_true',
-        default = False,
-        help = 'Get the total size of all the files, including subdirectories.'
-    )
-    parser.add_argument(
-        '-f',
-        '--flag',
-        dest = 'flag',
-        default = '0',
-        help = 'Enter a number to specify which method to use.'
-    )
-
-    return parser.parse_args()
-
-
-class Duplicator(object):
-
-    def __init__(self, files:list, **kwargs):
+    def __init__(self, filePatterns:list, kwargs={}):
 
         options = {
-            'destination':'',
+            'destination':None,
             'flag':'0'
         }
         flags = {
@@ -151,19 +24,21 @@ class Duplicator(object):
             '2':'directory-file-today'
         }
 
-        # pass arguments to variables
+        # pass arguments to the "options" variable
         for key in options.keys():
             if key in kwargs:
                 options[key] = kwargs.get(key)
         
-        # initialize variables using default
+        # validate options
         if options['destination'] is None:
             options['destination'] = '_bak'
 
         # validate flag
         for key in flags.keys():
+            # if the flag is '0' then set 'file-today'
             if options['flag'] == key:
                 options['flag'] = flags.get(key)
+        # if the flag is invalid, set 'file-today'
         if options['flag'] not in flags.values():
             options['flag'] = flags.get('0')
 
@@ -172,7 +47,7 @@ class Duplicator(object):
         # create backup directory
         if not os.path.exists(options['destination']):
             os.mkdir(options['destination'])
-            print('A new directory named "{}" has been created'.format(options['destination']))
+            print(f"{options['destination']} 폴더가 새로 만들어졌습니다.")
 
         if options['flag'] == 'directory-today' or options['flag'] == 'directory-file-today':
             destination_directory = os.path.join(options['destination'], today)
@@ -183,17 +58,17 @@ class Duplicator(object):
                     subdir = '{}_{}'.format(today, counter)
                     destination_directory = os.path.join(options['destination'], subdir)
             os.mkdir(destination_directory)
-            print('A new directory named "{}" has been created'.format(destination_directory))
+            print(f"{destination_directory} 폴더가 새로 만들어졌습니다.")
         else:
             destination_directory = options['destination']
 
         # copy files
         if options['flag'] == 'directory-today':
-            for f in files:
+            for f in filePatterns:
                 for i in glob.glob(f):
                     shutil.copy(i, destination_directory)
         else:
-            for f in files:
+            for f in filePatterns:
                 for i in glob.glob(f):
                     name, ext = os.path.splitext(os.path.basename(i))
                     destination_file = '{}_{}{}'.format(name, today, ext)
@@ -208,51 +83,12 @@ class Duplicator(object):
                     shutil.copy(i, destination)
 
 
-class FileMeasurer(object):
+class FileGatherer(object):
 
-    def __init__(self, dirs:list):
-
-        if len(dirs) == 0:
-            dirs.append('.')
-
-        for d in dirs:
-            total_size = 0
-            for filepath in os.walk(d):
-                for fp in filepath[2]:
-                    f = os.path.join(filepath[0], fp)
-                    try:
-                        stat = os.stat(f)
-                    except OSError:
-                        continue
-                    total_size += stat.st_size
-            print(d, self.readable(total_size))
-
-
-    def readable(self, size: int) -> str:
-
-        units = ["B", "KB", "MB", "GB", "TB"]
-        format = "%d %s"
-        radix = 1024
-
-        for u in units[:-1]:
-            if size < radix: 
-                tmp = str(size)
-                if '.' in tmp:
-                    decimal = tmp.split('.')
-                    if len(decimal[1]) > 2:
-                        size = round(size,2)
-                    else:
-                        size = round(size,1)
-                return "{} {}".format(size, u)
-            size /= radix
-
-
-class Gatherer(object):
-
-    def __init__(self, files:list, **kwargs) -> None:
+    def __init__(self, filePatterns:list, kwargs={}) -> None:
 
         options = {
-            'destination':'',
+            'destination':None,
             'flag':'0'
         }
         flags = {
@@ -260,16 +96,13 @@ class Gatherer(object):
             '1':'append-number'
         }
 
-        # pass arguments to variables
         for key in options.keys():
             if key in kwargs:
                 options[key] = kwargs.get(key)
 
-        # initialize variables using default
         if options['destination'] is None:
             options['destination'] = '.'
         
-        # validate flag
         for key in flags.keys():
             if options['flag'] == key:
                 options['flag'] = flags.get(key)
@@ -281,15 +114,14 @@ class Gatherer(object):
             if not os.path.exists(options['destination']):
                 os.mkdir(options['destination'])
 
-        for target in files:
-            dir = os.path.dirname(target)
-            files = os.path.basename(target)
-            if dir == '':
-                dir = '.'
+        for targetPath in filePatterns:
+            dir = os.path.dirname(targetPath)
+            basename = os.path.basename(targetPath)
+            if dir == '': dir = '.'
             subdirs = [x[0] for x in os.walk(dir)]
             for subdir in subdirs:
-                fnpattern = os.path.join(subdir, files)
-                for file in glob.glob(fnpattern):
+                filePattern = os.path.join(subdir, basename)
+                for file in glob.glob(filePattern):
                     if options['flag'] == 'overwrite':
                         shutil.copy(file, options['destination'])
                     else:
@@ -304,9 +136,9 @@ class Gatherer(object):
                         shutil.copy(file, destination)
 
 
-class Renamer(object):
+class FileRenamer(object):
 
-    def __init__(self, files:list, **kwargs):
+    def __init__(self, filePatterns:list, kwargs={}):
 
         self.options = {
             'affix':None,
@@ -326,16 +158,13 @@ class Renamer(object):
         }
         self.filenames = []
 
-        # pass arguments to variables
         for key in self.options.keys():
             if key in kwargs:
                 self.options[key] = kwargs.get(key)
 
-        # initialize variables using default
         if self.options['affix'] is None:
             self.options['affix'] = datetime.strftime(date.today(), '%Y-%m-%d')
 
-        # validate flag
         for key in flags.keys():
             if self.options['flag'] == key:
                 self.options['flag'] = flags.get(key)
@@ -350,23 +179,21 @@ class Renamer(object):
                 self.options['affix'] = self.options['affix'] + '_'
 
         if self.options['flag'] == 'append-letters' or self.options['flag'] == 'prepend-letters':
-            self.add_letters(files)
+            self.add_letters(filePatterns)
         elif self.options['flag'] == 'remove-letters' or self.options['flag'] == 'replace-letters' or self.options['flag'] == 'remove-spaces':
-            self.replace_letters(files)
-        elif self.options['flag'] == 'remove-spaces':
-            self.remove_spaces(files)
+            self.replace_letters(filePatterns)
         elif self.options['flag'] == 'uppercase':
-            self.rename_uppercase(files)
+            self.rename_uppercase(filePatterns)
         elif self.options['flag'] == 'lowercase' or self.options['flag'] == 'ext-lowercase':
-            self.rename_lowercase(files)
+            self.rename_lowercase(filePatterns)
         elif self.options['flag'] == 'date-created':
-            self.rename_date_created(files)
+            self.rename_date_created(filePatterns)
 
 
-    def add_letters(self, files) -> None:
+    def add_letters(self, filePatterns:list) -> None:
 
-        for fnpattern in files:
-            for file in glob.glob(fnpattern):
+        for filePattern in filePatterns:
+            for file in glob.glob(filePattern):
                 filename = os.path.splitext(file)
                 if self.options['flag'] == 'prepend-letters':
                     newname = self.options['affix'] + ''.join(filename)
@@ -375,43 +202,43 @@ class Renamer(object):
                 os.rename(file, newname)
 
 
-    def replace_letters(self, files) -> None:
+    def replace_letters(self, filePatterns:list) -> None:
 
-        for fnpattern in files:
-            for file in glob.glob(fnpattern):
+        for filePattern in filePatterns:
+            for file in glob.glob(filePattern):
                 if self.options['flag'] == 'remove-letters':
                     newname = re.sub(self.options['affix'], '', file)
                 elif self.options['flag'] == 'replace-letters':
                     if self.options['substitute'] is None:
-                        print('Enter a string of letters as substitute.')
+                        print("대체할 문자열을 입력하시오.")
                         return
                     newname = re.sub(self.options['affix'], self.options['substitute'], file)
                 else: # remove spaces
                     newname = re.sub(' ', '', file)
                 if not os.path.exists(newname):
                     os.rename(file, newname)
-                    print(f'{file} is changed to {newname}.')
+                    print(f"{file}에서 {newname}로 바뀌었습니다.")
                 else:
                     if file.lower() == newname.lower() and file != newname:
                         os.rename(file, "@@@___@@@.___@@@___")
                         os.rename("@@@___@@@.___@@@___", newname)
-                        print(f'{file} is changed to {newname}.')
+                        print(f"{file}에서 {newname}로 바뀌었습니다.")
                     
 
 
-    def rename_uppercase(self, files) -> None:
+    def rename_uppercase(self, filePatterns:list) -> None:
 
-        for fnpattern in files:
-            for file in glob.glob(fnpattern):
+        for filePattern in filePatterns:
+            for file in glob.glob(filePattern):
                 filename = os.path.splitext(file)
                 newname = filename[0].upper() +  filename[1].upper()
                 os.rename(file, newname)
 
 
-    def rename_lowercase(self, files) -> None:
+    def rename_lowercase(self, filePatterns:list) -> None:
 
-        for fnpattern in files:
-            for file in glob.glob(fnpattern):
+        for filePattern in filePatterns:
+            for file in glob.glob(filePattern):
                 filename = os.path.splitext(file)
                 if self.options['flag'] == 'ext-lowercase':
                     newname = filename[0] +  filename[1].lower()
@@ -420,10 +247,10 @@ class Renamer(object):
                 os.rename(file, newname)
 
 
-    def rename_date_created(self, files) -> None:
+    def rename_date_created(self, filePatterns:list) -> None:
 
-        for fnpattern in files:
-            for file in glob.glob(fnpattern):
+        for filePattern in filePatterns:
+            for file in glob.glob(filePattern):
                 try:
                     with open(file, 'rb') as f:
                         tags = exifread.process_file(f, stop_tag='EXIF DateTimeOriginal')
@@ -434,13 +261,15 @@ class Renamer(object):
                     date = datetime.fromtimestamp(os.path.getmtime(file))
                     date = date.strftime('%Y-%m-%d')
 
+                # 날짜 정보가 동일하면 16진수를 덧붙이기
                 newname = self.date_increment(date, os.path.splitext(file)[1])
                 os.rename(file, newname)
 
+        # 16진수를 10진수로 바꾸기
         self.serialize()
 
 
-    def date_increment(self, filename, ext) -> str:
+    def date_increment(self, filename:str, ext:str) -> str:
         """
         If a file of the same name exists, change:
         yyyy-mm-dd_a0.ext
@@ -500,10 +329,10 @@ class Renamer(object):
 
 class FileCataloger(object):
 
-    def __init__(self, filename_patterns:list, **kwargs):
+    def __init__(self, filePatterns:list, kwargs={}):
 
         options = {
-            'exclude_patterns':'',
+            'exclude':'',
             'output':None,
             'flag':'0'
         }
@@ -513,12 +342,10 @@ class FileCataloger(object):
             '1':'subfolders'
         }
 
-        # pass arguments to variables
         for key in options.keys():
             if key in kwargs:
                 options[key] = kwargs.get(key)
 
-        # validate flag
         for key in flags.keys():
             if options['flag'] == key:
                 options['flag'] = flags.get(key)
@@ -526,23 +353,24 @@ class FileCataloger(object):
             options['flag'] = flags.get('0')
 
         files = []
-        except_files = self.list_except_files(options['exclude_patterns'])
-
-        if len(filename_patterns) == 0:
-            filename_patterns = ['*.pdf', '*.jpg', '*.png']
+        except_files = self.list_except_files(options['exclude'])
 
         if options['flag'] == 'subfolders':
-            subdirs = self.get_subdirs()
-            for subdir in subdirs:
-                for fp in filename_patterns:
-                    for file in glob.glob(f"{subdir}/{fp}"):
+            for targetPath in filePatterns:
+                dir = os.path.dirname(targetPath)
+                basename = os.path.basename(targetPath)
+                if dir == '': dir = '.'
+                subdirs = [x[0] for x in os.walk(dir)]
+                for subdir in subdirs:       
+                    for file in glob.glob(f"{subdir}/{basename}"):
                         if not file in except_files:
                             files.append(file)
         else:
-            for fp in filename_patterns:
-                for file in glob.glob(fp):
+            for filePattern in filePatterns:
+                for file in glob.glob(filePattern):
                     if not file in except_files:
-                        files.append(file)
+                        files.append(file)    
+
 
         if len(files) > 0:
             files = self.natural_sort(files)
@@ -552,9 +380,9 @@ class FileCataloger(object):
             else:
                 with open(options['output'], mode='w', encoding='utf-8') as f:
                     f.write(files)
-                print(f"{options['output']} has been created.")
+                print(f"{options['output']} 파일이 만들어졌습니다.")
         else:
-            print("No files have been found.")
+            print("해당 파일이 없습니다.")
 
 
     def list_except_files(self, exclude_patterns:str):
@@ -568,27 +396,150 @@ class FileCataloger(object):
         return except_files
 
 
-    def get_subdirs(self) -> list:
-
-        return [x[0] for x in os.walk('.')]
-
-
-    def natural_sort(self, listing:list): 
+    def natural_sort(self, aList:list): 
 
         convert = lambda text: int(text) if text.isdigit() else text.lower()
         alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
-        return sorted(listing, key=alphanum_key)
+        return sorted(aList, key=alphanum_key)
 
+
+
+class DirectoryMeasurer(object):
+
+    def __init__(self, directories:list):
+
+        if len(directories) == 0:
+            directories.append('.')
+
+        for d in directories:
+            total_size = 0
+            for filepath in os.walk(d):
+                for fp in filepath[2]:
+                    f = os.path.join(filepath[0], fp)
+                    try:
+                        stat = os.stat(f)
+                    except OSError:
+                        continue
+                    total_size += stat.st_size
+            print(d, self.readable(total_size))
+
+
+    def readable(self, size: int) -> str:
+
+        units = ["B", "KB", "MB", "GB", "TB"]
+        format = "%d %s"
+        radix = 1024
+
+        for u in units[:-1]:
+            if size < radix: 
+                tmp = str(size)
+                if '.' in tmp:
+                    decimal = tmp.split('.')
+                    if len(decimal[1]) > 2:
+                        size = round(size,2)
+                    else:
+                        size = round(size,1)
+                return "{} {}".format(size, u)
+            size /= radix
+
+
+def parse_args() ->argparse.Namespace:
+
+    epilog = r'''tasks:
+    file-backup, B: 파일 백업하기
+    file-gather, G: 파일들 모으기
+    file-list, L: 파일 목록 보기
+    file-rename, R: 파일 이름 바꾸기
+    folder-measure, M: 폴더 크기 구하기
+flags:
+    file-backup
+        0, file-today: _bak/foo_yyyy-mm-dd.ext
+        1, directory-today: _bak/yyyy-mm-dd/foo.ext
+        2, directory-file-today: _bak/yyyy-mm-dd/foo_yyyy-mm-dd.ext
+    file-gather
+        0, overwrite: 같은 이름의 파일이 있으면, 파일 덮어쓰기
+        1, append-number: 같은 이름의 파일이 있을 때, 파일 이름에 번호 덧붙이기
+    file-list
+        0, current-folder: 현재 폴더
+        1, subfolders: 현재 폴더와 하위 폴더
+    file-rename 
+        0, append-letters: 파일 이름 꼬리에 문자열 덧붙이기
+        1, prepend-letters: 파일 이름 머리에 문자열 덧붙이기
+        2, remove-letters: 문자열 없애기
+        3, replace-letters: 문자열 바꾸기
+        4, remove-spaces: 공백 없애기
+        5, uppercase: 대문자로 바꾸기
+        6, lowercase: 소문자로 바꾸기
+        7, ext-lowercase: 파일 확장자를 소문자로 바꾸기
+        8, date-created: 사진 파일의 이름을 사진이 생성된 날짜로 바꾸기
+'''
+
+    parser = argparse.ArgumentParser(
+        epilog=epilog,
+        formatter_class = argparse.RawDescriptionHelpFormatter,
+        description = ""
+    )
+    parser.add_argument('task', nargs=1, help='할 작업을 지정하시오.')
+    parser.add_argument('filePatterns', nargs = '+', help = '하나 이상의 파일을 지정하시오.')
+    parser.add_argument(
+        '-a',
+        dest = 'affix',
+        default = None,
+        help = '접사로 취급할 날짜나 문자열을 지정하시오.'
+    )
+    parser.add_argument(
+        '-d',
+        dest = 'destination',
+        default = None,
+        help = '목적지 폴더의 이름을 지정하시오.'
+    )
+    parser.add_argument(
+        '-e',
+        dest = 'exclude',
+        help = '배제할 파일 이름의 패턴을 지정하시오.'
+    )
+    parser.add_argument(
+        '-f',
+        dest = 'flag',
+        default = '0',
+        help = '사용할 방법 또는 그 번호를 지정하시오.'
+    )
+    parser.add_argument(
+        '-o',
+        dest = 'output',
+        default = None,
+        help = '출력 파일을 위한 이름을 지정하시오.' 
+    )
+    parser.add_argument(
+        '-s',
+        dest = 'substitute',
+        default = None,
+        help = '접사를 대체할 새 문자열을 지정하시오.'
+    )
+
+    return parser.parse_args()
 
 if __name__ == '__main__':
-    args = parse_args()
-    if args.list_files:
-        FileCataloger(args.files, exclude_patterns=args.exclude, output=args.output, flag=args.flag)
-    elif args.total_size:
-        FileMeasurer(args.files)
-    elif args.gather_files:
-        Gatherer(args.files, destination=args.destination, flag=args.flag)
-    elif args.rename_files:
-        Renamer(args.files, affix=args.affix, substitute=args.substitute, flag=args.flag)
+    args = parse_args()    
+    options = vars(args)
+    filePatterns = options["filePatterns"]
+    task = options["task"][0]
+    del options["filePatterns"]
+    del options["task"]
+
+    # 파일 이름에 와일드카드 '[ ]'가 포함되어 있다면
+    for i in range(len(filePatterns)):
+        filePatterns[i] = re.sub("\\[(.+?)\\]", "[[]\\1[]]", filePatterns[i])
+
+    if task == 'file-backup' or task == 'B':
+        FileDuplicator(filePatterns, options)
+    elif task == 'file-gather' or task == 'G':
+        FileGatherer(filePatterns, options)
+    elif task == 'file-list' or task == 'L':
+        FileCataloger(filePatterns, options)
+    elif task == 'file-rename' or task == 'R':
+        FileRenamer(filePatterns, options)
+    elif task == 'folder-measure' or task == 'M':
+        DirectoryMeasurer(filePatterns)
     else:
-        Duplicator(args.files, destination=args.destination, flag=args.flag)
+        print(f"{task} 명령은 정의되지 않았습니다.")
