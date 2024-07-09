@@ -1,11 +1,18 @@
+# unit.py 10 mi 20
+# unit.py -H 5-11.25
+# unit.py -c 0000FF
+# unit.py -c 240,120,99
+# unit.py -c 0,0.1,0.33,0.01
+# unit.py "100,000" pa
+# unit.py 100`,000 pa
+
 import math
 import re
 import argparse
 
-
 class ConvertUnit(object):
 
-    def __init__(self, numerals=[], **kwargs):
+    def __init__(self, numerals=[], kwargs={}):
 
         self.options = {
             'decimal_place': 2,
@@ -73,7 +80,6 @@ class ConvertUnit(object):
                     if len(self.numerals) >= 3:
                         self.until = float(self.numerals[2].replace(',', ''))
                         if len(self.numerals) == 4:
-                            # self.interval = float(self.numerals[3].replace(',', ''))
                             self.interval = int(self.numerals[3].replace(',', ''))
                     else:
                         self.until = None
@@ -358,35 +364,6 @@ class ColorModel(object):
 
 def parse_args() -> argparse.Namespace:
 
-#     example = '''examples:
-# unit.py
-#     Supported units are displayed.
-# unit.py 10 mi 20
-#     10 to 20 miles are converted to kilometers.
-# unit.py 99 fah
-#     A temperature in Fahrenheit is converted to Celsius.
-# unit.py -H 5-11.25
-#     A height of 5 feet 11.25 inches is converted to centimeters.
-# unit.py -c 0000FF
-#     This type of RGB value is converted to CMYK.
-# unit.py -c 240,120,99
-#     This type of RGB value is converted to CMYK.
-# unit.py -c 0,0.1,0.33,0.01
-#     This type of CMYK value is converted to RGB.
-
-# To use comma as thousand separator in PowerShell,
-# wrap the number with quotes or use the escape character.
-
-# unit.py "100,000" pa
-# unit.py 100`,000 pa
-# '''
-
-    # parser = argparse.ArgumentParser(
-    #     epilog = example,
-    #     formatter_class = argparse.RawDescriptionHelpFormatter,
-    #     description = 'Convert non-metric units to the metric system.'
-    # )
-
     parser = argparse.ArgumentParser(
         description = "Convert non-metric units to the metric system."
     )
@@ -428,9 +405,7 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     args = parse_args()
-    ConvertUnit(
-        numerals = args.numerals,
-        decimal_place = args.decimal_place,
-        color = args.color,
-        height = args.height,
-        hexadecimal = args.hexadecimal)
+    options = vars(args)
+    numerals = options['numerals']
+    del options['numerals']
+    ConvertUnit(numerals, options)

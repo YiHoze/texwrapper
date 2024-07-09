@@ -3,11 +3,11 @@ import argparse
 import csv
 import pymupdf
 import glob
-# import itertools
 import openpyxl
 import os
 import re
 import unicodedata
+
 
 class WordDigger(object):
 

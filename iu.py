@@ -1,8 +1,6 @@
 import os
-import sys
 import glob
 import argparse
-import configparser
 import subprocess
 import pymupdf
 import shutil
@@ -84,7 +82,7 @@ def parse_args() -> argparse.Namespace:
 
 class ImageUtility(object):
 
-    def __init__(self, images=[], **kwargs):
+    def __init__(self, images=[], kwargs={}):
 
         self.options = {
             'info': False,
@@ -109,18 +107,9 @@ class ImageUtility(object):
         self.fnpattern = ''
 
         self.images = images
-        self.reconfigure(kwargs)
-
-        self.Magick = 'magick.exe'
-        self.Inkscape = 'inkscape.com'
-        self.Ghostscript = 'gswin64c.exe'
-
-
-    def reconfigure(self, options) -> None:
-
         for key in self.options.keys():
-            if key in options:
-                self.options[key] = options.get(key)
+            if key in kwargs:
+                self.options[key] = kwargs.get(key)
 
         self.options['target_format'] = self.options['target_format'].lower()
         if not self.options['target_format'].startswith('.'):
@@ -130,6 +119,10 @@ class ImageUtility(object):
             self.options['Texlive'] = True
         if shutil.which('inkscape'):
             self.options['Inkscape'] = True
+
+        self.Magick = 'magick.exe'
+        self.Inkscape = 'inkscape.com'
+        self.Ghostscript = 'gswin64c.exe'
 
 
     def check_format(self, img) -> str:
@@ -237,10 +230,7 @@ class ImageUtility(object):
         return trg
 
 
-    def bitmap_to_bitmap(self, img, **options) -> None:
-
-        if len(options) > 0:
-            self.reconfigure(options)
+    def bitmap_to_bitmap(self, img) -> None:
 
         trg = self.name_target(img)
         if os.path.splitext(img)[1].lower() == '.gif':
@@ -284,10 +274,7 @@ class ImageUtility(object):
         return doc.page_count
 
 
-    def vector_to_bitmap(self, img, **options) -> None:
-
-        if len(options) > 0:
-            self.reconfigure(options)
+    def vector_to_bitmap(self, img) -> None:
 
         if os.path.splitext(img)[1].lower() == '.pdf':
             self.pdf_to_bitmap(img)
@@ -336,13 +323,8 @@ class ImageUtility(object):
         self.cnt += 1
 
 
-    def from_svg(self, img, **options) -> None:
+    def from_svg(self, img) -> None:
 
-        if len(options) > 0:
-            self.reconfigure(options)
-
-        # trg = self.options['target_format'].replace('.', '')
-        # cmd = '"{}" --export-type={} --pages=1 "{}"'.format(self.Inkscape, trg, img)
         trg = self.name_target(img, trgext=self.options['target_format'])
         cmd = '"{}" --export-filename={} "{}"'.format(self.Inkscape, trg, img)
         self.run_cmd(cmd)
@@ -390,9 +372,7 @@ class ImageUtility(object):
             os.rename(trg, img)
 
 
-    def convert(self, **options) -> None:
-
-        self.reconfigure(options)
+    def convert(self) -> None:
 
         recipe = {}
         recipe['target format'] = self.options['target_format']
@@ -471,15 +451,8 @@ class ImageUtility(object):
 
 if __name__ == '__main__':
     args = parse_args()
-    IU = ImageUtility(
-        args.images,
-        info = args.info,
-        target_format = args.target_format,
-        transparent = args.transparent,
-        resize = args.resize,
-        density = args.density,
-        maxwidth = args.maxwidth,
-        scale = args.scale,
-        recursive = args.recursive,
-        crop = args.crop)
+    options = vars(args)
+    images = options['images']
+    del options['images']
+    IU = ImageUtility(images, options)
     IU.determine_task()

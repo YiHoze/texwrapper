@@ -3,8 +3,6 @@ import sys
 import glob
 import argparse
 import configparser
-import re
-# companions of i.py
 from ltx import LatexCompiler
 
 ini = 'i.ini'
