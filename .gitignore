@@ -1,7 +1,5 @@
 __pycache__/
-private/
-build/
-dist/
+_bak/
 *.aux
 *.cmd
 *.csv

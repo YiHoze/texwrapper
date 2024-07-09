@@ -4237,9 +4237,14 @@ tex_output = RunningCat.tex
 tex = ```\documentclass[a5paper]{article}
 	```\usepackage{animate}
 	```\usepackage{graphicx}
+	```\usepackage{lipsum}
 	```\pagestyle{empty}
 	```\begin{document}
+    ```\lipsum[1]
+    ```
 	```\animategraphics[width=5cm,autoplay,loop]{12}{cat-}{0}{3}
+    ```
+    ```\lipsum[2]
 	```\end{document}
 	```
 cmd_output = run.cmd

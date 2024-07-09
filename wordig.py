@@ -1,7 +1,7 @@
 # C:\>wordig.py -u 가①⑴ⓐ⒜ㄱ㉠㉮㈀㈎𐊀
 import argparse
 import csv
-import fitz # pip install pymupdf
+import pymupdf
 import glob
 # import itertools
 import openpyxl
@@ -177,7 +177,7 @@ class WordDigger(object):
         count = 0
         found_line = ""
 
-        doc = fitz.open(file)
+        doc = pymupdf.open(file)
         for page_no in range(0, doc.page_count):
             page = doc.load_page(page_no)
             page_text = page.get_text()
@@ -235,7 +235,10 @@ class WordDigger(object):
 
         found = []
         for i in ptrn:
-            found_lines = re.findall(i, content, flags=re.MULTILINE)
+            if self.options['dotall']:
+                found_lines = re.findall(i, content, flags=re.DOTALL)
+            else:
+                found_lines = re.findall(i, content, flags=re.MULTILINE)
             if found_lines:
                 if self.options['gather']:
                     self.found += found_lines
@@ -526,7 +529,7 @@ class WordDigger(object):
 
         filename, ext = os.path.splitext(file)
         if os.path.splitext(file)[1].lower() == '.pdf':
-            doc = fitz.open(file)
+            doc = pymupdf.open(file)
             content = ""
             for p in range(0, doc.page_count):
                 page = doc.load_page(p)
@@ -570,7 +573,7 @@ class WordDigger(object):
 
     def count_pdf_pages(self, file:str) -> None:
 
-        doc = fitz.open(file)
+        doc = pymupdf.open(file)
         print('{}: {}'.format(file, doc.page_count))
         self.pages += doc.page_count
 
@@ -745,9 +748,9 @@ class WordDigger(object):
             UTF = UnicodeDigger(chars=self.targets[0], flag=1)
             UTF.print()
         elif self.options['unicode_hexadecimal']:
-            UnicodeDigger.chr(self.targets)
+            UnicodeDigger.char(self.targets)
         elif self.options['unicode_decimal']:
-            UnicodeDigger.chr(self.targets, False)
+            UnicodeDigger.char(self.targets, False)
 
         elif self.options['xlsx']:
             self.run_recursive(self.tsv_to_xlsx)
@@ -888,7 +891,7 @@ class UnicodeDigger(object):
                     print(char, Dcode, Hcode, charname)
 
 
-    def chr(codepoints, hex=True) -> None:
+    def char(codepoints, hex=True) -> None:
 
         for i in codepoints:
             if hex:
@@ -897,12 +900,14 @@ class UnicodeDigger(object):
                     charname = unicodedata.name(char).lower()
                     print(char, charname, end=' ')
                 except:
-                    print('Enter hexadecimal numbers.')
+                    print('Enter hexadecimal numbers greater than x19.')
             else:
                 try:
-                    print(chr(int(i)), end=' ')
+                    char = chr(int(i))
+                    charname = unicodedata.name(char).lower()
+                    print(char, charname, end=' ')
                 except:
-                    print('Enter decimal numbers.')
+                    print('Enter decimal numbers greater than 31.')
 
 
 def parse_args() -> argparse.Namespace:
@@ -1045,7 +1050,7 @@ def parse_args() -> argparse.Namespace:
         dest = 'unicode',
         action = 'store_true',
         default = False,
-        help = 'Show the uncode information of a given character.',
+        help = 'Show the unicode information of a given character.',
     )
     parser.add_argument(
         '-u',
@@ -1053,7 +1058,7 @@ def parse_args() -> argparse.Namespace:
         dest = 'unicode_bits',
         action = 'store_true',
         default = False,
-        help = 'Show the uncode information with its UTF-8 bits.',
+        help = 'Show the unicode information with its UTF-8 bits.',
     )
     parser.add_argument(
         '-X',

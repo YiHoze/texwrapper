@@ -6,9 +6,8 @@ import configparser
 import re
 import shutil
 
-
 # LC = LatexCompiler('foo', ['-v', ...])
-# LC.compile(clear=True, ...)
+# LC.compile()
 
 class LatexCompiler(object):
 
@@ -20,7 +19,6 @@ class LatexCompiler(object):
         self.options = {
             'xetex': False,
             'luatex': False,
-            # 'alternative': False,
             'batch': False,
             'shell': False,
             'twice': False,
@@ -37,54 +35,13 @@ class LatexCompiler(object):
             'python': False
         }
 
+        self.compiler = "lualatex.exe"
         self.tex = tex
         self.parse_args(argv)
-
-        dirCalled = os.path.dirname(__file__)
-        ini = os.path.join(dirCalled, 'docenv.conf')
-        if os.path.exists(ini):
-            config = configparser.ConfigParser()
-            config.read(ini)
-            self.compiler = config.get('LaTeX', 'compiler', fallback='xelatex.exe')
-            # self.alternative_path = config.get('LaTeX', 'alternative_path', fallback=None)
-        else:
-            self.compiler = "xelatex.exe"
 
 
     def parse_args(self, argv=None) -> None:
 
-    #     example = '''examples:
-    # ltx.py -b -s foo.xxx
-    #     Any filename extension is ignored.
-    #     foo.tex is compiled in batch mode and shell commands are allowed during compilation.
-    # ltx.py -L foo
-    #     lualatex is used instead of xelatex.
-    # ltx.py -w -i foo
-    #     foo.tex is compiled twice and index entries (foo.idx) are sorted by xindex in between.
-    # ltx.py -i -I french -n foo
-    #     foo.idx is sorted by French without compilation.
-    # ltx.py -i -I foo.ist foo
-    #     foo.idx is sorted by komkindex with foo.ist after a compilation.
-    # ltx.py -i -m foo
-    #     foo.ind is altered so that index entries are added as bookmarks.
-    #     Use "-M" to bookmark ones from python docstrings.
-    # ltx.py -f -a foo
-    #     If foo.idx exists, foo.tex is compiled four times and foo.idx is sorted in between.
-    #     Otherwise, it is compiled three times.
-    #     Without "-a", every auxiliary file is deleted after compilation is completed.
-    # ltx.py -B foo
-    #     Bibtex runs after a compilation.
-    # ltx.py -p foo
-    #     Pythontex runs after a compilation.
-    # ltx.py -c
-    #     Auxiliary files are cleared.
-    # '''
-
-        # parser = argparse.ArgumentParser(
-        #     epilog = example,
-        #     formatter_class = argparse.RawDescriptionHelpFormatter,
-        #     description = 'Let LuaLaTeX or XeLaTeX generate a PDF file from a TeX file.'
-        # )
         parser = argparse.ArgumentParser(
             description = "Let LuaLaTeX or XeLaTeX compile TeX files to generate PDF files."
 
@@ -109,13 +66,6 @@ class LatexCompiler(object):
             default = False,
             help = 'Use XeLaTeX.'
         )
-        # parser.add_argument(
-        #     '-A',
-        #     dest = 'alternative',
-        #     action = 'store_true',
-        #     default = False,
-        #     help = 'Use compilers in the directory set to the alternative_path option in docenv.conf'
-        # )
         parser.add_argument(
             '-b',
             dest = 'batch',
@@ -215,39 +165,14 @@ class LatexCompiler(object):
         )
 
         args = parser.parse_args(argv)
-        if args.tex:
-            self.tex = args.tex
-        self.pass_args(
-            luatex = args.luatex,
-            xetex = args.xetex,
-            # alternative = args.alternative,
-            batch = args.batch,
-            shell = args.shell,
-            twice = args.twice,
-            fully = args.fully,
-            view = args.view,
-            compile = args.compile,
-            index = args.index,
-            index_option = args.index_option,
-            keep_aux = args.keep_aux,
-            bookmark_index = args.bookmark_index,
-            bookmark_python = args.bookmark_python,
-            clear = args.clear,
-            bibtex = args.bibtex,
-            python = args.python)
-
-
-    def pass_args(self, **options) -> None:
-
-        self.reconfigure(options)
-
-
-    def reconfigure(self, options) -> None:
+        options = vars(args)
+        if options['tex'] is not None:
+            self.tex = options['tex']
+            del options['tex']
 
         for key in self.options.keys():
             if key in options:
                 self.options[key] = options.get(key)
-
 
     def get_ready(self) -> None:
 
@@ -255,10 +180,6 @@ class LatexCompiler(object):
             self.compiler = 'lualatex.exe'
         if self.options['xetex']:
             self.compiler = 'xelatex.exe'
-        # if self.options['alternative'] and self.alternative_path is not None:
-        #     self.compiler = os.path.join(self.alternative_path, self.compiler).replace('/','\\')
-        #     print(self.compiler)
-
 
         # Compile mode
         if 'xelatex' in  self.compiler.lower():
@@ -439,10 +360,7 @@ class LatexCompiler(object):
         os.system('pythontex.exe --runall=true "{}"'.format(self.py))
 
 
-    def compile(self, **options) -> None:
-
-        if len(options) > 0:
-            self.reconfigure(options)
+    def compile(self) -> None:
 
         self.get_ready()
 

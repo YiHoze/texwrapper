@@ -5,36 +5,11 @@ import argparse
 import configparser
 import re
 import base64
-# companions of mytex.py
 from ltx import LatexCompiler
 
 
 def parse_args() -> argparse.Namespace:
 
-#     example = '''examples:
-# mytex.py
-#     makes mydoc.tex out of the default template, article.
-# mytex.py -l
-#     enumerates templates
-# mytex.py -D metapost 
-#     gives a brief description of the metapost template.
-# mytex.py memoir -o foo
-#     makes "foo.tex" out of the memoir template.
-# mytex.py -s "20, 10" lotto
-#     makes and compiles lotto.tex, of which two placeholders are replaced with "20" and "10".
-# mytex.py lotto -n
-#     makes lotto.tex but doesn't compile though this template has some compile options.
-# mytex.py fonttable -f
-#     makes and compiles myfont.tex though this template has no compile options.
-# >mytex.py -i foo.tex style_output=foo.sty image_output=foo.png
-#     The specified files are inserted into the database.
-#     '''
-
-#     parser = argparse.ArgumentParser(
-#         epilog = example,
-#         formatter_class = argparse.RawDescriptionHelpFormatter,
-#         description = "Create a LaTeX file from the template databse and compile it using ltx.py."
-#     )
     parser = argparse.ArgumentParser(
         description = "Create a LaTeX file from the template databse and compile it using ltx.py."
     )
@@ -139,7 +114,7 @@ def parse_args() -> argparse.Namespace:
 
 class LatexTemplate(object):
 
-    def __init__(self, template=[], **kwargs):
+    def __init__(self, template=[], kwargs={}):
 
         dirCalled = os.path.dirname(__file__)
         self.dbFile = os.path.join(dirCalled, 'latex.db')
@@ -564,21 +539,26 @@ class LatexTemplate(object):
             self.template = i
             self.pick_template()
 
-
 if __name__ == '__main__':
     args = parse_args()
-    LatexTemplate(
-        args.template,
-        output = args.output,
-        substitutes = args.substitutes,
-        defy = args.defy,
-        force = args.force,
-        delete = args.delete,
-        list = args.list,
-        List = args.List,
-        detail = args.detail,
-        insert = args.insert,
-        update = args.update,
-        remove = args.remove,
-        burst = args.burst,
-        recursive = args.recursive)
+    options = vars(args)
+    template = options['template']
+    del options['template']
+    LatexTemplate(template, options)
+
+
+    # LatexTemplate(
+    #     args.template,
+    #     output = args.output,
+    #     substitutes = args.substitutes,
+    #     defy = args.defy,
+    #     force = args.force,
+    #     delete = args.delete,
+    #     list = args.list,
+    #     List = args.List,
+    #     detail = args.detail,
+    #     insert = args.insert,
+    #     update = args.update,
+    #     remove = args.remove,
+    #     burst = args.burst,
+    #     recursive = args.recursive)

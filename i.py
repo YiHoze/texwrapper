@@ -23,13 +23,6 @@ main = \\input{preamble}
 
 def parse_args() -> argparse.Namespace:
 
-    # about = 'i.ini should be like:\n{}'.format(ini_template)
-
-    # parser = argparse.ArgumentParser(
-    #     epilog = about,
-    #     formatter_class = argparse.RawDescriptionHelpFormatter,
-    #     description = 'Find and compile a tex file using ltx.py. Options unknown to this script are passed to ltx.py.'
-    # )
     parser = argparse.ArgumentParser(
         description = "Find and compile a tex file using ltx.py. Options unknown to this script are passed to ltx.py."
     )
@@ -359,8 +352,7 @@ def determine_tex() -> None:
             if tex:
                 compile_tex(tex)
 
-global args, compile_option
-global preset_option
+global args, compile_option, preset_option
 preset_option = []
 args, compile_option = parse_args()
 determine_tex()

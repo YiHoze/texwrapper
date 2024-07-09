@@ -4,7 +4,7 @@ import glob
 import argparse
 import configparser
 import subprocess
-import fitz #pymupdf
+import pymupdf
 import shutil
 
 def parse_args() -> argparse.Namespace:
@@ -280,7 +280,7 @@ class ImageUtility(object):
 
     def count_pdf_pages(self, img) -> int:
 
-        doc = fitz.open(img)
+        doc = pymupdf.open(img)
         return doc.page_count
 
 
@@ -317,7 +317,7 @@ class ImageUtility(object):
 
     def pdf_to_bitmap(self, img) -> None:
 
-        doc = fitz.open(img)
+        doc = pymupdf.open(img)
 
         filename = os.path.splitext(img)[0]
         if doc.page_count > 1:

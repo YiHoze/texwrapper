@@ -15,6 +15,7 @@
 \\image[^\(]+?(?=\(|$)
 \\listimg.+?\}
 \\cellimg.+?\}
+\\url.+?\}
 \\imgitem.+?\]
 \\img.+?\}
 \\keys.+?\}
