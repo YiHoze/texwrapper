@@ -3,7 +3,6 @@ import sys
 import re
 import argparse
 import subprocess
-# companions of fontinfo.py
 from ltx import LatexCompiler
 
 class FontInfo(object):
@@ -16,23 +15,6 @@ class FontInfo(object):
 
     def parse_args(self) -> None:
 
-    #     example = '''examples:
-    # fontinfo.py
-    #     A list of all installed fonts is written in fontsList.txt.
-    # fontinfo.py -o foo.txt
-    #     "foo.txt" is used instead of "fontsList.txt".
-    # fontinfo.py "Noto Serif"
-    #     "NotoSerif.pdf" is created, which contains multilingual texts.
-    # fontinfo.py -i NotoSerif-Regular.ttf
-    #     The font details are displayed, including the full name.
-    # fontinfo.py -i "Noto Serif"
-    #     Every font that belongs to the same family is enumerated.
-    #     '''
-    #     parser = argparse.ArgumentParser(
-    #         epilog = example,
-    #         formatter_class = argparse.RawDescriptionHelpFormatter,
-    #         description = 'This script requires TeX Live.'
-    #     )
         parser = argparse.ArgumentParser(
             description = "This script requires TeX Live."
         )
@@ -56,13 +38,6 @@ class FontInfo(object):
         )
         self.args = parser.parse_args()
 
-
-    # def multilingual(self) -> None:
-
-    #     filename = os.path.splitext(self.args.font)[0]
-    #     filename = ''.join(filename.split())
-    #     LatexTemplate(['multilingual'], substitutes=self.args.font, output=filename)
-
     def fonttable(self) -> None:
 
         fontname = self.args.font
@@ -75,7 +50,7 @@ class FontInfo(object):
 \usepackage{{unicodefonttable}}
 \usepackage{{color}}
 \setmainfont{{{0}}}
-\setlength\parskip{{1.25\\baselineskip}}
+\setlength\parskip{{1.25\baselineskip}}
 \setlength\parindent{{0pt}}
 \begin{{document}}
 0 1 2 3 4 5 6 7 8 9
