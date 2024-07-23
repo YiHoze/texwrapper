@@ -1,19 +1,20 @@
 # C:\>wordig.py -u 가①⑴ⓐ⒜ㄱ㉠㉮㈀㈎𐊀
 import argparse
+import bs4
 import csv
-import pymupdf
 import glob
 import openpyxl
 import os
+import pymupdf
 import re
 import unicodedata
-
+import xmlformatter
 
 class WordDigger(object):
 
     # flag: ONCE, EXPAND
 
-    def __init__(self, targets, **kwargs):
+    def __init__(self, targets, options={}):
 
         self.targets = targets
         self.options = {
@@ -35,11 +36,12 @@ class WordDigger(object):
             'unicode_bits': False,
             'unicode_hexadecimal': False,
             'unicode_decimal': False,
-            'encoding': None,
             'xlsx': False,
             'tsv': False,
             'escape_tex': False,
-            'quietly': False
+            'quietly': False,
+            'beautify': False,
+            'indent': None
         }
 
         self.files = 0
@@ -51,12 +53,6 @@ class WordDigger(object):
         self.found = []
         self.found_count = {}
 
-        self.reconfigure(kwargs)
-        self.determine_task()
-
-
-    def reconfigure(self, options:dict) -> None:
-
         for key in self.options.keys():
             if key in options:
                 self.options[key] = options.get(key)
@@ -66,23 +62,25 @@ class WordDigger(object):
         if self.options['flag'] == '2':
             self.options['flag'] == 'EXPAND'
 
+        self.determine_task()
+
 
     def run_recursive(self, func:str) -> None:
 
         if self.options['recursive']:
             for target in self.targets:
                 dir = os.path.dirname(target)
-                filename = os.path.basename(target)
+                fileNamePattern = os.path.basename(target)
                 if dir == '': dir = '.'
                 subdirs = [x[0] for x in os.walk(dir)]
                 for subdir in subdirs:
-                    fnpattern = os.path.join(subdir, filename).replace('/','\\')
-                    for file in glob.glob(fnpattern):
-                        func(file)
+                    files = os.path.join(subdir, fileNamePattern).replace('/','\\')
+                    for filePath in glob.glob(files):
+                        func(filePath)
         else:
-            for fnpattern in self.targets:
-                for file in glob.glob(fnpattern):
-                    func(file)
+            for target in self.targets:
+                for filePath in glob.glob(target):
+                    func(filePath)
 
 
     def find(self, file:str) -> None:
@@ -603,16 +601,6 @@ class WordDigger(object):
             print(f"{output} has been created or updated.")
 
 
-    def convert_encoding(self, file:str) -> None:
-
-        with open(file, mode='r', encoding=self.options['encoding']) as f:
-            content = f.read()
-
-        output = self.determine_output(file, output='UTF-8/')
-        with open(output, mode='w', encoding='utf-8') as f:
-            f.write(content)
-
-
     def tsv_to_xlsx(self, file:str) -> None:
 
         output = self.determine_output_indefinite(file=file, output='.xlsx')
@@ -739,6 +727,34 @@ class WordDigger(object):
         return columns
 
 
+    def beautifyML(self, filePath:str) -> None:
+
+        fileExtension = os.path.splitext(filePath)[1].lower()        
+        if fileExtension == '.xml':
+            print(filePath)
+            self.XmlFormatter(filePath)
+        elif fileExtension == '.html':
+            print(filePath)
+            self.HtmlFormatter(filePath)
+
+
+    def HtmlFormatter(self, htmlFile:str) -> None:
+
+        with open(htmlFile, mode='r', encoding='utf-8') as fs:
+            content = fs.read()
+        htmlFormatter = bs4.formatter.HTMLFormatter(indent=int(self.options['indent']))
+        soup = bs4.BeautifulSoup(content, 'html.parser')
+        content = soup.prettify(formatter=htmlFormatter)
+        with open(htmlFile, mode='w', encoding='utf-8') as fs:
+            fs.write(content)
+
+
+    def XmlFormatter(self, xmlFile:str) -> None:
+
+        xmlFormatter = xmlformatter.Formatter(indent=self.options['indent'])
+        xmlFormatter.enc_output(xmlFile, xmlFormatter.format_file(xmlFile))
+
+
     def determine_task(self) -> None:
 
         if self.options['unicode']:
@@ -756,8 +772,6 @@ class WordDigger(object):
             self.run_recursive(self.tsv_to_xlsx)
         elif self.options['tsv']:
             self.run_recursive(self.xlsx_to_tsv)
-        elif self.options['encoding'] is not None:
-            self.run_recursive(self.convert_encoding)
         elif self.options['compare']:
             self.compare()
         elif self.options['pattern'] is not None:
@@ -794,6 +808,8 @@ class WordDigger(object):
         elif self.options['page_count']:
             self.run_recursive(self.count_pdf_pages)
             print( 'Total pages: {:,}'.format(self.pages) )
+        elif self.options['beautify']:
+            self.run_recursive(self.beautifyML)
         else:
             self.run_recursive(self.count_words)
             if self.files > 1:
@@ -898,251 +914,132 @@ class UnicodeDigger(object):
                 try:
                     char = chr(int(i, 16))
                     charname = unicodedata.name(char).lower()
-                    print(char, charname, end=' ')
+                    print(char, charname) #end=' '
                 except:
                     print('Enter hexadecimal numbers greater than x19.')
             else:
                 try:
                     char = chr(int(i))
                     charname = unicodedata.name(char).lower()
-                    print(char, charname, end=' ')
+                    print(char, charname) #end=' '
                 except:
                     print('Enter decimal numbers greater than 31.')
 
 
 def parse_args() -> argparse.Namespace:
 
-    # example = '''examples:
-    # wordig.py *.txt *.pdf
-    #     Count characters and words.
-    # wordig.py -p *.pdf
-    #     Count pages in PDF files.
-    # wordig.py -r -a "foo" *.txt *.pdf
-    #     Find "foo", searching through all subdirectories.
-    # wordig.py -P foo.tsv *.txt
-    #     Find and replace according to the regular expressions contained in foo.tsv.
-    # wordig.py -U "unicode 유니코드"
-    #     Get the unicode code points and UTF-8 bytes for the given characters.
-    # wordig.py -x *.tsv
-    #     Convert TSV files to XLSX.
-    # wordig.py -E cp949 *.tex
-    #     Convert TeX files from CP949 to UTF-8 encoding.
-    # '''
-
-    # parser = argparse.ArgumentParser(
-    #     epilog = example,
-    #     formatter_class = argparse.RawDescriptionHelpFormatter,
-    #     description = 'Count words, count pages, find or replace strings, and more.'
-    # )
-
-    parser = argparse.ArgumentParser(
-        description = "Count words, count pages, find or replace strings, and more."
+    parser=argparse.ArgumentParser(
+        description="Count words, count pages, find or replace strings, and more."
     )
 
     parser.add_argument(
-        'targets',
-        nargs = '+',
-        help = 'Specify one or more text files or characters.'
+        'targets', nargs='+',
+        help='Specify one or more text files or characters.'
     )
     parser.add_argument(
-        '-a',
-        dest = 'aim',
-        default = None,
-        help = 'Specify a string to find.'
+        '-a', dest='aim', default=None,
+        help='Specify a string to find.'
     )
     parser.add_argument(
-        '-A',
-        dest = 'aim_pattern',
-        default = None,
-        help = 'Specify a text file which contains regular expressions for text search.'
+        '-A', dest='aim_pattern', default=None,
+        help='Specify a text file which contains regular expressions for text search.'
     )
     parser.add_argument(
-        '-s',
-        dest = 'substitute',
-        default = None,
-        help = 'Specify a string with which to replace found strings.'
+        '-s', dest='substitute', default=None,
+        help='Specify a string with which to replace found strings.'
     )
     parser.add_argument(
-        '-P',
-        dest = 'pattern',
-        default = None,
-        help = 'Specify a TSV or CSV file which contains regular expressions for text replacement.'
+        '-P', dest='pattern', default=None,
+        help='Specify a TSV or CSV file which contains regular expressions for text replacement.'
     )
     parser.add_argument(
-        '-C',
-        '--compare',
-        action = 'store_true',
-        default = False,
-        help = 'Specify two files or folders to compare them.'
+        '-C', '--compare', action='store_true', default=False,
+        help='Specify two files or folders to compare them.'
     )
     parser.add_argument(
-        '-c',
-        '--case-sensitive',
-        dest = 'case_sensitive',
-        action = 'store_true',
-        default = False,
-        help = 'Perform case-sensitive match when finding. Replacing is always case-sensitive.'
+        '-c', '--case-sensitive', dest='case_sensitive', action='store_true', default=False,
+        help='Perform case-sensitive match when finding. Replacing is always case-sensitive.'
     )
     parser.add_argument(
-        '-L',
-        '--dotall',
-        dest = 'dotall',
-        action = 'store_true',
-        default = False,
-        help = 'Dot matches all characters including newline.'
+        '-L', '--dotall', dest='dotall', action='store_true', default=False,
+        help='Dot matches all characters including newline.'
     )
     parser.add_argument(
-        '-F',
-        '--flag',
-        dest = 'flag',
-        default = 'ONCE',
-        help = 'Specify "EXPAND" or "2" to perform in-scope substitutions.'
+        '-F', '--flag', dest='flag', default='ONCE',
+        help='Specify "EXPAND" or "2" to perform in-scope substitutions.'
     )
     parser.add_argument(
-        '-e',
-        '--extract',
-        dest = 'extract',
-        action = 'store_true',
-        default = False,
-        help = 'Extract strings. Use with -a or -A option.'
+        '-e', '--extract', dest='extract', action='store_true', default=False,
+        help='Extract strings. Use with -a or -A option.'
     )
     parser.add_argument(
-        '-g',
-        '--gather',
-        dest = 'gather',
-        action = 'store_true',
-        default = False,
-        help = 'Extract and gather strings. Use with -a or -A option.'
+        '-g', '--gather', dest='gather', action='store_true', default=False,
+        help='Extract and gather strings. Use with -a or -A option.'
     )
     parser.add_argument(
-        '-o',
-        dest = 'output',
-        default = None,
-        help = 'Specify a directory or filename for output.'
+        '-o', dest='output', default=None, 
+        help='Specify a directory or filename for output.'
     )
     parser.add_argument(
-        '-v',
-        '--overwrite',
-        dest = 'overwrite',
-        action = 'store_true',
-        default = False,
-        help = 'Overwrite the source file when replacing.'
+        '-v', '--overwrite', dest='overwrite', action='store_true', default=False,
+        help='Overwrite the source file when replacing.'
     )
     parser.add_argument(
-        '-r',
-        '--recursive',
-        dest = 'recursive',
-        action = 'store_true',
-        default = False,
-        help = 'Search through all subdirectories.'
+        '-r', '--recursive', dest='recursive', action='store_true', default=False,
+        help='Search through all subdirectories.'
     )
     parser.add_argument(
-        '-p',
-        '--count-pdf-page',
-        dest = 'page_count',
-        action = 'store_true',
-        default = False,
-        help = 'Count PDF pages.'
+        '-p', '--count-pdf-page', dest='page_count', action='store_true', default=False,
+        help='Count PDF pages.'
     )
     parser.add_argument(
-        '-U',
-        '--unicode-info',
-        dest = 'unicode',
-        action = 'store_true',
-        default = False,
-        help = 'Show the unicode information of a given character.',
+        '-U', '--unicode-info', dest='unicode', action='store_true', default=False,
+        help='Show the unicode information of a given character.',
     )
     parser.add_argument(
-        '-u',
-        '--unicode-utf8',
-        dest = 'unicode_bits',
-        action = 'store_true',
-        default = False,
-        help = 'Show the unicode information with its UTF-8 bits.',
+        '-u', '--unicode-utf8', dest='unicode_bits', action='store_true', default=False,
+        help='Show the unicode information with its UTF-8 bits.',
     )
     parser.add_argument(
-        '-X',
-        '--hexadecimal',
-        dest = 'unicode_hexadecimal',
-        action = 'store_true',
-        default = False,
-        help = 'Show the unicode character of a given hexadecimal.',
+        '-X', '--hexadecimal', dest='unicode_hexadecimal', action='store_true', default=False,
+        help='Show the unicode character of a given hexadecimal.',
     )
     parser.add_argument(
-        '-D',
-        '--decimal',
-        dest = 'unicode_decimal',
-        action = 'store_true',
-        default = False,
-        help = 'Show the unicode character of a given decimal.',
+        '-D', '--decimal', dest='unicode_decimal', action='store_true', default=False,
+        help='Show the unicode character of a given decimal.',
     )
     parser.add_argument(
-        '-E',
-        dest = 'encoding',
-        default = None,
-        help = 'Specify an encoding system, such as cp949, from which to convert to UTF-8.'
+        '-x', '--tsv-to-xlsx', dest='xlsx', action='store_true', default=False,
+        help='Specify a TSV file or more from which to convert to XLSX.'
     )
     parser.add_argument(
-        '-x',
-        '--tsv-to-xlsx',
-        dest = 'xlsx',
-        action = 'store_true',
-        default = False,
-        help = 'Specify a TSV file or more from which to convert to XLSX.'
+        '-t', '--xlsx-to-tsv', dest='tsv', action='store_true', default=False,
+        help='Specify a XLSX file or more from which to convert to TSV or XLSX.'
     )
     parser.add_argument(
-        '-t',
-        '--xlsx-to-tsv',
-        dest = 'tsv',
-        action = 'store_true',
-        default = False,
-        help = 'Specify a XLSX file or more from which to convert to TSV or XLSX.'
+        '-T', '--escape-tex', dest='escape_tex', action='store_true', default=False,
+        help='Escape TeX macros when converting between XLSX and TSV.'
     )
     parser.add_argument(
-        '-T',
-        '--escape-tex',
-        dest = 'escape_tex',
-        action = 'store_true',
-        default = False,
-        help = 'Escape TeX macros when converting between XLSX and TSV.'
+        '-q', '--quietly', dest='quietly', action='store_true', default=False,
+        help='Display no result message.'
     )
     parser.add_argument(
-        '-q',
-        '--quietly',
-        dest = 'quietly',
-        action = 'store_true',
-        default = False,
-        help = 'Display no result message.'
+        '-b', '--beautiyfy', dest='beautify', action='store_true', default=False,
+        help='Beautify HTML or XML files.'
     )
+    parser.add_argument(
+        '-i', dest='indent', default=4, 
+        help='Specify a number to change the indent size.'
+    )
+    
 
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    WordDigger(
-        args.targets,
-        aim = args.aim,
-        aim_pattern = args.aim_pattern,
-        substitute = args.substitute,
-        pattern = args.pattern,
-        compare = args.compare,
-        case_sensitive = args.case_sensitive,
-        dotall = args.dotall,
-        flag = args.flag,
-        extract = args.extract,
-        gather = args.gather,
-        output = args.output,
-        overwrite = args.overwrite,
-        recursive = args.recursive,
-        page_count = args.page_count,
-        unicode = args.unicode,
-        unicode_bits = args.unicode_bits,
-        unicode_hexadecimal = args.unicode_hexadecimal,
-        unicode_decimal = args.unicode_decimal,
-        encoding = args.encoding,
-        xlsx = args.xlsx,
-        tsv = args.tsv,
-        escape_tex = args.escape_tex,
-        quietly = args.quietly
-    )
+    options = vars(args)
+    targets = options['targets']
+    del options['targets']
+    WordDigger(targets, options)
