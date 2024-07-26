@@ -9,6 +9,7 @@ import pymupdf
 import re
 import unicodedata
 import xmlformatter
+from pathlib import PurePath
 
 class WordDigger(object):
 
@@ -78,7 +79,7 @@ class WordDigger(object):
                     for filePath in glob.glob(files):
                         func(filePath)
         else:
-            for target in self.targets:
+            for target in self.targets: 
                 for filePath in glob.glob(target):
                     func(filePath)
 
@@ -614,12 +615,12 @@ class WordDigger(object):
                 else:
                     content.append(row)
 
-        wb = openpyxl.Workbook()
-        ws = wb.active
+        workbook = openpyxl.Workbook()
+        ws = workbook.active
         for row, line in enumerate(content):
             for column, text in enumerate(line):
                 ws.cell(row=row+1, column=column+1, value=text)
-        wb.save(output)
+        workbook.save(output)
         if not self.options['quietly']:
             print("{} -> {}".format(file, output))
 
@@ -667,47 +668,88 @@ class WordDigger(object):
         return exclude_column_ranges
 
 
+
+
     # C:\>wordig -t -a "1,3-5" -o goo.tsv foo.xlsx
-    def xlsx_to_tsv(self, file:str) -> None:
+    def xlsx_to_tsv(self, xlsxFile:str) -> None:
 
-        output = self.determine_output_indefinite(file=file, output='.tsv')
-
-        wb = openpyxl.load_workbook(file)
-        ws = wb.active
-        if self.options['aim'] is not None:
-            column_ranges = self.columns_to_remove(self.options['aim'], ws.max_column)
-            for i in column_ranges:
-                ws.delete_cols(i[0], i[1]-i[0]+1)
-
-        if os.path.splitext(output)[1].lower() == '.xlsx':
-            wb.save(filename=output)
-            if not self.options['quietly']:
-                print("{} -> {}".format(file, output))
+        if PurePath(xlsxFile).suffix.lower() != '.xlsx':
+            print('xlsx 파일을 지정하시오.')
             return
-        else:
-            line = []
-            content = ''
-            for row in ws.iter_rows():
-                line.clear()
-                for cell in row:
-                    if isinstance(cell.value, str):
-                        line.append(cell.value)
-                    elif (isinstance(cell.value, int) or isinstance(cell.value, float)):
-                        line.append(str(cell.value))
-                    else:
-                        line.append(' ')
-                if len(line) > 0 :
-                    tmp = ''.join(line)
-                    if tmp.strip() != '': # 공백을 제거한 뒤에 빈 줄이 아니라면
-                        content += self.escape_tex('\t'.join(line))
 
-            with open(output, mode='w', encoding='utf-8') as f:
-                f.write(content)
-            if not self.options['quietly']:
-                print("{} -> {}".format(file, output))
+        self.options['overwrite'] = True
+        fileName = os.path.splitext(os.path.basename(xlsxFile))[0]
+        if not self.options['quietly']:
+            print(xlsxFile)
+
+        workbook = openpyxl.load_workbook(xlsxFile)
+        sheets = workbook.sheetnames
+
+        for i in range(len(sheets)):
+            sheet = workbook[sheets[i]]
+            sheetName = sheets[i]
+            output = f"{fileName}_{sheetName}.tsv"
+            output = self.determine_output_indefinite(xlsxFile, output)
+            self.sheet_to_tsv(sheet, output)
+
+    def sheet_to_tsv(self, worksheet, output):
+
+        if self.options['aim'] is not None:
+            column_ranges = self.columns_to_remove(self.options['aim'], worksheet.max_column)
+            for i in column_ranges:
+                worksheet.delete_cols(i[0], i[1]-i[0]+1)
+
+        line = []
+        content = ''
+        for row in worksheet.iter_rows():
+            line.clear()
+            for cell in row:
+                if isinstance(cell.value, str):
+                    line.append(cell.value)
+                elif (isinstance(cell.value, int) or isinstance(cell.value, float)):
+                    line.append(str(cell.value))
+                else:
+                    line.append(' ')
+            if len(line) > 0 :
+                tmp = ''.join(line)
+                if tmp.strip() != '': # 공백을 제거한 뒤에 빈 줄이 아니라면
+                    content += self.escape_tex('\t'.join(line))
+
+        with open(output, mode='w', encoding='utf-8') as f:
+            f.write(content)
+        if not self.options['quietly']:
+            print(f"-> {output}")
 
 
-    def escape_tex(self, string: str) -> str:
+        # if os.path.splitext(output)[1].lower() == '.xlsx':
+        #     workbook.save(filename=output)
+        #     if not self.options['quietly']:
+        #         print("{} -> {}".format(xlsxFile, output))
+        #     return
+        # else:
+        #     line = []
+        #     content = ''
+        #     for row in worksheet.iter_rows():
+        #         line.clear()
+        #         for cell in row:
+        #             if isinstance(cell.value, str):
+        #                 line.append(cell.value)
+        #             elif (isinstance(cell.value, int) or isinstance(cell.value, float)):
+        #                 line.append(str(cell.value))
+        #             else:
+        #                 line.append(' ')
+        #         if len(line) > 0 :
+        #             tmp = ''.join(line)
+        #             if tmp.strip() != '': # 공백을 제거한 뒤에 빈 줄이 아니라면
+        #                 content += self.escape_tex('\t'.join(line))
+
+        #     with open(output, mode='w', encoding='utf-8') as f:
+        #         f.write(content)
+        #     if not self.options['quietly']:
+        #         print("{} -> {}".format(xlsxFile, output))
+
+
+    def escape_tex(self, string:str) -> str:
 
         if self.options['escape_tex']: 
             string = re.sub(r'\\', '\\\\textbackslash', string)
@@ -911,19 +953,27 @@ class UnicodeDigger(object):
 
         for i in codepoints:
             if hex:
-                try:
-                    char = chr(int(i, 16))
-                    charname = unicodedata.name(char).lower()
-                    print(char, charname) #end=' '
-                except:
-                    print('Enter hexadecimal numbers greater than x19.')
+                codepoint = int(i, 16)
+                if codepoint >= 0xE000 and codepoint <= 0xF8FF:
+                    print('Private Use Area')
+                else:
+                    try:
+                        char = chr(codepoint)
+                        charname = unicodedata.name(char).lower()
+                        print(char, charname) #end=' '
+                    except:
+                        print('Enter hexadecimal numbers greater than x19.')
             else:
-                try:
-                    char = chr(int(i))
-                    charname = unicodedata.name(char).lower()
-                    print(char, charname) #end=' '
-                except:
-                    print('Enter decimal numbers greater than 31.')
+                codepoint = int(i)
+                if codepoint >= 57344 and codepoint <= 63743:
+                    print('Private Use Area')
+                else:
+                    try:
+                        char = chr(codepoint)
+                        charname = unicodedata.name(char).lower()
+                        print(char, charname) #end=' '
+                    except:
+                        print('Enter decimal numbers greater than 31.')
 
 
 def parse_args() -> argparse.Namespace:
