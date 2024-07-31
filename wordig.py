@@ -10,6 +10,7 @@ import re
 import unicodedata
 import xmlformatter
 from pathlib import PurePath
+from pathlib import Path
 
 class WordDigger(object):
 
@@ -782,8 +783,13 @@ class WordDigger(object):
 
     def HtmlFormatter(self, htmlFile:str) -> None:
 
+        if Path(htmlFile).stat().st_size == 0:
+            print("It's empty.")    
+            return
+
         with open(htmlFile, mode='r', encoding='utf-8') as fs:
             content = fs.read()
+        
         htmlFormatter = bs4.formatter.HTMLFormatter(indent=int(self.options['indent']))
         soup = bs4.BeautifulSoup(content, 'html.parser')
         content = soup.prettify(formatter=htmlFormatter)
@@ -793,6 +799,10 @@ class WordDigger(object):
 
     def XmlFormatter(self, xmlFile:str) -> None:
 
+        if Path(xmlFile).stat().st_size == 0:
+            print("It's empty.")    
+            return
+        
         xmlFormatter = xmlformatter.Formatter(indent=self.options['indent'])
         xmlFormatter.enc_output(xmlFile, xmlFormatter.format_file(xmlFile))
 
