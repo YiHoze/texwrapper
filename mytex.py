@@ -114,7 +114,7 @@ def parse_args() -> argparse.Namespace:
 
 class LatexTemplate(object):
 
-    def __init__(self, template=[], kwargs={}):
+    def __init__(self, template=[], options={}):
 
         dirCalled = os.path.dirname(__file__)
         self.dbFile = os.path.join(dirCalled, 'latex.db')
@@ -150,8 +150,8 @@ class LatexTemplate(object):
                 self.auxiliary_files = template[1:]
 
         for key in self.options.keys():
-            if key in kwargs:
-                self.options[key] = kwargs.get(key)
+            if key in options:
+                self.options[key] = options.get(key)
         self.generated_files = []
 
         if self.options["List"]:

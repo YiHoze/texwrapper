@@ -1,16 +1,16 @@
 # C:\>wordig.py -u 가①⑴ⓐ⒜ㄱ㉠㉮㈀㈎𐊀
+from pathlib import Path
+from pathlib import PurePath
 import argparse
 import bs4
 import csv
 import glob
+import xml.etree.ElementTree as ET
 import openpyxl
 import os
 import pymupdf
 import re
 import unicodedata
-import xmlformatter
-from pathlib import PurePath
-from pathlib import Path
 
 class WordDigger(object):
 
@@ -668,9 +668,6 @@ class WordDigger(object):
             print(exclude_column_ranges)
         return exclude_column_ranges
 
-
-
-
     # C:\>wordig -t -a "1,3-5" -o goo.tsv foo.xlsx
     def xlsx_to_tsv(self, xlsxFile:str) -> None:
 
@@ -789,9 +786,8 @@ class WordDigger(object):
 
         with open(htmlFile, mode='r', encoding='utf-8') as fs:
             content = fs.read()
-        
-        htmlFormatter = bs4.formatter.HTMLFormatter(indent=int(self.options['indent']))
         soup = bs4.BeautifulSoup(content, 'html.parser')
+        htmlFormatter = bs4.formatter.HTMLFormatter(indent=int(self.options['indent']))
         content = soup.prettify(formatter=htmlFormatter)
         with open(htmlFile, mode='w', encoding='utf-8') as fs:
             fs.write(content)
@@ -803,8 +799,15 @@ class WordDigger(object):
             print("It's empty.")    
             return
         
-        xmlFormatter = xmlformatter.Formatter(indent=self.options['indent'])
-        xmlFormatter.enc_output(xmlFile, xmlFormatter.format_file(xmlFile))
+        with open(xmlFile, mode='r', encoding='utf-8') as fs:
+            content = fs.read()
+        tree = ET.fromstring(content)
+        ET.indent(tree, space='    ')
+        content = ET.tostring(tree, encoding='unicode')
+        content = content.replace("\u2028", "&#x2028;")
+        content = content.replace("\u2029", "&#x2029;")
+        with open(xmlFile, mode='w', encoding='utf-8') as fs:
+            fs.write(content)
 
 
     def determine_task(self) -> None:

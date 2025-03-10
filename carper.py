@@ -52,7 +52,7 @@ def find_misspelt(filename:str):
     
     intermediary, result = name_output(filename)
     if args.strip:
-        WordDigger([filename], pattern=args.regex, output=intermediary, overwrite=True)
+        WordDigger([filename], {'pattern':args.regex, 'output':intermediary, 'overwrite':True})
         filename = intermediary
 
     with open(filename, mode="r", encoding="utf-8") as fs:
