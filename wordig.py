@@ -769,12 +769,15 @@ class WordDigger(object):
 
     def beautifyML(self, filePath:str) -> None:
 
+        filePath = Path(filePath)
+        print(filePath.as_posix())
+
         fileExtension = os.path.splitext(filePath)[1].lower()        
         if fileExtension == '.xml':
-            print(filePath)
+            self.XmlFormatter(filePath)
+        elif fileExtension == '.dita':
             self.XmlFormatter(filePath)
         elif fileExtension == '.html':
-            print(filePath)
             self.HtmlFormatter(filePath)
 
 
@@ -801,14 +804,27 @@ class WordDigger(object):
         
         with open(xmlFile, mode='r', encoding='utf-8') as fs:
             content = fs.read()
+        preamble = self.GetXmlPreamble(content)
         tree = ET.fromstring(content)
         ET.indent(tree, space='    ')
-        content = ET.tostring(tree, encoding='unicode')
-        content = content.replace("\u2028", "&#x2028;")
-        content = content.replace("\u2029", "&#x2029;")
+        TreeContent = ET.tostring(tree, encoding='unicode')
+        TreeContent = TreeContent.replace("\u2028", "&#x2028;")
+        TreeContent = TreeContent.replace("\u2029", "&#x2029;")
+        content = preamble + TreeContent
         with open(xmlFile, mode='w', encoding='utf-8') as fs:
             fs.write(content)
 
+
+    def GetXmlPreamble(self, content:str) -> str:
+        preamble = ''
+        match = re.search(r"(<\?xml\s[^>]+?>)", content)
+        if match:
+            preamble = match.group(1) + '\n'
+        match = re.search(r"(<\?xml-stylesheet\s[^>]+?>)", content)
+        if match:
+            preamble = preamble + match.group(1) + '\n'
+        return preamble
+        
 
     def determine_task(self) -> None:
 
