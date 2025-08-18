@@ -195,7 +195,7 @@ class ImageUtility(object):
             result = result.decode(encoding='latin_1')
         result = result.split('\r\n')
         print('\n{}'.format(img))
-        for n in range(5):
+        for n in range(6):
             print(result[n+5])
 
 

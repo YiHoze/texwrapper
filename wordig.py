@@ -774,14 +774,20 @@ class WordDigger(object):
 
         fileExtension = os.path.splitext(filePath)[1].lower()        
         if fileExtension == '.xml':
-            self.XmlFormatter(filePath)
+            self.xmlFormatter(filePath)
         elif fileExtension == '.dita':
-            self.XmlFormatter(filePath)
+            self.xmlFormatter(filePath)
+        elif fileExtension == '.ditamap':
+            self.xmlFormatter(filePath)
+        elif fileExtension == '.fo':
+            self.xmlFormatter(filePath)
+        elif fileExtension == '.tmx':
+            self.xmlFormatter(filePath)
         elif fileExtension == '.html':
-            self.HtmlFormatter(filePath)
+            self.htmlFormatter(filePath)
 
 
-    def HtmlFormatter(self, htmlFile:str) -> None:
+    def htmlFormatter(self, htmlFile:str) -> None:
 
         if Path(htmlFile).stat().st_size == 0:
             print("It's empty.")    
@@ -790,15 +796,15 @@ class WordDigger(object):
         with open(htmlFile, mode='r', encoding='utf-8') as fs:
             content = fs.read()
         soup = bs4.BeautifulSoup(content, 'html.parser')
-        htmlFormatter = bs4.formatter.HTMLFormatter(indent=int(self.options['indent']))
-        content = soup.prettify(formatter=htmlFormatter)
+        HTMLFormatter = bs4.formatter.HTMLFormatter(indent=int(self.options['indent']))
+        content = soup.prettify(formatter=HTMLFormatter)
         with open(htmlFile, mode='w', encoding='utf-8') as fs:
             fs.write(content)
 
 
-    def XmlFormatter(self, xmlFile:str) -> None:
+    def xmlFormatter(self, xmlFile:str) -> None:
 
-        if Path(xmlFile).stat().st_size == 0:
+        if Path(xmlFile).stat().st_size < 50:
             print("It's empty.")    
             return
         
@@ -823,6 +829,10 @@ class WordDigger(object):
         match = re.search(r"(<\?xml-stylesheet\s[^>]+?>)", content)
         if match:
             preamble = preamble + match.group(1) + '\n'
+        match = re.search(r"(<\!DOCTYPE\s[^>]+?>)", content, re.DOTALL)
+        if match:
+            doctype = match.group(1)
+            preamble = preamble + doctype.replace('\n', '') + '\n'
         return preamble
         
 
