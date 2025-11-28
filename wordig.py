@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 import openpyxl
 import os
 import pymupdf
-import re
+import regex
 import unicodedata
 
 class WordDigger(object):
@@ -67,7 +67,7 @@ class WordDigger(object):
         self.determine_task()
 
 
-    def run_recursive(self, func:str) -> None:
+    def run_recursive(self, func) -> None:
 
         if self.options['recursive']:
             for target in self.targets:
@@ -98,7 +98,7 @@ class WordDigger(object):
             for p in patterns:
                 if p.startswith('~~~') or p.startswith('```'):
                     continue
-                p = re.sub('\t.*$', '', p)
+                p = regex.sub('\t.*$', '', p)
                 p = p.rstrip()
                 if p not in self.found_count.keys():
                     self.found_count[p] = 0
@@ -134,9 +134,9 @@ class WordDigger(object):
 
         for num, line in enumerate(content):
             if self.options['case_sensitive']:
-                matched = re.search(pattern, line)
+                matched = regex.search(pattern, line)
             else:
-                matched = re.search(pattern, line, flags=re.IGNORECASE)
+                matched = regex.search(pattern, line, flags=regex.IGNORECASE)
             if matched:
                 found_line = found_line + "  line {:4}: {}\n".format(num+1, line.strip())
                 count += 1
@@ -159,7 +159,7 @@ class WordDigger(object):
             print('{} is not encoded in UTF-8.'.format(file))
             return 0
 
-        matched = re.findall(pattern, content, re.DOTALL)
+        matched = regex.findall(pattern, content, regex.DOTALL)
         if matched:
             for i in range(len(matched)):
                 found_line = found_line + "\t{}\n".format(matched[i])
@@ -181,13 +181,13 @@ class WordDigger(object):
         for page_no in range(0, doc.page_count):
             page = doc.load_page(page_no)
             page_text = page.get_text()
-            page_text = re.sub('-\n', '', page_text)
+            page_text = regex.sub('-\n', '', page_text)
             lines = page_text.split('\n')
             for line in lines:
                 if self.options['case_sensitive']:
-                    matched = re.search(pattern, line)
+                    matched = regex.search(pattern, line)
                 else:
-                    matched = re.search(pattern, line, flags=re.IGNORECASE)
+                    matched = regex.search(pattern, line, flags=regex.IGNORECASE)
                 if matched:
                     # self.add_found("\tPage {}: {}".format(page_no+1, line))
                     found_line = found_line + "  page {:3}: {}\n".format(page_no+1, line.strip())
@@ -236,9 +236,9 @@ class WordDigger(object):
         found = []
         for i in ptrn:
             if self.options['dotall']:
-                found_lines = re.findall(i, content, flags=re.DOTALL)
+                found_lines = regex.findall(i, content, flags=regex.DOTALL)
             else:
-                found_lines = re.findall(i, content, flags=re.MULTILINE)
+                found_lines = regex.findall(i, content, flags=regex.MULTILINE)
             if found_lines:
                 if self.options['gather']:
                     self.found += found_lines
@@ -258,13 +258,13 @@ class WordDigger(object):
         within_scope = False
         for i, line in enumerate(content):
             if within_scope:
-                matched = re.search(pattern[3], line)
+                matched = regex.search(pattern[3], line)
                 if matched:
                     within_scope = False
                 else:
-                    content[i] = re.sub(pattern[1], pattern[2], line)
+                    content[i] = regex.sub(pattern[1], pattern[2], line)
             else:
-                matched = re.search(pattern[0], line)
+                matched = regex.search(pattern[0], line)
                 if matched:
                     within_scope = True
         return content
@@ -273,10 +273,10 @@ class WordDigger(object):
     def replace_expand_inline(self, content:list, pattern:list) -> list:
 
         for i, line in enumerate(content):
-            phrases = re.findall(pattern[0], line)
+            phrases = regex.findall(pattern[0], line)
             for phrase in phrases:
                 aim = '{}{}{}'.format(pattern[3], phrase, pattern[4])
-                substitute = re.sub(pattern[1], pattern[2], phrase)
+                substitute = regex.sub(pattern[1], pattern[2], phrase)
                 if len(pattern) == 7:
                     substitute = '{}{}{}'.format(pattern[5], substitute, pattern[6])
                 else:
@@ -291,24 +291,24 @@ class WordDigger(object):
 
         for i, line in enumerate(content):
             if len(pattern) == 1:
-                content[i] = re.sub(pattern[0], '', line)
+                content[i] = regex.sub(pattern[0], '', line)
             else:
-                content[i] = re.sub(pattern[0], pattern[1], line)
+                content[i] = regex.sub(pattern[0], pattern[1], line)
 
         return content
 
 
-    def replace_expand(self, file:str) -> str:
+    def replace_expand(self, file:str):
 
         try:
             with open(file, mode='r', encoding='utf-8') as f:
                 content = f.readlines()
         except:
             print('{} is not encoded in UTF-8.'.format(file))
-            return None
+            return False
 
         if not os.path.exists(self.options['pattern']):
-            return None
+            return False
 
         ptrn_ext = os.path.splitext(self.options['pattern'])[1].lower()
         with open(self.options['pattern'], mode='r', encoding='utf-8') as ptrn:
@@ -338,7 +338,7 @@ class WordDigger(object):
         inside = []
 
         while True:
-            found = re.search(leading, line)
+            found = regex.search(leading, line)
             if found:
                 line_out += line[:found.end()]
                 line = line[found.end():]
@@ -359,20 +359,20 @@ class WordDigger(object):
         return inside
 
 
-    def replace_once(self, file:str) -> str:
+    def replace_once(self, file:str):
 
         try:
             with open(file, mode='r', encoding='utf-8') as f:
                 content = f.read()
         except:
             print('{} is not encoded in UTF-8.'.format(file))
-            return None
+            return False
 
         if self.options['pattern'] is None:
             if self.options['dotall']:
-                content = re.sub(self.options['aim'], self.options['substitute'], content, flags=re.DOTALL)
+                content = regex.sub(self.options['aim'], self.options['substitute'], content, flags=regex.DOTALL)
             else:
-                content = re.sub(self.options['aim'], self.options['substitute'], content, flags=re.MULTILINE)
+                content = regex.sub(self.options['aim'], self.options['substitute'], content, flags=regex.MULTILINE)
         else:
             ptrn_ext = os.path.splitext(self.options['pattern'])[1].lower()
             with open(self.options['pattern'], mode='r', encoding='utf-8') as ptrn:
@@ -393,23 +393,23 @@ class WordDigger(object):
                     else:
                         if DOTALL:
                             if len(pattern) == 1:
-                                content = re.sub(pattern[0], '', content, flags=re.DOTALL)
+                                content = regex.sub(pattern[0], '', content, flags=regex.DOTALL)
                             else:
-                                content = re.sub(pattern[0], pattern[1], content, flags=re.DOTALL)
+                                content = regex.sub(pattern[0], pattern[1], content, flags=regex.DOTALL)
                         else:
                             if len(pattern) == 1:
-                                content = re.sub(pattern[0], '', content, flags=re.MULTILINE)
+                                content = regex.sub(pattern[0], '', content, flags=regex.MULTILINE)
                             else:
                                 # when replacing with quotation mark (") use \" in TSV
                                 if pattern[1] == '\\"':  
-                                    content = re.sub(pattern[0], '"', content, flags=re.MULTILINE)
+                                    content = regex.sub(pattern[0], '"', content, flags=regex.MULTILINE)
                                 else:
-                                    content = re.sub(pattern[0], pattern[1], content, flags=re.MULTILINE)
+                                    content = regex.sub(pattern[0], pattern[1], content, flags=regex.MULTILINE)
 
         return content
 
 
-    def replace(self, file:str) -> None:
+    def replace(self, file:str):
         
         if self.options['flag'] == 'EXPAND':
             content = self.replace_expand(file)
@@ -508,7 +508,7 @@ class WordDigger(object):
         return output
 
 
-    def determine_output(self, file:str, output=None) -> str:
+    def determine_output(self, file:str, output:str) -> str:
 
         if self.options['output'] is None:
             if self.options['overwrite']:
@@ -533,7 +533,7 @@ class WordDigger(object):
             content = ""
             for p in range(0, doc.page_count):
                 page = doc.load_page(p)
-                content += page.get_text()
+                content = content + page.get_text()
             output = os.path.splitext(file)[0] + '_from_pdf.txt'
             with open(output, mode='w', encoding='utf-8') as f:
                 f.write(content)
@@ -588,7 +588,7 @@ class WordDigger(object):
 
 
     def write_gathered(self) -> None:
-        
+
         if len(self.found) < 1:
             print("There is nothing to write.")
             return
@@ -683,10 +683,16 @@ class WordDigger(object):
         workbook = openpyxl.load_workbook(xlsxFile)
         sheets = workbook.sheetnames
 
-        for i in range(len(sheets)):
-            sheet = workbook[sheets[i]]
-            sheetName = sheets[i]
-            output = f"{fileName}_{sheetName}.tsv"
+        if len(sheets) > 1:
+            for i in range(len(sheets)):
+                sheet = workbook[sheets[i]]
+                sheetName = sheets[i]
+                output = f"{fileName}_{sheetName}.tsv"
+                output = self.determine_output_indefinite(xlsxFile, output)
+                self.sheet_to_tsv(sheet, output)
+        else:
+            sheet = workbook[sheets[0]]
+            output = f"{fileName}.tsv"
             output = self.determine_output_indefinite(xlsxFile, output)
             self.sheet_to_tsv(sheet, output)
 
@@ -750,9 +756,9 @@ class WordDigger(object):
     def escape_tex(self, string:str) -> str:
 
         if self.options['escape_tex']: 
-            string = re.sub(r'\\', '\\\\textbackslash', string)
-            string = re.sub('([&%$#_])', '\\\\\\1', string)
-            string = re.sub('\n', '\\\\linebreak{}', string)
+            string = regex.sub(r'\\', '\\\\textbackslash', string)
+            string = regex.sub('([&%$#_])', '\\\\\\1', string)
+            string = regex.sub('\n', '\\\\linebreak{}', string)
         string += '\n'
         return string
 
@@ -760,16 +766,16 @@ class WordDigger(object):
     def remove_tex(self, columns: list) -> list:
 
         for i, string in enumerate(columns):
-            string = re.sub('\\\\textbackslash', '', string)
-            string = re.sub('\\\\([&%$#_])', '\\1', string)
-            string = re.sub('\\\\linebreak\\{\\}', '\\n', string)
+            string = regex.sub('\\\\textbackslash', '', string)
+            string = regex.sub('\\\\([&%$#_])', '\\1', string)
+            string = regex.sub('\\\\linebreak\\{\\}', '\\n', string)
             columns[i] = string
         return columns
 
 
     def beautifyML(self, filePath:str) -> None:
 
-        filePath = Path(filePath)
+        filePath = PurePath(filePath)        
         print(filePath.as_posix())
 
         fileExtension = os.path.splitext(filePath)[1].lower()        
@@ -782,6 +788,10 @@ class WordDigger(object):
         elif fileExtension == '.fo':
             self.xmlFormatter(filePath)
         elif fileExtension == '.tmx':
+            self.xmlFormatter(filePath)
+        elif fileExtension == '.sdlxliff':
+            self.xmlFormatter(filePath)
+        elif fileExtension == '.skeleton':
             self.xmlFormatter(filePath)
         elif fileExtension == '.html':
             self.htmlFormatter(filePath)
@@ -823,13 +833,13 @@ class WordDigger(object):
 
     def GetXmlPreamble(self, content:str) -> str:
         preamble = ''
-        match = re.search(r"(<\?xml\s[^>]+?>)", content)
+        match = regex.search(r"(<\?xml\s[^>]+?>)", content)
         if match:
             preamble = match.group(1) + '\n'
-        match = re.search(r"(<\?xml-stylesheet\s[^>]+?>)", content)
+        match = regex.search(r"(<\?xml-stylesheet\s[^>]+?>)", content)
         if match:
             preamble = preamble + match.group(1) + '\n'
-        match = re.search(r"(<\!DOCTYPE\s[^>]+?>)", content, re.DOTALL)
+        match = regex.search(r"(<\!DOCTYPE\s[^>]+?>)", content, regex.DOTALL)
         if match:
             doctype = match.group(1)
             preamble = preamble + doctype.replace('\n', '') + '\n'
@@ -1018,7 +1028,7 @@ class UnicodeDigger(object):
 def parse_args() -> argparse.Namespace:
 
     parser=argparse.ArgumentParser(
-        description="Count words, count pages, find or replace strings, and more."
+        description="Count words, count pages, find or replace strings, and moregex."
     )
 
     parser.add_argument(

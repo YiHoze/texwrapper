@@ -125,7 +125,7 @@ class ImageUtility(object):
         self.Ghostscript = 'gswin64c.exe'
 
 
-    def check_format(self, img) -> str:
+    def check_format(self, img):
 
         basename = os.path.basename(img)
         ext = os.path.splitext(basename)[1]

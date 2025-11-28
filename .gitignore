@@ -3,3 +3,5 @@ build/
 dist/
 *.exe
 *.spec
+carper.py
+wordig-build.ps1

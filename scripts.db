@@ -980,7 +980,7 @@ code = ```
 	```
 	```        URL = 'https://finance.naver.com/marketindex/exchangeDetail.nhn?marketindexCd=FX_USDKRW'
 	```        page = urllib.request.urlopen(URL)
-	```        self.soup = BeautifulSoup(page, 'html.parser')
+	```        self.soup = BeautifulSoup(page, 'html.parser', from_encoding='euc-kr')
 	```
 	```        # getting currencies from <select>
 	```        lines = ''
