@@ -16,7 +16,7 @@ class WordDigger(object):
 
     # flag: ONCE, EXPAND
 
-    def __init__(self, targets, options={}):
+    def __init__(self, targets=[], options={}):
 
         self.targets = targets
         self.options = {
@@ -60,9 +60,9 @@ class WordDigger(object):
                 self.options[key] = options.get(key)
 
         if self.options['flag'] == '1':
-            self.options['flag'] == 'ONCE'
+            self.options['flag'] = 'ONCE'
         if self.options['flag'] == '2':
-            self.options['flag'] == 'EXPAND'
+            self.options['flag'] = 'EXPAND'
 
         self.determine_task()
 
@@ -180,8 +180,8 @@ class WordDigger(object):
         doc = pymupdf.open(file)
         for page_no in range(0, doc.page_count):
             page = doc.load_page(page_no)
-            page_text = page.get_text()
-            page_text = regex.sub('-\n', '', page_text)
+            page_text = "".join(page.get_text())
+            page_text = regex.sub("-\n", "", page_text)
             lines = page_text.split('\n')
             for line in lines:
                 if self.options['case_sensitive']:
@@ -421,7 +421,7 @@ class WordDigger(object):
 
         output = self.determine_output(file, output='_replaced')
         with open(output, mode='w', encoding='utf-8') as f:
-            f.write(content)
+            f.write(str(content))
 
 
     def compare(self) -> None:
@@ -469,7 +469,7 @@ class WordDigger(object):
                     self.found.append(("{:5}: {}\n{:5}: {}".format(lineno, line1.strip(), lineno, line2.strip())))
 
 
-    def determine_output_indefinite(self, file:str, output=None) -> str:
+    def determine_output_indefinite(self, file:str, output="") -> str:
 
         iFilename, iExt = os.path.splitext(os.path.basename(file))
 
@@ -533,7 +533,7 @@ class WordDigger(object):
             content = ""
             for p in range(0, doc.page_count):
                 page = doc.load_page(p)
-                content = content + page.get_text()
+                content = content + "".join(page.get_text())
             output = os.path.splitext(file)[0] + '_from_pdf.txt'
             with open(output, mode='w', encoding='utf-8') as f:
                 f.write(content)
@@ -578,13 +578,14 @@ class WordDigger(object):
         self.pages += doc.page_count
 
 
-    def align_string(self, string: str, width: int) -> None:
+    def align_string(self, string: str, width: int):
 
         nfc_string = unicodedata.normalize('NFC', string)
         wide_chars = [unicodedata.east_asian_width(c) for c in nfc_string]
         num_wide_chars = sum(map(wide_chars.count, ['W', 'F']))
         width = max(width-num_wide_chars, num_wide_chars)
         return '{:{w}}'.format(nfc_string, w=width)
+        
 
 
     def write_gathered(self) -> None:
@@ -618,12 +619,13 @@ class WordDigger(object):
 
         workbook = openpyxl.Workbook()
         ws = workbook.active
-        for row, line in enumerate(content):
-            for column, text in enumerate(line):
-                ws.cell(row=row+1, column=column+1, value=text)
-        workbook.save(output)
-        if not self.options['quietly']:
-            print("{} -> {}".format(file, output))
+        if ws is not None:
+            for row, line in enumerate(content):
+                for column, text in enumerate(line):
+                    ws.cell(row=row+1, column=column+1, value=text)
+            workbook.save(output)
+            if not self.options['quietly']:
+                print("{} -> {}".format(file, output))
 
 
     def columns_to_remove(self, columns_to_extract:str, max_col:int) -> list:
@@ -773,7 +775,7 @@ class WordDigger(object):
         return columns
 
 
-    def beautifyML(self, filePath:str) -> None:
+    def beautifyML(self, filePath) -> None:
 
         filePath = PurePath(filePath)        
         print(filePath.as_posix())
@@ -797,7 +799,7 @@ class WordDigger(object):
             self.htmlFormatter(filePath)
 
 
-    def htmlFormatter(self, htmlFile:str) -> None:
+    def htmlFormatter(self, htmlFile) -> None:
 
         if Path(htmlFile).stat().st_size == 0:
             print("It's empty.")    
@@ -807,12 +809,12 @@ class WordDigger(object):
             content = fs.read()
         soup = bs4.BeautifulSoup(content, 'html.parser')
         HTMLFormatter = bs4.formatter.HTMLFormatter(indent=int(self.options['indent']))
-        content = soup.prettify(formatter=HTMLFormatter)
+        content = str(soup.prettify(formatter=HTMLFormatter))
         with open(htmlFile, mode='w', encoding='utf-8') as fs:
             fs.write(content)
 
 
-    def xmlFormatter(self, xmlFile:str) -> None:
+    def xmlFormatter(self, xmlFile) -> None:
 
         if Path(xmlFile).stat().st_size < 50:
             print("It's empty.")    
@@ -850,15 +852,14 @@ class WordDigger(object):
 
         if self.options['unicode']:
             UTF = UnicodeDigger(chars=self.targets[0])
-            UTF.print()
+            UTF.displayCodePoint()
         elif self.options['unicode_bits']:
             UTF = UnicodeDigger(chars=self.targets[0], flag=1)
-            UTF.print()
-        elif self.options['unicode_hexadecimal']:
-            UnicodeDigger.char(self.targets)
-        elif self.options['unicode_decimal']:
-            UnicodeDigger.char(self.targets, False)
-
+            UTF.displayCodePoint()
+        elif self.options['unicode_hexadecimal']:            
+            UnicodeDigger(self.targets, True)
+        elif self.options['unicode_decimal']:            
+            UnicodeDigger(self.targets, False)
         elif self.options['xlsx']:
             self.run_recursive(self.tsv_to_xlsx)
         elif self.options['tsv']:
@@ -916,7 +917,7 @@ class WordDigger(object):
 class UnicodeDigger(object):
 
 
-    def __init__(self, chars=None, flag=0):
+    def __init__(self, chars="", flag=0):
 
         self.chars = chars
         self.flag = flag
@@ -943,7 +944,7 @@ class UnicodeDigger(object):
             return head + byte[0:6] + tail + byte[6:12] + head + byte[12:18] + tail + byte[18:24] + normal
 
 
-    def highlight_binary_byte(self, byte_number, byte_index, byte) -> str:
+    def highlight_binary_byte(self, byte_number, byte_index, byte):
 
         head = '\x1b[32m'
         tail = '\x1b[33m'
@@ -960,7 +961,7 @@ class UnicodeDigger(object):
                 return head + byte[:5] + tail + byte[5:] + normal
 
 
-    def print(self) -> None:
+    def displayCodePoint(self) -> None:
 
         for char in self.chars:
             charname = unicodedata.name(char).lower()
@@ -998,7 +999,7 @@ class UnicodeDigger(object):
                     print(char, Dcode, Hcode, charname)
 
 
-    def char(codepoints, hex=True) -> None:
+    def displayCharacter(self, codepoints, hex=True) -> None:
 
         for i in codepoints:
             if hex:
