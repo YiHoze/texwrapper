@@ -822,6 +822,14 @@ class WordDigger(object):
         
         with open(xmlFile, mode='r', encoding='utf-8') as fs:
             content = fs.read()
+
+        # namespace가 ns0 따위로 바뀌는 것을 방지하기 위하여
+        events = ("split", "start-ns")
+        parser = ET.XMLPullParser(['start-ns'])
+        parser.feed(content)
+        for event, (prefix, uri) in parser.read_events():
+            ET.register_namespace(prefix, uri)
+
         preamble = self.GetXmlPreamble(content)
         tree = ET.fromstring(content)
         ET.indent(tree, space='    ')
