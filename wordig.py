@@ -5,7 +5,8 @@ import argparse
 import bs4
 import csv
 import glob
-import xml.etree.ElementTree as ET
+# import xml.etree.ElementTree as ET
+from lxml import etree
 import openpyxl
 import os
 import pymupdf
@@ -777,10 +778,12 @@ class WordDigger(object):
 
     def beautifyML(self, filePath) -> None:
 
-        filePath = PurePath(filePath)        
-        print(filePath.as_posix())
+        # filePath = PurePath(filePath)        
+        print(PurePath(filePath).as_posix())
 
-        fileExtension = os.path.splitext(filePath)[1].lower()        
+        # fileExtension = os.path.splitext(filePath)[1].lower()  
+        fileExtension = PurePath(filePath).suffix.lower()
+
         if fileExtension == '.xml':
             self.xmlFormatter(filePath)
         elif fileExtension == '.dita':
@@ -816,44 +819,25 @@ class WordDigger(object):
 
     def xmlFormatter(self, xmlFile) -> None:
 
-        if Path(xmlFile).stat().st_size < 50:
-            print("It's empty.")    
-            return
-        
-        with open(xmlFile, mode='r', encoding='utf-8') as fs:
-            content = fs.read()
+        parser = etree.XMLParser(
+            remove_blank_text=True,  
+            strip_cdata=False
+        )
 
-        # namespace가 ns0 따위로 바뀌는 것을 방지하기 위하여
-        events = ("split", "start-ns")
-        parser = ET.XMLPullParser(['start-ns'])
-        parser.feed(content)
-        for event, (prefix, uri) in parser.read_events():
-            ET.register_namespace(prefix, uri)
-
-        preamble = self.GetXmlPreamble(content)
-        tree = ET.fromstring(content)
-        ET.indent(tree, space='    ')
-        TreeContent = ET.tostring(tree, encoding='unicode')
-        TreeContent = TreeContent.replace("\u2028", "&#x2028;")
-        TreeContent = TreeContent.replace("\u2029", "&#x2029;")
-        content = preamble + TreeContent
-        with open(xmlFile, mode='w', encoding='utf-8') as fs:
-            fs.write(content)
-
-
-    def GetXmlPreamble(self, content:str) -> str:
-        preamble = ''
-        match = regex.search(r"(<\?xml\s[^>]+?>)", content)
-        if match:
-            preamble = match.group(1) + '\n'
-        match = regex.search(r"(<\?xml-stylesheet\s[^>]+?>)", content)
-        if match:
-            preamble = preamble + match.group(1) + '\n'
-        match = regex.search(r"(<\!DOCTYPE\s[^>]+?>)", content, regex.DOTALL)
-        if match:
-            doctype = match.group(1)
-            preamble = preamble + doctype.replace('\n', '') + '\n'
-        return preamble
+        tree = etree.parse(xmlFile, parser)
+        tree.write(
+            xmlFile,
+            encoding="UTF-8",
+            xml_declaration=True,
+            pretty_print=True,
+            doctype=tree.docinfo.doctype
+        )
+        # xmlFile = Path(xmlFile)
+        # content = xmlFile.read_text(encoding="utf-8")
+        # content = content.replace("\n  ", "\n    ")
+        # content = content.replace("\u2028", "&#x2028;")
+        # content = content.replace("\u2029", "&#x2029;")
+        # xmlFile.write_text(content, encoding="utf-8")
         
 
     def determine_task(self) -> None:
@@ -864,10 +848,12 @@ class WordDigger(object):
         elif self.options['unicode_bits']:
             UTF = UnicodeDigger(chars=self.targets[0], flag=1)
             UTF.displayCodePoint()
-        elif self.options['unicode_hexadecimal']:            
-            UnicodeDigger(self.targets, True)
-        elif self.options['unicode_decimal']:            
-            UnicodeDigger(self.targets, False)
+        elif self.options['unicode_hexadecimal']:     
+            UTF = UnicodeDigger()       
+            UTF.displayCharacter(self.targets, True)
+        elif self.options['unicode_decimal']:   
+            UTF = UnicodeDigger()
+            UTF.displayCharacter(self.targets, False)
         elif self.options['xlsx']:
             self.run_recursive(self.tsv_to_xlsx)
         elif self.options['tsv']:
