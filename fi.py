@@ -38,8 +38,10 @@ class FontInfo(object):
         self.args = parser.parse_args()
 
     def fonttable(self) -> None:
-
+        
         fontname = self.args.font
+        if fontname.startswith('.\\'):
+            fontname = fontname[2:]
         output = fontname.replace(' ', '')
         output = "{}.tex".format(os.path.splitext(output)[0])
         
@@ -47,11 +49,11 @@ class FontInfo(object):
 \documentclass{{article}}
 \usepackage[paper=a4paper,vmargin={{20mm,20mm}}]{{geometry}}
 \usepackage{{unicodefonttable}}
-\usepackage{{color}}
-\setmainfont{{{0}}}
+\setmainfont{{Noto Serif}}
 \setlength\parskip{{1.25\baselineskip}}
 \setlength\parindent{{0pt}}
 \begin{{document}}
+\fontspec{{{0}}}
 0 1 2 3 4 5 6 7 8 9
 
 english:
@@ -118,7 +120,12 @@ turkish TÜRKÇE:
 Bu kılavuzu daha sonra kullanmak üzere saklayın.
 
 \newpage
-\displayfonttable[range-start=0020, range-end=FFFF]{{{0}}}
+\displayfonttable[
+    range-start=0020, 
+    range-end=FFFF,
+    %display-block=rules,
+    nostatistics,
+    ]{{{0}}}
 \end{{document}}'''.format(fontname)
         
         with open(output, mode='w', encoding='utf-8') as f:

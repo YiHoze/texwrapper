@@ -1,6 +1,7 @@
 __pycache__/
 build/
 dist/
+cloche/
 *.exe
 *.spec
 wordig-build.ps1

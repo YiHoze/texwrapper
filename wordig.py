@@ -44,7 +44,7 @@ class WordDigger(object):
             'escape_tex': False,
             'quietly': False,
             'beautify': False,
-            'indent': None
+            'beautify2': False,
         }
 
         self.files = 0
@@ -55,6 +55,12 @@ class WordDigger(object):
         self.pages = 0
         self.found = []
         self.found_count = {}
+
+        self.SPECIALS = {
+            "\u2028": "&#x2028;",
+            "\u2029": "&#x2029;",
+            "\u00A0": "&#xA0;"
+        }
 
         for key in self.options.keys():
             if key in options:
@@ -778,10 +784,8 @@ class WordDigger(object):
 
     def beautifyML(self, filePath) -> None:
 
-        # filePath = PurePath(filePath)        
         print(PurePath(filePath).as_posix())
 
-        # fileExtension = os.path.splitext(filePath)[1].lower()  
         fileExtension = PurePath(filePath).suffix.lower()
 
         if fileExtension == '.xml':
@@ -811,13 +815,17 @@ class WordDigger(object):
         with open(htmlFile, mode='r', encoding='utf-8') as fs:
             content = fs.read()
         soup = bs4.BeautifulSoup(content, 'html.parser')
-        HTMLFormatter = bs4.formatter.HTMLFormatter(indent=int(self.options['indent']))
+        HTMLFormatter = bs4.formatter.HTMLFormatter(indent=4)
         content = str(soup.prettify(formatter=HTMLFormatter))
         with open(htmlFile, mode='w', encoding='utf-8') as fs:
             fs.write(content)
 
 
     def xmlFormatter(self, xmlFile) -> None:
+
+        filePath = Path(xmlFile)
+        if filePath.stat().st_size < 100:
+            return
 
         parser = etree.XMLParser(
             remove_blank_text=True,  
@@ -832,13 +840,14 @@ class WordDigger(object):
             pretty_print=True,
             doctype=tree.docinfo.doctype
         )
-        # xmlFile = Path(xmlFile)
-        # content = xmlFile.read_text(encoding="utf-8")
-        # content = content.replace("\n  ", "\n    ")
-        # content = content.replace("\u2028", "&#x2028;")
-        # content = content.replace("\u2029", "&#x2029;")
-        # xmlFile.write_text(content, encoding="utf-8")
-        
+
+        if self.options['beautify']:
+            content = filePath.read_text(encoding="UTF-8")
+            for char, ref in self.SPECIALS.items():
+                content = content.replace(char, ref)
+            content = regex.sub(r'^\s+', lambda indent: ' ' * (len(indent.group(0)) * 2), content, flags=regex.MULTILINE)
+            filePath.write_text(content, encoding="UTF-8")
+
 
     def determine_task(self) -> None:
 
@@ -894,7 +903,7 @@ class WordDigger(object):
         elif self.options['page_count']:
             self.run_recursive(self.count_pdf_pages)
             print( 'Total pages: {:,}'.format(self.pages) )
-        elif self.options['beautify']:
+        elif self.options['beautify'] or self.options['beautify2']:
             self.run_recursive(self.beautifyML)
         else:
             self.run_recursive(self.count_words)
@@ -1120,13 +1129,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         '-b', '--beautiyfy', dest='beautify', action='store_true', default=False,
-        help='Beautify HTML or XML files.'
+        help='Beautify HTML or XML files with 4 indent spaces.'
     )
     parser.add_argument(
-        '-i', dest='indent', default=4, 
-        help='Specify a number to change the indent size.'
+        '-B', '--beautiyfy2', dest='beautify2', action='store_true', default=False,
+        help='Beautify files with 2 indent spaces. (faster than -b)'
     )
-    
 
     return parser.parse_args()
 
