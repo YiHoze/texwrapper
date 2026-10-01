@@ -796,6 +796,8 @@ class WordDigger(object):
             self.xmlFormatter(filePath)
         elif fileExtension == '.fo':
             self.xmlFormatter(filePath)
+        elif fileExtension == '.icml':
+            self.xmlFormatter(filePath)
         elif fileExtension == '.tmx':
             self.xmlFormatter(filePath)
         elif fileExtension == '.sdlxliff':

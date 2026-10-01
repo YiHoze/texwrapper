@@ -27,7 +27,7 @@ $global:TeXLive = @{
     SumatraPDFpath = $SumatraPDFpath;
     InverseSearch = $InverseSearch;
     MainRepository = "http://mirror.navercorp.com/CTAN/systems/texlive/tlnet/";
-    PrivateRepository = "https://mirror.ischo.org/KTUG/texlive/tlnet/"
+    PrivateRepository = "https://cran.asia/KTUG/texlive/tlnet/"
 }
 # MainRepository = "http://mirror.kakao.com/CTAN/systems/texlive/tlnet/"
 # PrivateRepository = "http://ftp.ktug.org/KTUG/texlive/tlnet/"

@@ -965,134 +965,110 @@ code = ```
 description = [Python] View exchage rates.
 code_output = exrate.py
 code = ```
-	```import urllib.request
-	```from bs4 import BeautifulSoup
 	```import argparse
-	```import re
 	```import unicodedata
+	```import requests
 	```
-	```class ExchangeRate(object):
 	```
-	```    def __init__(self, amount=1.0, currency='USD', list=False):
-	```        self.amount = amount
-	```        self.currency = currency
-	```        self.list_bool = list
+	```API_URL = "https://finance.daum.net/api/exchanges/summaries"
+	```HEADERS = {
+	```    "User-Agent": (
+	```        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+	```        "AppleWebKit/537.36 (KHTML, like Gecko) "
+	```        "Chrome/154.0.0.0 Safari/537.36"
+	```    ),
+	```    "Referer": "https://finance.daum.net/exchanges",
+	```}
 	```
-	```        URL = 'https://finance.naver.com/marketindex/exchangeDetail.nhn?marketindexCd=FX_USDKRW'
-	```        page = urllib.request.urlopen(URL)
-	```        self.soup = BeautifulSoup(page, 'html.parser', from_encoding='euc-kr')
 	```
-	```        # getting currencies from <select>
-	```        lines = ''
-	```        for i in self.soup.find_all('option'):
-	```            lines = lines + str(i) + '\n'
-	```        p = re.compile('>(.+?)<')
-	```        found = p.findall(lines)
-	```        i = 0
-	```        while i < len(found):
-	```            found[i] = found[i].strip()
-	```            i += 1
-	```        found = set(found)
-	```        self.currencies = {}
-	```        for i in found:
-	```            words = i.split()
-	```            self.currencies[words[-1]] = i
+	```def get_exchange_rates():
+	```    response = requests.get(API_URL, headers=HEADERS, timeout=10)
+	```    response.raise_for_status()
+	```    data = response.json()["data"]
+	```    
+	```    rates = {}
+	```    for item in data:
+	```        currency = item["currencyCode"]
+	```        rates[currency] = {
+	```            "name": item["currencyName"],
+	```            "country": item["country"],
+	```            "price": item["basePrice"],
+	```            "unit": item["currencyUnit"]
+	```        } 
+	```    return rates
 	```
-	```    def parse_args(self):
-	```        parser = argparse.ArgumentParser(
-	```            description = 'View exchage rates.'
-	```        )
-	```        parser.add_argument(
-	```            'amount',
-	```            nargs = '?',
-	```            type = str,
-	```            default = "1.0",
-	```            help = 'Specify an amount.'
-	```        )
-	```        parser.add_argument(
-	```            dest = 'currency',
-	```            nargs = '?',
-	```            default = 'USD',
-	```            help = 'specify a currency. (default: USD) '
-	```        )
-	```        parser.add_argument(
-	```            '-l',
-	```            dest = 'list',
-	```            action = 'store_true',
-	```            default = False,
-	```            help = 'Show the ist of currencies.'
-	```        )
-	```        args = parser.parse_args()
-	```        self.amount = float(args.amount.replace(',', ''))
-	```        self.currency = args.currency
-	```        self.list_bool = args.list
+	```def calcurate(rates:dict, amount:int, currency:str):
 	```
-	```    def align_string(self, string: str, width: int):
-	```        nfc_string = unicodedata.normalize('NFC', string)
-	```        wide_chars = [unicodedata.east_asian_width(c) for c in nfc_string]
-	```        num_wide_chars = sum(map(wide_chars.count, ['W', 'F']))
-	```        width = max(width - num_wide_chars, num_wide_chars)
-	```        return '{:{w}}'.format(nfc_string, w=width)
+	```    # 1 USD = 1,000 KRW
+	```    price = rates[currency]["price"]
+	```    basis = rates[currency]["unit"]
+	```    won = basis * price
+	```    print(f"{basis} {currency} = {won:,} KRW")
 	```
-	```    def show_currencies(self, columns=2):
-	```        currencies = sorted(self.currencies.keys())
-	```        cur_countries = []
-	```        for i in currencies:
-	```            country = self.currencies[i]
-	```            # Removing 'CNY' from '중국 위안 CNY'
-	```            country = country.rsplit(' ', 1)[0]
-	```            country = self.align_string(country, 25)
-	```            cur_countries.append('{0}: {1}'.format(i, country))
-	```        cnt = 0
-	```        line = ''
-	```        for i in cur_countries:
-	```            line += i
-	```            cnt += 1
-	```            if cnt == columns:
-	```                print(line)
-	```                line = ''
-	```                cnt = 0
-	```        if line != '':
-	```            print(line)
+	```    # 100 USD = 100,000 KRW
+	```    won_amount = amount * price
+	```    foreign_amount = amount
+	```    print(f"{foreign_amount} {currency} = {won_amount:,} KRW")
 	```
-	```    def calcurate(self):
-	```        self.currency = self.currency.upper()
-	```        try:
-	```            exchange_rate = self.soup.find('option', string=self.currencies[self.currency]).attrs['value']
-	```        except:
-	```            print('Make sure the currency abbreviation is correct.')
-	```            return
-	```        basis = self.soup.find('option', string=self.currencies[self.currency]).attrs['label']
+	```    # 100 KRW = 0.01 USD
+	```    won_amount = amount
+	```    foreign_amount = amount / price
+	```    print(f"{won_amount} KRW = {foreign_amount:,.2f} {currency}")
 	```
-	```        # foreign : KRW for the basis
-	```        exchange_rate = float(exchange_rate)
-	```        basis = float(basis)
-	```        won = basis * exchange_rate
-	```        won = '{:,.2f}'.format(won)
-	```        basis = '{:,.2f}'.format(basis)
-	```        print('{} {} = {} KRW'.format(basis, self.currency, won))
+	```def align_string(string:str, width:int):
+	```    nfc_string = unicodedata.normalize('NFC', string)
+	```    wide_chars = [unicodedata.east_asian_width(c) for c in nfc_string]
+	```    num_wide_chars = sum(map(wide_chars.count, ['W', 'F']))
+	```    width = max(width - num_wide_chars, num_wide_chars)
+	```    return '{:{w}}'.format(nfc_string, w=width)
 	```
-	```        # foreign : KRW for the given
-	```        won_amount = self.amount * exchange_rate
-	```        foreign_amount = self.amount
-	```        won_amount = '{:,.2f}'.format(won_amount)
-	```        foreign_amount = '{:,.2f}'.format(foreign_amount)
-	```        print('{} {} = {} KRW'.format(foreign_amount, self.currency, won_amount))
+	```def parse_args():
+	```    parser = argparse.ArgumentParser(
+	```        description = 'View exchage rates.'
+	```    )
+	```    parser.add_argument(
+	```        'amount',
+	```        nargs = '?',
+	```        type = int,
+	```        default = 0,
+	```        help = 'Specify an amount.'
+	```    )
+	```    parser.add_argument(
+	```        dest = 'currency',
+	```        nargs = '?',
+	```        default = 'USD',
+	```        help = 'specify a currency. (default: USD) '
+	```    )
+	```    return parser.parse_args()
 	```
-	```        # KRW : foreign for the given
-	```        won_amount = self.amount
-	```        foreign_amount = self.amount / exchange_rate
-	```        won_amount = '{:,.2f}'.format(won_amount)
-	```        foreign_amount = '{:,.2f}'.format(foreign_amount)
-	```        print('{} KRW = {} {}'.format(won_amount, foreign_amount, self.currency))
+	```def main():
+	```    
+	```    rates = get_exchange_rates()
+	```    args = parse_args()
+	```
+	```    # 주어진 금액이 0이면 각 통화의 환율을 출력한다.
+	```    if args.amount == 0:
+	```        for currency, item in rates.items():
+	```            name = align_string(item['name'], 9)
+	```            country = align_string(item['country'], 15)
+	```            print(
+	```                f"{currency:<6}{name}{country}{item['price']:>10,.2f}"
+	```            )
+	```        return
+	```
+	```    currency = args.currency
+	```    if args.currency not in rates:
+	```        print("Available currencies:")
+	```        print(", ".join(rates.keys()))
+	```        return
+	```    
+	```    calcurate(rates, args.amount, args.currency)
+	```
+	```    # item = rates[currency]
+	```    # print(f"{currency} : {item['rate']:,.4f} KRW")
 	```
 	```if __name__ == '__main__':
-	```    exrate = ExchangeRate()
-	```    exrate.parse_args()
-	```    if exrate.list_bool:
-	```        exrate.show_currencies()
-	```    else:
-	```        exrate.calcurate()
+	```    main()
 
 [taxrate]
 description = [Python] Calculate income tax.
