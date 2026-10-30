@@ -985,7 +985,7 @@ code = ```
 	```    response = requests.get(API_URL, headers=HEADERS, timeout=10)
 	```    response.raise_for_status()
 	```    data = response.json()["data"]
-	```    
+	```
 	```    rates = {}
 	```    for item in data:
 	```        currency = item["currencyCode"]
@@ -994,7 +994,7 @@ code = ```
 	```            "country": item["country"],
 	```            "price": item["basePrice"],
 	```            "unit": item["currencyUnit"]
-	```        } 
+	```        }
 	```    return rates
 	```
 	```def calcurate(rates:dict, amount:int, currency:str):
@@ -1008,7 +1008,7 @@ code = ```
 	```    # 100 USD = 100,000 KRW
 	```    won_amount = amount * price
 	```    foreign_amount = amount
-	```    print(f"{foreign_amount} {currency} = {won_amount:,} KRW")
+	```    print(f"{foreign_amount} {currency} = {won_amount:,.2f} KRW")
 	```
 	```    # 100 KRW = 0.01 USD
 	```    won_amount = amount
@@ -1029,7 +1029,7 @@ code = ```
 	```    parser.add_argument(
 	```        'amount',
 	```        nargs = '?',
-	```        type = int,
+	```        type = float,
 	```        default = 0,
 	```        help = 'Specify an amount.'
 	```    )
@@ -1042,7 +1042,7 @@ code = ```
 	```    return parser.parse_args()
 	```
 	```def main():
-	```    
+	```
 	```    rates = get_exchange_rates()
 	```    args = parse_args()
 	```
@@ -1061,7 +1061,7 @@ code = ```
 	```        print("Available currencies:")
 	```        print(", ".join(rates.keys()))
 	```        return
-	```    
+	```
 	```    calcurate(rates, args.amount, args.currency)
 	```
 	```    # item = rates[currency]

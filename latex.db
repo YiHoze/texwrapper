@@ -4240,11 +4240,11 @@ tex = ```\documentclass[a5paper]{article}
 	```\usepackage{lipsum}
 	```\pagestyle{empty}
 	```\begin{document}
-    ```\lipsum[1]
-    ```
+	```\lipsum[1]
+	```
 	```\animategraphics[width=5cm,autoplay,loop]{12}{cat-}{0}{3}
-    ```
-    ```\lipsum[2]
+	```
+	```\lipsum[2]
 	```\end{document}
 	```
 cmd_output = run.cmd
@@ -4541,4 +4541,38 @@ tex = ```\documentclass{article}
 	```Thank God Almighty, we are free at last.
 	```
 	```\end{document}
+
+[AncestralTablet]
+tex_output = AncestralTablet.tex
+tex = ```\documentclass{hzguide}
+	```\LayoutSetup{}
+	```\setmainhangulfont{Noto Serif KR}[BoldFont={* SemiBold}, Script=Hangul, Language=Korean, Vertical=Alternates, RawFeature=vertical]
+	```
+	```\ExplSyntaxOn
+	```\RenewTColorBox{FrameBox}{ s }
+	```{
+	```    width=20cm,
+	```    colframe=gray, colback=white, after={\par\normalcolor},
+	```    boxrule=0.5pt, arc=0pt,
+	```    boxsep=0.5ex, top=0.75ex, bottom=0.75ex, left=0.5em, right=0.5em,
+	```    IfBooleanTF={#1}{
+	```        breakable=\l_bbox_breakable_adhoc_tl
+	```    }{
+	```        breakable=\l_bbox_breakable_default_tl
+	```    }
+	```}
+	```\ExplSyntaxOff
+	```
+	```\pagestyle{empty}
+	```\begin{document}
+	```\begin{center}
+	```\begin{vertical}{18cm}\fontsize{50pt}{40pt}\selectfont
+	```\begin{FrameBox} 
+	```\mbox{} \\
+	```顯考學生府君神位 \\
+	```\end{FrameBox}
+	```\end{vertical}
+	```\end{center}
+	```\end{document}
+	```
 
